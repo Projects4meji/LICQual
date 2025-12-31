@@ -1,0 +1,7 @@
+#id_captcha_1 {
+  color: #000 !important;
+  background-color: #fff;
+}
+#id_captcha_1::placeholder {
+  color: #4b5563;
+}

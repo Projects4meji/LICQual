@@ -1,0 +1,651 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Change Avatar • LICQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    background: radial-gradient(circle at 18% 18%, rgba(59,130,246,0.08), transparent 36%), radial-gradient(circle at 82% 8%, rgba(239,68,68,0.08), transparent 42%), linear-gradient(180deg, #f8fafc 0%, #ffffff 45%, #f8fafc 100%);
+    min-height: calc(100vh - 80px);
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .card-content {
+    padding: 3rem 2.5rem;
+  }
+
+  /* Avatar Upload Section - Completely New Design */
+  .avatar-upload-section {
+    margin-bottom: 3rem;
+  }
+
+  .avatar-preview-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .avatar-preview-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+
+  .avatar-preview {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(239, 68, 68, 0.1), 0 0 0 8px rgba(59, 130, 246, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .avatar-preview-wrapper:hover .avatar-preview {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(239, 68, 68, 0.25), 0 0 0 4px rgba(239, 68, 68, 0.2), 0 0 0 8px rgba(59, 130, 246, 0.2);
+  }
+
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+  }
+
+  .avatar-preview-wrapper:hover .avatar-overlay {
+    opacity: 1;
+  }
+
+  .avatar-overlay-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    transform: translateY(-10px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .avatar-preview-wrapper:hover .avatar-overlay-icon {
+    transform: translateY(0);
+  }
+
+  .avatar-overlay-text {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transform: translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .avatar-preview-wrapper:hover .avatar-overlay-text {
+    transform: translateY(0);
+  }
+
+  /* Drag and Drop Zone */
+  .upload-zone {
+    border: 3px dashed #cbd5e1;
+    border-radius: 1.25rem;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.02) 0%, rgba(59, 130, 246, 0.02) 100%);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .upload-zone:hover {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+  }
+
+  .upload-zone:hover::before {
+    opacity: 1;
+  }
+
+  .upload-zone.drag-over {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.25);
+  }
+
+  .upload-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .upload-zone:hover .upload-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .upload-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.01em;
+  }
+
+  .upload-subtitle {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .file-input-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    position: relative;
+    z-index: 1;
+  }
+
+  .file-input-label::before {
+    content: '📷';
+    font-size: 1.25rem;
+  }
+
+  .file-input-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+  }
+
+  .file-input-label:active {
+    transform: translateY(0);
+  }
+
+  .file-chosen {
+    display: block;
+    margin-top: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: 0.75rem;
+    color: #059669;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: none;
+  }
+
+  .file-chosen.has-file {
+    display: block;
+  }
+
+  .file-chosen::before {
+    content: '✓ ';
+    font-weight: 800;
+    margin-right: 0.5rem;
+  }
+
+  /* Form Styling */
+  .form-group {
+    margin-bottom: 2rem;
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 1rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-error {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(220, 38, 38, 0.1);
+    border-left: 3px solid #dc2626;
+    border-radius: 0.5rem;
+    font-weight: 600;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 3rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 2px solid #e2e8f0;
+  }
+
+  /* Hidden Input */
+  .hidden-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Alert Messages */
+  .alert {
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border: 2px solid;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .alert-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #059669;
+  }
+
+  .alert-error {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.1) 100%);
+    border-color: rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 2rem 1.5rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .avatar-preview-wrapper {
+      width: 160px;
+      height: 160px;
+    }
+
+    .avatar-preview {
+      width: 160px;
+      height: 160px;
+    }
+
+    .upload-zone {
+      padding: 2rem 1.5rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Profile Photo</h1>
+      <div class="page-header-actions">
+        {# Back button: prefer ?next=..., else role-based fallback #}
+        {% if request.GET.next %}
+          <a href="{{ request.GET.next }}" class="btn-modern btn-secondary">Back</a>
+        {% elif user.is_superuser %}
+          <a href="{% url 'superadmin:superadmin_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+        {% elif user.is_partner %}
+          <a href="{% url 'superadmin:business_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+        {% elif user.is_learner %}
+          <a href="{% url 'learners:learner_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+        {% else %}
+          <a href="{% url 'users:login' %}" class="btn-modern btn-secondary">Back</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Avatar Preview Section -->
+      <div class="avatar-upload-section">
+        <div class="avatar-preview-container">
+          <div class="avatar-preview-wrapper">
+            {% static 'images/avatar_default.png' as default_avatar %}
+            <img
+              id="avatar-preview"
+              src="{{ request.user.avatar_safe_url|default:default_avatar }}"
+              alt="Current avatar"
+              class="avatar-preview"
+            >
+            <div class="avatar-overlay" id="avatarOverlay">
+              <div class="avatar-overlay-icon">📷</div>
+              <div class="avatar-overlay-text">Click to Change</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drag and Drop Zone -->
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📤</div>
+          <h3 class="upload-title">Drag & Drop Your Photo</h3>
+          <p class="upload-subtitle">or click the button below to browse</p>
+          <label for="id_avatar" class="file-input-label">Choose File</label>
+          <span id="file-chosen" class="file-chosen">No file chosen</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form method="post" enctype="multipart/form-data" id="avatarForm" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Hidden real input -->
+        <input id="id_avatar" name="avatar" type="file" accept="image/*" class="hidden-input">
+
+        {# Show field errors, if any #}
+        {% if form.avatar.errors %}
+          <div class="form-error">{{ form.avatar.errors|striptags }}</div>
+        {% endif %}
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button class="btn-modern btn-primary" type="submit">Save</button>
+          <button class="btn-modern btn-secondary" type="submit" name="remove" value="1">Remove photo</button>
+          <a class="btn-modern btn-danger" href="{% url 'users:logout' %}">Logout</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const input = document.getElementById('id_avatar');
+    const chosen = document.getElementById('file-chosen');
+    const preview = document.getElementById('avatar-preview');
+    const overlay = document.getElementById('avatarOverlay');
+    const uploadZone = document.getElementById('uploadZone');
+    const form = document.getElementById('avatarForm');
+
+    if (!input) return;
+
+    // Click overlay to trigger file input
+    if (overlay) {
+      overlay.addEventListener('click', () => {
+        input.click();
+      });
+    }
+
+    // Click upload zone to trigger file input
+    if (uploadZone) {
+      uploadZone.addEventListener('click', (e) => {
+        if (e.target !== input && e.target !== chosen) {
+          input.click();
+        }
+      });
+    }
+
+    // File input change handler
+    input.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const f = this.files[0];
+        chosen.textContent = f.name;
+        chosen.classList.add('has-file');
+
+        // Live preview
+        const reader = new FileReader();
+        reader.onload = e => { 
+          preview.src = e.target.result;
+          preview.style.transform = 'scale(1)';
+          setTimeout(() => {
+            preview.style.transform = '';
+          }, 300);
+        };
+        reader.readAsDataURL(f);
+      } else {
+        chosen.textContent = 'No file chosen';
+        chosen.classList.remove('has-file');
+      }
+    });
+
+    // Drag and drop functionality
+    if (uploadZone) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, () => {
+          uploadZone.classList.add('drag-over');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, () => {
+          uploadZone.classList.remove('drag-over');
+        }, false);
+      });
+
+      uploadZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+          input.files = files;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }, false);
+    }
+  })();
+</script>
+{% endblock %}

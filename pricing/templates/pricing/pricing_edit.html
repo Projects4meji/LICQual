@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% block title %}Edit Pricing • {{ course.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  /* Form Styling */
+  .form-container {
+    max-width: 100%;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input,
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    font-size: 0.9375rem !important;
+    color: #1e293b !important;
+    background: #ffffff !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-input:focus,
+  .form-group input[type="text"]:focus,
+  .form-group input[type="number"]:focus,
+  .form-group input:focus {
+    outline: none !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
+
+  .form-input:hover,
+  .form-group input[type="text"]:hover,
+  .form-group input[type="number"]:hover,
+  .form-group input:hover {
+    border-color: #cbd5e1 !important;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  /* Course Info */
+  .course-info {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .course-info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .course-info-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Edit Pricing — {{ course.title }}</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'pricing:pricing_list' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Course Info -->
+      <div class="course-info">
+        <div class="course-info-label">Course</div>
+        <div class="course-info-value">{{ course.title }}</div>
+      </div>
+
+      <!-- Form -->
+      <form method="post" class="form-container">
+        {% csrf_token %}
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="{{ form.currency.id_for_label }}" class="form-label">Currency</label>
+            {{ form.currency }}
+            {% if form.currency.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ form.currency.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.affiliate_price.id_for_label }}" class="form-label">Affiliate Price</label>
+            {{ form.affiliate_price }}
+            {% if form.affiliate_price.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ form.affiliate_price.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.learner_price.id_for_label }}" class="form-label">Learner Price</label>
+            {{ form.learner_price }}
+            {% if form.learner_price.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ form.learner_price.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-modern btn-primary">Save Changes</button>
+          <a href="{% url 'pricing:pricing_list' %}" class="btn-modern btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

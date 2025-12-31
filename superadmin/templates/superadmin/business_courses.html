@@ -1,0 +1,1513 @@
+{% extends "superadmin/business_base.html" %}
+{% block title %}My Courses • LICQUAL{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* Import modern font */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2rem;
+    position: relative;
+    z-index: 0;
+  }
+
+  /* Header badges */
+  .header-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .badge-soft {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  /* Search and Filter Bar */
+  .filters-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .search-container {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.875rem;
+    font-size: 0.9375rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    font-weight: 500;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .search-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    font-size: 1.125rem;
+    pointer-events: none;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+  }
+
+  .search-container:focus-within .search-icon {
+    color: #3b82f6;
+    opacity: 1;
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.875rem;
+    padding: 0.5rem;
+  }
+
+  .view-toggle-btn {
+    padding: 0.625rem 1rem;
+    border: none;
+    background: transparent;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1.125rem;
+    transition: all 0.2s ease;
+    color: #64748b;
+  }
+
+  .view-toggle-btn:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  .view-toggle-btn.active {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .stats-stack {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+    border-radius: 0.875rem;
+    border: 2px solid #e2e8f0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+  }
+
+  .stat-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.375rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .stat-label::before {
+    content: '📚';
+    font-size: 0.875rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Courses Grid Layout */
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 1200px) {
+    .courses-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .courses-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .courses-grid.hidden {
+    display: none;
+  }
+
+  /* Course Card - New Design */
+  .course-card-modern {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .course-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .course-card-modern:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+  }
+
+  .course-card-modern:hover::before {
+    transform: scaleX(1);
+  }
+
+  .course-card-header {
+    padding: 1.75rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-bottom: 2px solid #f1f5f9;
+  }
+
+  .course-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .course-card-title a {
+    color: #1e293b;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: block;
+  }
+
+  .course-card-title a:hover {
+    color: #3b82f6;
+    transform: translateX(4px);
+  }
+
+  .course-card-number {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #475569;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  .course-card-body {
+    padding: 1.5rem 1.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .course-info-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .course-info-item:last-child {
+    border-bottom: none;
+  }
+
+  .course-info-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .course-info-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #1e293b;
+    text-align: right;
+  }
+
+  .course-info-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.875rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .course-card-footer {
+    padding: 1.5rem 1.75rem;
+    background: #f8fafc;
+    border-top: 2px solid #f1f5f9;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .btn-primary-action {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    min-width: 0;
+  }
+
+  .btn-primary-action::before {
+    content: '➕';
+    font-size: 1rem;
+    color: #ffffff;
+    display: inline-block;
+    filter: brightness(0) invert(1);
+  }
+
+  .btn-primary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-secondary-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .btn-secondary-action::before {
+    content: '👁️';
+    font-size: 1rem;
+  }
+
+  .btn-secondary-action:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .certificate-link-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.625rem;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .certificate-link-modern::before {
+    content: '📄';
+    font-size: 1rem;
+  }
+
+  .certificate-link-modern:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Actions Dropdown Menu */
+  .actions-wrapper {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 999998;
+  }
+
+  .courses-table tbody tr:hover .actions-wrapper {
+    z-index: 999998;
+  }
+
+  .courses-table tbody tr .actions-wrapper:hover,
+  .courses-table tbody tr .actions-wrapper:has(.actions-menu:hover) {
+    z-index: 999998;
+  }
+
+  .actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    font-size: 1.125rem;
+    position: relative;
+    z-index: 1000;
+  }
+
+  .actions-trigger:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  .actions-trigger::after {
+    content: '⋯';
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .actions-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999999 !important;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+  
+  .desktop-table-container .actions-menu {
+    z-index: 1000000 !important;
+  }
+
+  .actions-wrapper:hover .actions-menu,
+  .actions-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .action-item:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+
+  .action-item:last-child {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+  }
+
+  .action-item:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  .action-item.register::before {
+    content: '👥';
+    font-size: 1rem;
+  }
+
+  .action-item.view::before {
+    content: '👁';
+    font-size: 1rem;
+  }
+
+  /* Desktop Table Container - Hidden by default, shown when list view is active */
+  .desktop-table-container {
+    display: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  .desktop-table-container.active {
+    display: block;
+  }
+
+  /* Mobile Cards Container */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .page-header-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .page-header-actions .btn-modern {
+      width: 100%;
+    }
+
+    .courses-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .course-card-modern {
+      margin-bottom: 1.5rem;
+    }
+
+    .course-card-footer {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn-primary-action,
+    .btn-secondary-action {
+      width: 100%;
+    }
+
+    .filters-section {
+      padding: 1rem;
+    }
+
+    .filters-row {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .search-container {
+      min-width: 100%;
+    }
+
+    .view-toggle {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* Mobile action buttons - match courses/learners design */
+    .actions-wrapper {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .actions-trigger {
+      display: none;
+    }
+
+    .actions-menu {
+      position: static;
+      display: flex !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1;
+      visibility: visible;
+      transform: none !important;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      min-width: auto;
+    }
+
+    .actions-menu .action-item {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      border-radius: 0.5rem !important;
+      text-decoration: none !important;
+      border: none !important;
+      background: #f8fafc !important;
+      color: #475569 !important;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      min-height: 40px !important;
+      min-width: 44px !important;
+      white-space: nowrap !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .actions-menu .action-item:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .actions-menu .action-item.register {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-menu .action-item.register:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-menu .action-item.view {
+      background: #60a5fa !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3) !important;
+    }
+
+    .actions-menu .action-item.view:hover {
+      background: #3b82f6 !important;
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4) !important;
+    }
+  }
+
+  /* Table Styling */
+  .courses-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: visible;
+    border: 2px solid #e2e8f0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .courses-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .courses-table thead th {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.25rem 1rem;
+    text-align: left;
+    border: none;
+  }
+
+  .courses-table thead th:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .courses-table thead th:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+  }
+
+  .courses-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .courses-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+  }
+
+  .courses-table tbody tr:has(.actions-wrapper:hover),
+  .courses-table tbody tr:has(.actions-menu:hover) {
+    z-index: 99999;
+  }
+
+  .courses-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .courses-table tbody td {
+    padding: 1.25rem 1rem;
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    vertical-align: middle;
+  }
+
+  .courses-table tbody td:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .courses-table tbody td:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+  }
+
+  .courses-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  /* Mobile card layout for table rows - hidden on desktop */
+  .mobile-table-cards {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    /* Hide table on mobile */
+    .courses-table {
+      display: none;
+    }
+
+    /* Show mobile card layout only when active (list view) on mobile */
+    .mobile-table-cards.active {
+      display: block;
+    }
+
+    .mobile-course-card {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .mobile-course-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border-color: #cbd5e1;
+    }
+
+    .mobile-course-header {
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    .mobile-course-title {
+      font-size: 1.125rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .mobile-course-title a {
+      color: #3b82f6;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .mobile-course-title a:hover {
+      color: #2563eb;
+    }
+
+    .mobile-course-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .mobile-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+    }
+
+    .mobile-info-label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mobile-info-value {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #1e293b;
+      text-align: right;
+    }
+
+    .mobile-course-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-top: 1rem;
+      border-top: 2px solid #f1f5f9;
+    }
+
+    .mobile-action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .mobile-action-btn-primary {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .mobile-action-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .mobile-action-btn-secondary {
+      background: #ffffff;
+      color: #475569;
+      border: 2px solid #e2e8f0;
+    }
+
+    .mobile-action-btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+  }
+
+  .course-link-table {
+    color: #3b82f6;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+  }
+
+  .course-link-table:hover {
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .filters-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .search-container {
+      min-width: 100%;
+    }
+
+    .stats-stack {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .stat-card {
+      padding: 0.75rem 1rem;
+      min-width: 100px;
+    }
+
+    .stat-value {
+      font-size: 1.125rem;
+    }
+
+    /* Grid cards footer buttons wrap and stretch */
+    .course-card-footer {
+      flex-wrap: wrap;
+      align-items: stretch;
+    }
+    .course-card-footer .btn-primary-action,
+    .course-card-footer .btn-secondary-action {
+      width: 100%;
+      justify-content: center;
+    }
+
+  }
+</style>
+{% endblock %}
+
+{% block business_content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Courses Assigned to Your Business</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Search + Stats + View Toggle -->
+      <div class="filters-section">
+        <div class="filters-row">
+          <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <label for="course-filter" class="sr-only">Search courses</label>
+            <input
+              type="search"
+              id="course-filter"
+              placeholder="Search courses by title…"
+              class="search-input"
+              autocomplete="off"
+            />
+          </div>
+          <div class="view-toggle">
+            {% if request.GET.view == 'list' %}
+              <button class="view-toggle-btn" data-view="grid" title="Grid View">⊞</button>
+              <button class="view-toggle-btn active" data-view="list" title="List View">☰</button>
+            {% else %}
+              <button class="view-toggle-btn active" data-view="grid" title="Grid View">⊞</button>
+              <button class="view-toggle-btn" data-view="list" title="List View">☰</button>
+            {% endif %}
+          </div>
+          <div class="stats-stack">
+            <div class="stat-card">
+              <div class="stat-label">Total Courses</div>
+              <div class="stat-value">{{ courses|length|default:0 }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Grid View -->
+      <div id="courses-grid" class="courses-grid{% if request.GET.view == 'list' %} hidden{% endif %}">
+        {% if courses %}
+          {% for c in courses %}
+            <div class="course-card-modern" data-title="{{ c.title|lower }}">
+              <div class="course-card-header">
+                <h3 class="course-card-title">
+                  <a href="{% url 'superadmin:registered_learners' c.id %}">
+                    {{ c.title }}
+                  </a>
+                </h3>
+                {% if c.course_number %}
+                  <span class="course-card-number">{{ c.course_number }}</span>
+                {% endif %}
+              </div>
+              <div class="course-card-body">
+                {% if c.duration %}
+                  <div class="course-info-item">
+                    <span class="course-info-label">⏱️ Duration</span>
+                    <span class="course-info-value">{{ c.duration }}</span>
+                  </div>
+                {% endif %}
+                {% if c.category %}
+                  <div class="course-info-item">
+                    <span class="course-info-label">📁 Category</span>
+                    <span class="course-info-value">
+                      <span class="course-info-badge">{{ c.category }}</span>
+                    </span>
+                  </div>
+                {% endif %}
+                {% if c.credit_hours %}
+                  <div class="course-info-item">
+                    <span class="course-info-label">🎓 Credit Hours</span>
+                    <span class="course-info-value">
+                      <span class="course-info-badge">{{ c.credit_hours }}</span>
+                    </span>
+                  </div>
+                {% endif %}
+                <div class="course-info-item">
+                  <span class="course-info-label">📄 Certificate</span>
+                  <span class="course-info-value">
+                    {% if c.certificate_sample %}
+                      <a href="{% url 'superadmin:view_certificate_sample' c.id %}" target="_blank" rel="noopener noreferrer" class="certificate-link-modern">
+                        View Sample
+                      </a>
+                    {% else %}
+                      <span style="color: #94a3b8; font-style: italic;">Not available</span>
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+              <div class="course-card-footer">
+                <a href="{% url 'superadmin:register_learners' c.id %}" class="btn-primary-action">
+                  Register Learners
+                </a>
+                <a href="{% url 'superadmin:registered_learners' c.id %}" class="btn-secondary-action">
+                  View Learners
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📚</div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">No Courses Available</h3>
+            <p style="color: #64748b; font-size: 1rem;">You don't have any courses assigned to your business yet.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Desktop Table View -->
+      <div id="desktop-table" class="desktop-table-container{% if request.GET.view == 'list' %} active{% endif %}">
+        <table class="courses-table">
+          <thead>
+            <tr>
+              <th>Course Title</th>
+              <th>Course No.</th>
+              <th>Duration</th>
+              <th>Category</th>
+              <th>Credit Hours</th>
+              <th>Sample Certificate</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if courses %}
+              {% for c in courses %}
+                <tr data-title="{{ c.title|lower }}">
+                  <td>
+                    <a href="{% url 'superadmin:registered_learners' c.id %}" class="course-link-table">
+                      {{ c.title }}
+                    </a>
+                  </td>
+                  <td>
+                    <span class="course-info-badge">{{ c.course_number|default:"—" }}</span>
+                  </td>
+                  <td>
+                    <span class="course-info-badge">{{ c.duration|default:"—" }}</span>
+                  </td>
+                  <td>
+                    <span class="course-info-badge">{{ c.category|default:"—" }}</span>
+                  </td>
+                  <td>
+                    <span class="course-info-badge">{{ c.credit_hours|default:"0" }}</span>
+                  </td>
+                  <td>
+                    {% if c.certificate_sample %}
+                      <a href="{% url 'superadmin:view_certificate_sample' c.id %}" target="_blank" rel="noopener noreferrer" class="certificate-link-modern">
+                        View
+                      </a>
+                    {% else %}
+                      <span style="color: #94a3b8; font-style: italic;">—</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="actions-wrapper">
+                      <button class="actions-trigger" aria-label="Actions menu"></button>
+                      <div class="actions-menu">
+                        <a href="{% url 'superadmin:register_learners' c.id %}" class="action-item register">
+                          Register Learners
+                        </a>
+                        <a href="{% url 'superadmin:registered_learners' c.id %}" class="action-item view">
+                          View Learners
+                        </a>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="7" class="empty-state" style="text-align: center; padding: 4rem 2rem;">
+                  <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📚</div>
+                  <h3 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">No Courses Available</h3>
+                  <p style="color: #64748b; font-size: 1rem;">You don't have any courses assigned to your business yet.</p>
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card View (hidden on desktop, shown on mobile) -->
+      <div id="mobile-table-cards" class="mobile-table-cards{% if request.GET.view == 'list' %} active{% endif %}">
+        {% if courses %}
+          {% for c in courses %}
+            <div class="mobile-course-card" data-title="{{ c.title|lower }}">
+              <div class="mobile-course-header">
+                <h3 class="mobile-course-title">
+                  <a href="{% url 'superadmin:registered_learners' c.id %}">
+                    {{ c.title }}
+                  </a>
+                </h3>
+              </div>
+              <div class="mobile-course-info">
+                <div class="mobile-info-row">
+                  <span class="mobile-info-label">Course No.</span>
+                  <span class="mobile-info-value">
+                    <span class="course-info-badge">{{ c.course_number|default:"—" }}</span>
+                  </span>
+                </div>
+                <div class="mobile-info-row">
+                  <span class="mobile-info-label">Duration</span>
+                  <span class="mobile-info-value">
+                    <span class="course-info-badge">{{ c.duration|default:"—" }}</span>
+                  </span>
+                </div>
+                <div class="mobile-info-row">
+                  <span class="mobile-info-label">Category</span>
+                  <span class="mobile-info-value">
+                    <span class="course-info-badge">{{ c.category|default:"—" }}</span>
+                  </span>
+                </div>
+                <div class="mobile-info-row">
+                  <span class="mobile-info-label">Credit Hours</span>
+                  <span class="mobile-info-value">
+                    <span class="course-info-badge">{{ c.credit_hours|default:"0" }}</span>
+                  </span>
+                </div>
+                <div class="mobile-info-row">
+                  <span class="mobile-info-label">Certificate</span>
+                  <span class="mobile-info-value">
+                    {% if c.certificate_sample %}
+                      <a href="{% url 'superadmin:view_certificate_sample' c.id %}" target="_blank" rel="noopener noreferrer" class="certificate-link-modern">
+                        View Sample
+                      </a>
+                    {% else %}
+                      <span style="color: #94a3b8; font-style: italic;">—</span>
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+              <div class="mobile-course-actions">
+                <a href="{% url 'superadmin:register_learners' c.id %}" class="mobile-action-btn mobile-action-btn-primary">
+                  <span>➕</span>
+                  Register Learners
+                </a>
+                <a href="{% url 'superadmin:registered_learners' c.id %}" class="mobile-action-btn mobile-action-btn-secondary">
+                  <span>👁️</span>
+                  View Learners
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" style="text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📚</div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">No Courses Available</h3>
+            <p style="color: #64748b; font-size: 1rem;">You don't have any courses assigned to your business yet.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const input = document.getElementById('course-filter');
+  if (!input) return;
+
+  const normalize = (s) => (s || '').toLowerCase().trim();
+
+  function filter() {
+    const q = normalize(input.value);
+    const isGridView = document.getElementById('courses-grid').classList.contains('hidden') === false;
+
+    if (isGridView) {
+      // Grid view
+      document.querySelectorAll('#courses-grid [data-title]').forEach(el => {
+        const title = normalize(el.dataset.title);
+        el.style.display = title.includes(q) ? '' : 'none';
+      });
+    } else {
+      // Table view (desktop)
+      document.querySelectorAll('#desktop-table tbody tr[data-title]').forEach(el => {
+        const title = normalize(el.dataset.title);
+        el.style.display = title.includes(q) ? '' : 'none';
+      });
+      // Mobile cards view
+      document.querySelectorAll('#mobile-table-cards .mobile-course-card[data-title]').forEach(el => {
+        const title = normalize(el.dataset.title);
+        el.style.display = title.includes(q) ? '' : 'none';
+      });
+    }
+  }
+
+  input.addEventListener('input', filter);
+
+  // View toggle functionality
+  const gridViewBtn = document.querySelector('[data-view="grid"]');
+  const listViewBtn = document.querySelector('[data-view="list"]');
+  const gridContainer = document.getElementById('courses-grid');
+  const tableContainer = document.getElementById('desktop-table');
+  const mobileCardsContainer = document.getElementById('mobile-table-cards');
+
+  // Check URL parameter for view preference
+  const urlParams = new URLSearchParams(window.location.search);
+  const viewParam = urlParams.get('view');
+
+  if (gridViewBtn && listViewBtn && gridContainer && tableContainer && mobileCardsContainer) {
+    // Set initial view based on URL parameter
+    if (viewParam === 'list') {
+      listViewBtn.classList.add('active');
+      gridViewBtn.classList.remove('active');
+      gridContainer.classList.add('hidden');
+      tableContainer.classList.add('active');
+      mobileCardsContainer.classList.add('active');
+    } else {
+      // Default to grid view
+      gridViewBtn.classList.add('active');
+      listViewBtn.classList.remove('active');
+      gridContainer.classList.remove('hidden');
+      tableContainer.classList.remove('active');
+      mobileCardsContainer.classList.remove('active');
+    }
+
+    gridViewBtn.addEventListener('click', function() {
+      gridViewBtn.classList.add('active');
+      listViewBtn.classList.remove('active');
+      gridContainer.classList.remove('hidden');
+      tableContainer.classList.remove('active');
+      mobileCardsContainer.classList.remove('active');
+      // Update URL without reload
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('view');
+      window.history.replaceState({}, '', newUrl);
+    });
+
+    listViewBtn.addEventListener('click', function() {
+      listViewBtn.classList.add('active');
+      gridViewBtn.classList.remove('active');
+      gridContainer.classList.add('hidden');
+      tableContainer.classList.add('active');
+      mobileCardsContainer.classList.add('active');
+      // Update URL without reload
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set('view', 'list');
+      window.history.replaceState({}, '', newUrl);
+    });
+  }
+
+  // Ensure dropdown menus appear above all table rows and card-content
+  document.querySelectorAll('.actions-wrapper').forEach(wrapper => {
+    const menu = wrapper.querySelector('.actions-menu');
+    const row = wrapper.closest('tr');
+    
+    if (wrapper && menu && row) {
+      wrapper.addEventListener('mouseenter', function() {
+        row.style.zIndex = '999999';
+        wrapper.style.zIndex = '999998';
+      });
+      
+      wrapper.addEventListener('mouseleave', function() {
+        // Only reset if menu is not being hovered
+        setTimeout(() => {
+          if (!menu.matches(':hover')) {
+            row.style.zIndex = '';
+            wrapper.style.zIndex = '';
+          }
+        }, 100);
+      });
+      
+      menu.addEventListener('mouseleave', function() {
+        row.style.zIndex = '';
+        wrapper.style.zIndex = '';
+      });
+    }
+  });
+})();
+</script>
+{% endblock %}

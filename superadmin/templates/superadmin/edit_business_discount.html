@@ -1,0 +1,944 @@
+{% extends "base.html" %}
+{% block title %}Edit Discount • {{ business.business_name|default:business.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Import modern font */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Two Column Layout */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar-section {
+      position: static;
+      top: auto;
+    }
+  }
+
+  /* Sidebar Section */
+  .sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: static;
+  }
+
+  /* Business Info Card */
+  .business-info-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .business-info-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .business-info-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    padding: 1.5rem;
+    color: #ffffff;
+  }
+
+  .business-info-header-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+  }
+
+  .business-info-header-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .business-info-body {
+    padding: 1.5rem;
+  }
+
+  .business-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9375rem;
+  }
+
+  .business-info-item:last-child {
+    border-bottom: none;
+  }
+
+  .business-info-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .business-info-content {
+    flex: 1;
+  }
+
+  .business-info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .business-info-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  /* Info Box Card */
+  .info-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .info-card-header {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .info-card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #ffffff;
+    flex-shrink: 0;
+  }
+
+  .info-card-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .info-card-body {
+    padding: 1.5rem;
+  }
+
+  .info-card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .info-card-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .info-card-item::before {
+    content: '→';
+    color: #3b82f6;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  /* Main Form Section */
+  .form-section {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .form-section-header {
+    background: linear-gradient(135deg, rgba(14, 27, 51, 0.05) 0%, rgba(19, 75, 112, 0.08) 100%);
+    padding: 1.75rem 2rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .form-section-title {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: #0e1b33;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .form-section-title::before {
+    content: '💼';
+    font-size: 1.75rem;
+    filter: grayscale(0.2);
+  }
+
+  .form-section-body {
+    padding: 2rem;
+  }
+
+  .discount-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .course-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .course-row:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .discount-cells-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .course-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .course-meta-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    word-break: break-word;
+  }
+
+  .course-meta-sub {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+  }
+
+  .course-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+    background: rgba(241, 245, 249, 0.8);
+    border: 1px solid rgba(226, 232, 240, 1);
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+
+  .discount-cell {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .discount-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444 0%, #3b82f6 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .discount-cell:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .discount-cell:focus-within::before {
+    opacity: 1;
+  }
+
+  .discount-cell-head {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .discount-cell-label {
+    font-size: 0.8125rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #0e1b33;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .discount-cell-value {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .discount-cell .form-input-wrapper {
+    margin-bottom: 0;
+    gap: 0.5rem;
+  }
+
+  .discount-cell .form-percent {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    padding: 1rem 1.25rem;
+    min-width: 3.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    transition: all 0.3s ease;
+  }
+
+  .discount-cell:focus-within .form-percent {
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+    transform: scale(1.02);
+  }
+
+  /* Responsive breakpoints for discount form */
+  @media (max-width: 768px) {
+    .discount-cells-wrapper {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .course-row {
+      padding: 1.5rem;
+      border-radius: 1.25rem;
+      gap: 1.25rem;
+    }
+
+    .course-meta-title {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .course-meta-sub {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .course-meta-chip {
+      padding: 0.5rem 0.875rem;
+      font-size: 0.8125rem;
+      white-space: normal;
+    }
+
+    .discount-cell {
+      padding: 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .discount-cell-label {
+      font-size: 0.75rem;
+      margin-bottom: 0.625rem;
+    }
+
+    .form-input-wrapper {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+
+    .form-input,
+    .form-group input[type="number"],
+    .form-group input {
+      width: 100% !important;
+    }
+
+    .discount-cell .form-percent {
+      min-width: 3rem;
+      padding: 0.875rem 1rem;
+    }
+  }
+
+  /* Form Styling */
+  .form-container {
+    max-width: 100%;
+  }
+
+  .form-group {
+    margin-bottom: 2rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    transition: none;
+  }
+
+  .discount-list .form-group {
+    margin-bottom: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    transition: none;
+  }
+
+  .form-group:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .discount-list .form-label {
+    text-transform: none;
+    letter-spacing: 0;
+    margin-bottom: 0;
+  }
+
+  .form-input-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-input,
+  .form-group input[type="number"],
+  .form-group input {
+    flex: 1;
+    padding: 1rem 1.25rem !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 0.75rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    background: #ffffff !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .form-input:focus,
+  .form-group input[type="number"]:focus,
+  .form-group input:focus {
+    outline: none !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  .form-input:hover,
+  .form-group input[type="number"]:hover,
+  .form-group input:hover {
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .form-percent {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 0.75rem;
+    min-width: 3.5rem;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    transition: all 0.3s ease;
+  }
+
+  .form-help {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.75rem;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  .form-error {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-error::before {
+    content: '⚠';
+    font-size: 1rem;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+    background: linear-gradient(135deg, #f15959 0%, #4a8df7 100%);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-top: 2px solid #e2e8f0;
+    margin-top: 0;
+  }
+
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .form-actions .btn-secondary {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #e2e8f0;
+  }
+
+  .form-actions .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #000000;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .page-header-actions {
+      width: 100%;
+    }
+
+    .page-header-actions .btn-modern {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+
+    .form-section-header {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .form-section-title {
+      font-size: 1.125rem;
+    }
+
+    .form-section-title::before {
+      font-size: 1.5rem;
+    }
+
+    .form-section-body {
+      padding: 1.5rem;
+    }
+
+    .business-info-header {
+      padding: 1.25rem;
+    }
+
+    .business-info-header-name {
+      font-size: 1.125rem;
+    }
+
+    .business-info-body {
+      padding: 1.25rem;
+    }
+
+    .business-info-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .info-card-header {
+      padding: 1rem 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .info-card-body {
+      padding: 1.25rem;
+    }
+
+    .info-card-list {
+      gap: 0.625rem;
+    }
+
+    .info-card-item {
+      font-size: 0.8125rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-container {
+      padding: 0.75rem;
+    }
+
+    .page-header {
+      padding: 1.25rem 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.25rem;
+    }
+
+    .form-section-header {
+      padding: 1rem;
+    }
+
+    .form-section-body {
+      padding: 1rem;
+    }
+
+    .course-row {
+      padding: 1.25rem;
+    }
+
+    .discount-cell {
+      padding: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Edit Discount — {{ business.business_name|default:business.name }}</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_discounts' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two Column Layout -->
+  <div class="content-grid">
+    <!-- Sidebar -->
+    <div class="sidebar-section">
+      <!-- Business Info Card -->
+      <div class="business-info-card">
+        <div class="business-info-header">
+          <div class="business-info-header-title">Business</div>
+          <h2 class="business-info-header-name">{{ business.business_name|default:business.name }}</h2>
+        </div>
+        <div class="business-info-body">
+          <div class="business-info-item">
+            <div class="business-info-icon">📧</div>
+            <div class="business-info-content">
+              <div class="business-info-label">Email</div>
+              <div class="business-info-value">{{ business.email }}</div>
+            </div>
+          </div>
+          {% if business.country %}
+            <div class="business-info-item">
+              <div class="business-info-icon">🌍</div>
+              <div class="business-info-content">
+                <div class="business-info-label">Country</div>
+                <div class="business-info-value">{{ business.country }}</div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Info Card -->
+      <div class="info-card">
+        <div class="info-card-header">
+          <div class="info-card-icon">ℹ️</div>
+          <h3 class="info-card-title">How it works</h3>
+        </div>
+        <div class="info-card-body">
+          <ul class="info-card-list">
+            <li class="info-card-item">Base prices are set in the Course Pricing section</li>
+            <li class="info-card-item">Discounts are applied as percentages (e.g., 10% = 10% off base price)</li>
+            <li class="info-card-item">Final price = Base Price - (Base Price × Discount %)</li>
+            <li class="info-card-item">Set to 0% to use base pricing without discount</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Form Section -->
+    <div class="form-section">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}" style="margin: 1.5rem 2rem; padding: 1rem; border-radius: 0.5rem;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="form-section-header">
+        <h2 class="form-section-title">Discount Settings</h2>
+      </div>
+
+      <form method="post" novalidate class="form-container">
+        {% csrf_token %}
+
+        <div class="form-section-body">
+          <!-- Apply one discount to all courses -->
+          <div class="form-group">
+            <div class="course-row">
+              <div class="course-meta">
+                <div class="course-meta-title">Apply to all courses</div>
+                <div class="course-meta-sub">
+                  <span class="course-meta-chip">Set one affiliate/learner discount and apply it to every assigned course.</span>
+                  <span class="course-meta-chip">Leave 0% to remove discounts.</span>
+                </div>
+              </div>
+
+              <div class="discount-cells-wrapper">
+                <div class="discount-cell">
+                  <label class="form-label">Affiliate Discount</label>
+                  <div class="form-input-wrapper">
+                    <input
+                      type="number"
+                      name="affiliate_all"
+                      value="{{ default_affiliate_discount }}"
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      class="form-input"
+                    />
+                    <span class="form-percent">%</span>
+                  </div>
+                </div>
+
+                <div class="discount-cell">
+                  <label class="form-label">Learner Discount</label>
+                  <div class="form-input-wrapper">
+                    <input
+                      type="number"
+                      name="learner_all"
+                      value="{{ default_learner_discount }}"
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      class="form-input"
+                    />
+                    <span class="form-percent">%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-modern btn-primary">Save Changes</button>
+          <a href="{% url 'superadmin:business_discounts' %}" class="btn-modern btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

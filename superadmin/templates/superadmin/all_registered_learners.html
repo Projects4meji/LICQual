@@ -1,0 +1,2149 @@
+{% extends "superadmin/business_base.html" %}
+{% block title %}Registered Learners • LICQual{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* Import modern font */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0 0 3rem 0;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem 3rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: visible;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.75rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-subtitle {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Stats integrated in header */
+  .header-stats-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  /* Stats Section - Modern Dashboard Style (Non-Card Design) */
+  .header-stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: relative;
+    margin-top: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .header-stats-container {
+      flex-direction: row;
+      gap: 1.5rem;
+    }
+  }
+
+  .stat-bar-item {
+    flex: 1;
+    position: relative;
+    padding: 1.5rem 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-bar-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 0;
+    opacity: 0.8;
+    transition: opacity 0.4s ease;
+    z-index: 0;
+  }
+
+  .stat-bar-item:hover::before {
+    opacity: 1;
+  }
+
+  .stat-bar-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
+    opacity: 0.6;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+
+  .stat-bar-item:hover::after {
+    transform: scaleX(1);
+  }
+
+  .stat-bar-item:nth-child(1) {
+    color: #f59e0b;
+  }
+
+  .stat-bar-item:nth-child(2) {
+    color: #3b82f6;
+  }
+
+  .stat-bar-item:nth-child(3) {
+    color: #ec4899;
+  }
+
+  .stat-bar-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 767px) {
+    .stat-bar-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0 1rem;
+    }
+  }
+
+  .stat-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .stat-icon-modern {
+    font-size: 2.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .stat-bar-item:hover .stat-icon-modern {
+    transform: scale(1.15) rotate(5deg);
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+  }
+
+  .stat-info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-label-modern {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    transition: all 0.3s ease;
+  }
+
+  .stat-bar-item:hover .stat-label-modern {
+    color: rgba(255, 255, 255, 1);
+    transform: translateX(4px);
+  }
+
+  .stat-value-modern {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.05em;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  @media (max-width: 767px) {
+    .stat-value-modern {
+      font-size: 2.5rem;
+    }
+  }
+
+  .stat-bar-item:hover .stat-value-modern {
+    transform: scale(1.1);
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-value-modern::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -10px;
+    right: -10px;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    transform: translateX(-100%) skewX(-15deg);
+    transition: transform 0.6s ease;
+  }
+
+  .stat-bar-item:hover .stat-value-modern::after {
+    transform: translateX(200%) skewX(-15deg);
+  }
+
+  .stat-bar-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 767px) {
+    .stat-bar-right {
+      align-items: flex-start;
+      width: 100%;
+    }
+  }
+
+  .stat-progress-bar {
+    width: 120px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  @media (max-width: 767px) {
+    .stat-progress-bar {
+      width: 100%;
+    }
+  }
+
+  .stat-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border-radius: 9999px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(200%);
+    }
+  }
+
+  .stat-percentage {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .stat-bar-item:nth-child(1) .stat-progress-fill {
+    width: 100%;
+  }
+
+  .stat-bar-item:nth-child(2) .stat-progress-fill {
+    width: calc(var(--issued-percentage, 0) * 1%);
+  }
+
+  .stat-bar-item:nth-child(3) .stat-progress-fill {
+    width: calc(var(--pending-percentage, 0) * 1%);
+  }
+
+  .stat-decoration-wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+    clip-path: polygon(0 100%, 100% 80%, 100% 100%, 0% 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+  }
+
+  .stat-bar-item:hover .stat-decoration-wave {
+    opacity: 1;
+  }
+
+  /* Search Section - Minimal Inline Design */
+  .search-section {
+    margin-bottom: 2rem;
+  }
+
+  .search-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+  }
+
+  .search-bar-wrapper:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  .search-input-inline {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    background: transparent;
+    padding: 0.625rem 0;
+  }
+
+  .search-input-inline::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .search-divider {
+    width: 2px;
+    height: 40px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+  }
+
+  .filter-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1.25rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .filter-chip:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  .filter-chip.active {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .filter-chip-select {
+    appearance: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .filter-chip-select:hover {
+    background: #f8fafc;
+    color: #1e293b;
+  }
+
+  .filter-chip-select:focus {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  .search-action-btn {
+    padding: 0.625rem 1.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    white-space: nowrap;
+  }
+
+  .search-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .search-action-btn:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    .search-bar-wrapper {
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+
+    .search-input-inline {
+      width: 100%;
+      order: 1;
+    }
+
+    .search-divider {
+      display: none;
+    }
+
+    .filter-chips-container {
+      width: 100%;
+      order: 2;
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .search-action-btn {
+      width: 100%;
+      order: 3;
+      margin-top: 0.75rem;
+    }
+  }
+
+  /* Table Styling */
+  .learners-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    border-radius: 1rem;
+    overflow: visible;
+  }
+
+  .learners-table th,
+  .learners-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .learners-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .learners-table thead th {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.25rem 1rem;
+    border: none;
+  }
+
+  .learners-table thead th:first-child {
+    border-top-left-radius: 1rem;
+    padding-left: 1.5rem;
+    text-align: left;
+    width: 25%;
+  }
+
+  .learners-table thead th:nth-child(2) {
+    text-align: left;
+    width: 18%;
+  }
+
+  .learners-table thead th:nth-child(3) {
+    width: 20%;
+  }
+
+  .learners-table thead th:nth-child(4) {
+    width: 12%;
+  }
+
+  .learners-table thead th:nth-child(5) {
+    width: 15%;
+  }
+
+  .learners-table thead th:last-child {
+    border-top-right-radius: 1rem;
+    padding-right: 1.5rem;
+    width: 10%;
+  }
+
+  .learners-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .learners-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+  }
+
+  .learners-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .learners-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .learners-table tbody td:first-child {
+    padding-left: 1.5rem;
+    text-align: left;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .learners-table tbody td:nth-child(2) {
+    text-align: left;
+  }
+
+  .learners-table tbody td:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+    position: relative;
+    z-index: auto;
+    overflow: visible;
+  }
+
+  .learners-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .learners-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+    z-index: 2;
+  }
+
+  /* Enhanced cells */
+  .learner-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .learner-initial {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
+    flex-shrink: 0;
+  }
+
+  .learner-name-main {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .email-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .email-chip::before {
+    content: '✉';
+    font-size: 0.9rem;
+    opacity: 0.65;
+  }
+
+  .date-cell {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .date-main {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.875rem;
+  }
+
+  .date-time {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .course-title-cell {
+    display: inline-block;
+    padding: 0.375rem 0.625rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.875rem;
+    word-break: break-word;
+    max-width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    line-height: 1.4;
+  }
+
+  /* Badges */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .badge-issued {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .badge-issued::before {
+    content: '✓';
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .badge-revoked {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .badge-revoked::before {
+    content: '✕';
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .badge-pending {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+
+  .badge-pending::before {
+    content: '○';
+    font-size: 0.875rem;
+  }
+
+  /* Modern Actions Column - Dropdown Menu Style */
+  .actions-wrapper {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 2000;
+  }
+
+  .learners-table tbody tr:hover .actions-wrapper {
+    z-index: 1000;
+  }
+
+  .actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    font-size: 1.125rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .actions-trigger:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  .actions-trigger::after {
+    content: '⋯';
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .actions-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10000;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+
+  .actions-wrapper:hover .actions-menu,
+  .actions-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .action-item:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+
+  .action-item:last-child {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+  }
+
+  .action-item:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  .action-item.download {
+    color: #3b82f6;
+  }
+
+  .action-item.download:hover {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+
+  .action-item.edit {
+    color: #3b82f6;
+  }
+
+  .action-item.edit:hover {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+
+  .action-item.share {
+    color: #f59e0b;
+  }
+
+  .action-item.share:hover {
+    background: #fffbeb;
+    color: #d97706;
+  }
+
+  .action-item.issue {
+    color: #10b981;
+  }
+
+  .action-item.issue:hover {
+    background: #f0fdf4;
+    color: #059669;
+  }
+
+  .action-item.issue:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .action-item.issue:disabled:hover {
+    background: none;
+    color: #10b981;
+  }
+
+  .action-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .mobile-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 0;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mobile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .mobile-card:hover {
+    box-shadow: 0 12px 32px rgba(239, 68, 68, 0.15);
+    border-color: #cbd5e1;
+    transform: translateY(-4px);
+  }
+
+  .mobile-card-header {
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .mobile-card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .mobile-card-footer {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Action buttons for cards (matching courses/learners page design) */
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.55rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .action-btn-download {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  }
+
+  .action-btn-download:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.35);
+  }
+
+  .action-btn-edit {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .action-btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .action-btn-share {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .action-btn-share:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  .action-btn-issue {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  .action-btn-issue:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  }
+
+  .action-btn-issue:disabled {
+    background: #94a3b8;
+    color: #ffffff;
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .action-btn-issue:disabled:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .learner-card-title {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .learner-card-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .learner-card-detail:last-of-type {
+    border-bottom: none;
+  }
+
+  .learner-card-label {
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .learner-card-value {
+    color: #1e293b;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow: visible;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #94a3b8;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  /* Modal Styling */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal-content {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 0;
+    max-width: 32rem;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 2px solid #e2e8f0;
+    overflow: hidden;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .modal-header {
+    padding: 2rem 2rem 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .modal-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .modal-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    font-size: 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .modal-description {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 1rem 0 0 0;
+    line-height: 1.6;
+  }
+
+  .modal-body {
+    padding: 2rem;
+  }
+
+  .modal-form-group {
+    margin-bottom: 1.75rem;
+  }
+
+  .modal-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .modal-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+  }
+
+  .modal-input:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .modal-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .modal-hint {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-radius: 0.5rem;
+    border-left: 3px solid #3b82f6;
+  }
+
+  .modal-hint::before {
+    content: 'ℹ️';
+    font-size: 1rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.5rem 2rem 2rem 2rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .btn-gray {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+    font-weight: 600;
+  }
+
+  .btn-gray:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 0 0 2rem 0;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem 2rem;
+      border-radius: 1rem;
+    }
+
+    .page-header-content {
+      margin-bottom: 1.5rem;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .page-header-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .header-stats-container {
+      margin-top: 1rem;
+      gap: 1rem;
+    }
+
+    .stat-bar-item {
+      padding: 1.25rem 0;
+    }
+
+    .stat-icon-modern {
+      font-size: 2rem;
+    }
+
+    .stat-value-modern {
+      font-size: 2rem;
+    }
+
+    .stat-label-modern {
+      font-size: 0.7rem;
+    }
+
+    .stat-progress-bar {
+      width: 100%;
+    }
+
+    .search-bar-wrapper {
+      padding: 0.875rem 1.25rem;
+    }
+
+    .search-input-inline {
+      font-size: 0.9375rem;
+    }
+
+    .filter-chip {
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    /* Responsive action buttons for desktop table */
+    .actions-wrapper {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: auto;
+    }
+
+    .actions-trigger {
+      display: none; /* Hide the dropdown trigger on mobile */
+    }
+
+    .actions-menu {
+      position: static;
+      display: flex !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1;
+      visibility: visible;
+      transform: none !important;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      min-width: auto;
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+    }
+
+    /* Mobile action buttons - modern design */
+    .actions-wrapper .actions-menu .action-item {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      border-radius: 0.5rem !important;
+      text-decoration: none !important;
+      border: none !important;
+      background: #f8fafc !important;
+      color: #475569 !important;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      min-height: 40px !important;
+      min-width: 44px !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      gap: 0.5rem !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item:active {
+      transform: translateY(0) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.download {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.download:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.share {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.share:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.edit {
+      background: #60a5fa !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.edit:hover {
+      background: #3b82f6 !important;
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.delete {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.delete:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.lock {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 50%, #374151 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.lock:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 50%, #1f2937 100%) !important;
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu button.action-item {
+      cursor: pointer !important;
+    }
+
+    /* Hide form wrapper display styles */
+    .actions-menu form {
+      display: contents;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block business_content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div>
+        <h1>Registered Learners</h1>
+        <p class="page-header-subtitle">All registrations across your assigned courses.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+
+    <!-- Stats Section - Modern Dashboard Style (Non-Card Design) -->
+    <div class="header-stats-container">
+      <div class="stat-bar-item">
+        <div class="stat-bar-content">
+          <div class="stat-bar-left">
+            <div class="stat-icon-modern">👥</div>
+            <div class="stat-info-group">
+              <p class="stat-label-modern">Total Registered</p>
+              <div class="stat-value-modern"><span id="sumTotal">{{ total_count|default:0 }}</span></div>
+            </div>
+          </div>
+          <div class="stat-bar-right">
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill"></div>
+            </div>
+            <p class="stat-percentage">100%</p>
+          </div>
+        </div>
+        <div class="stat-decoration-wave"></div>
+      </div>
+
+      <div class="stat-bar-item">
+        <div class="stat-bar-content">
+          <div class="stat-bar-left">
+            <div class="stat-icon-modern">✓</div>
+            <div class="stat-info-group">
+              <p class="stat-label-modern">Issued Certificates</p>
+              <div class="stat-value-modern"><span id="sumIssued">{{ issued_count|default:0 }}</span></div>
+            </div>
+          </div>
+          <div class="stat-bar-right">
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill"></div>
+            </div>
+            <p class="stat-percentage" id="issuedPercentage">0%</p>
+          </div>
+        </div>
+        <div class="stat-decoration-wave"></div>
+      </div>
+
+      <div class="stat-bar-item">
+        <div class="stat-bar-content">
+          <div class="stat-bar-left">
+            <div class="stat-icon-modern">⏳</div>
+            <div class="stat-info-group">
+              <p class="stat-label-modern">Pending Issuance</p>
+              <div class="stat-value-modern"><span id="sumPending">{{ pending_count|default:0 }}</span></div>
+            </div>
+          </div>
+          <div class="stat-bar-right">
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill"></div>
+            </div>
+            <p class="stat-percentage" id="pendingPercentage">0%</p>
+          </div>
+        </div>
+        <div class="stat-decoration-wave"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Section - Minimal Inline -->
+  <div class="search-section">
+    <form method="get" id="filterForm">
+      <div class="search-bar-wrapper">
+        <input
+          type="text"
+          id="liveSearch"
+          name="q"
+          value="{{ q }}"
+          placeholder="Search by course, learner name, or email..."
+          class="search-input-inline"
+        />
+        <div class="search-divider"></div>
+        <div class="filter-chips-container">
+          <button
+            type="button"
+            class="filter-chip {% if not status %}active{% endif %}"
+            data-status=""
+            onclick="setStatus('')"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="filter-chip {% if status == 'pending' %}active{% endif %}"
+            data-status="pending"
+            onclick="setStatus('pending')"
+          >
+            Pending
+          </button>
+          <button
+            type="button"
+            class="filter-chip {% if status == 'issued' %}active{% endif %}"
+            data-status="issued"
+            onclick="setStatus('issued')"
+          >
+            Issued
+          </button>
+          <select id="statusSelect" name="status" class="filter-chip-select" style="display: none;">
+            <option value="" {% if not status %}selected{% endif %}>All Status</option>
+            <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="issued" {% if status == 'issued' %}selected{% endif %}>Issued</option>
+          </select>
+        </div>
+        <button type="submit" class="search-action-btn">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function setStatus(value) {
+      document.getElementById('statusSelect').value = value;
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.remove('active');
+      });
+      event.target.closest('.filter-chip').classList.add('active');
+      document.getElementById('filterForm').submit();
+    }
+  </script>
+
+  <!-- Mobile Cards -->
+  <div class="mobile-cards-container" id="cards">
+    {% if registrations %}
+      {% for r in registrations %}
+        <div class="mobile-card card-row"
+             data-q="{{ r.course.title }} {{ r.course.course_number }} {{ r.learner.full_name|default:r.learner.email }} {{ r.learner.email }}"
+             data-status="{% if r.certificate_issued_at %}issued{% else %}pending{% endif %}">
+
+          <div class="mobile-card-header">
+            <h3 class="learner-card-title">{{ r.course.title }}</h3>
+            {% if r.is_revoked %}
+              <span class="status-badge badge-revoked">Revoked</span>
+            {% elif r.certificate_issued_at %}
+              <span class="status-badge badge-issued">Issued</span>
+            {% else %}
+              <span class="status-badge badge-pending">Pending</span>
+            {% endif %}
+          </div>
+
+          <div class="mobile-card-body">
+            <div class="learner-card-detail">
+              <span class="learner-card-label">Learner:</span>
+              <span class="learner-card-value">{{ r.learner.full_name|default:r.learner.email }}</span>
+            </div>
+            <div class="learner-card-detail">
+              <span class="learner-card-label">Email:</span>
+              <span class="learner-card-value">{{ r.learner.email }}</span>
+            </div>
+            <div class="learner-card-detail">
+              <span class="learner-card-label">Registered on:</span>
+              <span class="learner-card-value">{{ r.created_at|date:"j M Y, H:i" }}</span>
+            </div>
+            <div class="learner-card-detail">
+              <span class="learner-card-label">Certificate:</span>
+              <span class="learner-card-value">
+                {% if r.certificate_issued_at %}
+                  Yes — {{ r.certificate_issue_date|date:"j M Y" }}{% if not r.awarded_date %}, {{ r.certificate_issued_at|date:"H:i" }}{% endif %}
+                {% else %}
+                  No
+                {% endif %}
+              </span>
+            </div>
+          </div>
+
+          <div class="mobile-card-footer">
+            {% if r.certificate_issued_at %}
+              <a href="{% url 'superadmin:download_certificate' r.id %}" class="action-btn action-btn-download">Download</a>
+              <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-btn action-btn-edit">Edit</a>
+              <form method="post" action="{% url 'learners:share_certificate_email' r.id %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="action-btn action-btn-share">Share</button>
+              </form>
+            {% else %}
+              {% if r.invoiced_item and r.invoiced_item.invoice.status == 'unpaid' %}
+                <button type="button" disabled class="action-btn action-btn-issue" title="Payment required before issuing certificate">
+                  Issue (Payment Required)
+                </button>
+              {% else %}
+                <button type="button" class="action-btn action-btn-issue issue-btn" data-reg-id="{{ r.id }}" data-issue-url="{% url 'superadmin:issue_certificate' r.id %}">Issue</button>
+              {% endif %}
+              <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-btn action-btn-edit">Edit</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No registrations found.</div>
+    {% endif %}
+  </div>
+
+  <!-- Desktop Table -->
+  <div class="desktop-table-container">
+    <table class="learners-table" id="regTable">
+      <thead>
+        <tr>
+          <th>Course Title</th>
+          <th>Learner Name</th>
+          <th>Email</th>
+          <th>Registered on</th>
+          <th>Certificate Issuance</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if registrations %}
+          {% for r in registrations %}
+            <tr class="reg-row"
+                data-q="{{ r.course.title }} {{ r.course.course_number }} {{ r.learner.full_name|default:r.learner.email }} {{ r.learner.email }}"
+                data-status="{% if r.certificate_issued_at %}issued{% else %}pending{% endif %}">
+              <td>
+                <span class="course-title-cell">{{ r.course.title }}</span>
+                {% if r.is_revoked %}
+                  <span class="status-badge badge-revoked" style="margin-left: 0.5rem;">Revoked</span>
+                {% elif r.certificate_issued_at %}
+                  <span class="status-badge badge-issued" style="margin-left: 0.5rem;">Issued</span>
+                {% else %}
+                  <span class="status-badge badge-pending" style="margin-left: 0.5rem;">Pending</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="learner-name-cell">
+                  <div class="learner-initial">
+                    {{ r.learner.full_name|default:r.learner.email|first|upper }}
+                  </div>
+                  <div class="learner-name-main">{{ r.learner.full_name|default:r.learner.email }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="email-chip">{{ r.learner.email }}</span>
+              </td>
+              <td>
+                <span class="date-cell">
+                  <span class="date-main">{{ r.created_at|date:"j M Y" }}</span>
+                  <span class="date-time">{{ r.created_at|date:"H:i" }}</span>
+                </span>
+              </td>
+              <td>
+                {% if r.certificate_issued_at %}
+                  <span class="date-cell">
+                    <span class="date-main">{{ r.certificate_issue_date|date:"j M Y" }}</span>
+                    {% if not r.awarded_date %}<span class="date-time">{{ r.certificate_issued_at|date:"H:i" }}</span>{% endif %}
+                  </span>
+                {% else %}
+                  <span style="color: #94a3b8; font-style: italic;">N/A</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="actions-wrapper">
+                  <button class="actions-trigger" aria-label="Actions menu"></button>
+                  <div class="actions-menu">
+                    {% if r.certificate_issued_at %}
+                      <a href="{% url 'superadmin:download_certificate' r.id %}" class="action-item download">
+                        Download Certificate
+                      </a>
+                      <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-item edit">
+                        Edit Learner
+                      </a>
+                      <form method="post" action="{% url 'learners:share_certificate_email' r.id %}" style="display:contents;">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="action-item share">
+                          Share Certificate
+                        </button>
+                      </form>
+                    {% else %}
+                      {% if r.invoiced_item and r.invoiced_item.invoice.status == 'unpaid' %}
+                        <button type="button" disabled class="action-item issue" title="Payment required before issuing certificate">
+                          Issue Certificate (Payment Required)
+                        </button>
+                      {% else %}
+                        <button type="button" class="action-item issue issue-btn" data-reg-id="{{ r.id }}" data-issue-url="{% url 'superadmin:issue_certificate' r.id %}">
+                          Issue Certificate
+                        </button>
+                      {% endif %}
+                      <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-item edit">
+                        Edit Learner
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="empty-state">No registrations found.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  (function(){
+    const input = document.getElementById('liveSearch');
+    const statusSel = document.getElementById('statusSelect');
+
+    function norm(s){ return (s||'').toLowerCase().trim(); }
+
+    function filterCards(){
+      const q = norm(input && input.value);
+      const status = statusSel ? statusSel.value : '';
+      document.querySelectorAll('.card-row').forEach(el=>{
+        const hay = norm(el.getAttribute('data-q'));
+        const st = el.getAttribute('data-status') || '';
+        const matchQ = !q || hay.includes(q);
+        const matchS = !status || st === status;
+        el.style.display = (matchQ && matchS) ? '' : 'none';
+      });
+    }
+
+    function filterRows(){
+      const q = norm(input && input.value);
+      const status = statusSel ? statusSel.value : '';
+      document.querySelectorAll('tr.reg-row').forEach(tr=>{
+        const hay = norm(tr.getAttribute('data-q'));
+        const st = tr.getAttribute('data-status') || '';
+        const matchQ = !q || hay.includes(q);
+        const matchS = !status || st === status;
+        tr.style.display = (matchQ && matchS) ? '' : 'none';
+      });
+    }
+
+    function updateSummary(){
+      const rowNodes  = Array.from(document.querySelectorAll('tr.reg-row'));
+      const cardNodes = Array.from(document.querySelectorAll('.card-row'));
+      const isVisible = el => el.style.display !== 'none';
+
+      const visibleRows  = rowNodes.filter(isVisible);
+      const visibleCards = cardNodes.filter(isVisible);
+      const allVisible = visibleRows.length ? visibleRows : visibleCards;
+
+      let total = 0, issued = 0, pending = 0;
+      allVisible.forEach(el => {
+        total += 1;
+        const st = (el.getAttribute('data-status') || '').toLowerCase();
+        if (st === 'issued') issued += 1; else pending += 1;
+      });
+
+      const t = document.getElementById('sumTotal');
+      const i = document.getElementById('sumIssued');
+      const p = document.getElementById('sumPending');
+      if (t) t.textContent = total;
+      if (i) i.textContent = issued;
+      if (p) p.textContent = pending;
+
+      // Update percentages and progress bars
+      const totalCount = total || 1; // Avoid division by zero
+      const issuedPercent = total > 0 ? Math.round((issued / totalCount) * 100) : 0;
+      const pendingPercent = total > 0 ? Math.round((pending / totalCount) * 100) : 0;
+
+      const issuedPercentageEl = document.getElementById('issuedPercentage');
+      const pendingPercentageEl = document.getElementById('pendingPercentage');
+      
+      if (issuedPercentageEl) {
+        issuedPercentageEl.textContent = issuedPercent + '%';
+      }
+      if (pendingPercentageEl) {
+        pendingPercentageEl.textContent = pendingPercent + '%';
+      }
+
+      // Update CSS custom properties for progress bars
+      const statBars = document.querySelectorAll('.stat-bar-item');
+      if (statBars.length >= 2) {
+        statBars[1].style.setProperty('--issued-percentage', issuedPercent);
+      }
+      if (statBars.length >= 3) {
+        statBars[2].style.setProperty('--pending-percentage', pendingPercent);
+      }
+
+      // Update progress bar widths
+      const issuedProgressFill = statBars[1]?.querySelector('.stat-progress-fill');
+      const pendingProgressFill = statBars[2]?.querySelector('.stat-progress-fill');
+      
+      if (issuedProgressFill) {
+        issuedProgressFill.style.width = issuedPercent + '%';
+      }
+      if (pendingProgressFill) {
+        pendingProgressFill.style.width = pendingPercent + '%';
+      }
+    }
+
+    function applyFilters(){
+      filterRows();
+      filterCards();
+      updateSummary();
+    }
+
+    if (input) input.addEventListener('input', applyFilters);
+    if (statusSel) statusSel.addEventListener('change', applyFilters);
+    applyFilters();
+
+    // Initialize percentages on page load
+    (function initPercentages() {
+      const total = Number("{{ total_count|default:0 }}");
+      const issued = Number("{{ issued_count|default:0 }}");
+      const pending = Number("{{ pending_count|default:0 }}");
+      
+      if (total > 0) {
+        const issuedPercent = Math.round((issued / total) * 100);
+        const pendingPercent = Math.round((pending / total) * 100);
+        
+        const issuedPercentageEl = document.getElementById('issuedPercentage');
+        const pendingPercentageEl = document.getElementById('pendingPercentage');
+        
+        if (issuedPercentageEl) {
+          issuedPercentageEl.textContent = issuedPercent + '%';
+        }
+        if (pendingPercentageEl) {
+          pendingPercentageEl.textContent = pendingPercent + '%';
+        }
+
+        const statBars = document.querySelectorAll('.stat-bar-item');
+        if (statBars.length >= 2) {
+          statBars[1].style.setProperty('--issued-percentage', issuedPercent);
+          const issuedProgressFill = statBars[1].querySelector('.stat-progress-fill');
+          if (issuedProgressFill) {
+            setTimeout(() => {
+              issuedProgressFill.style.width = issuedPercent + '%';
+            }, 100);
+          }
+        }
+        if (statBars.length >= 3) {
+          statBars[2].style.setProperty('--pending-percentage', pendingPercent);
+          const pendingProgressFill = statBars[2].querySelector('.stat-progress-fill');
+          if (pendingProgressFill) {
+            setTimeout(() => {
+              pendingProgressFill.style.width = pendingPercent + '%';
+            }, 200);
+          }
+        }
+      }
+    })();
+  })();
+
+// Awarded Date Modal
+(function() {
+  const issueButtons = document.querySelectorAll('.issue-btn');
+  
+  // Get CSRF token from cookie
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  // Create modal HTML
+  const modalHTML = `
+    <div id="awardedDateModal" class="hidden modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title-wrapper">
+            <div class="modal-icon">📜</div>
+            <h2 class="modal-title">Issue Certificate</h2>
+          </div>
+          <p class="modal-description">Please select the awarded date to display on the certificate. This date will be shown on the certificate document.</p>
+        </div>
+        <div class="modal-body">
+          <form id="awardedDateForm" method="post">
+            <input type="hidden" name="csrfmiddlewaretoken" value="${csrftoken}">
+            <div class="modal-form-group">
+              <label for="id_awarded_date" class="modal-label">Awarded Date</label>
+              <input type="date" id="id_awarded_date" name="awarded_date" required class="modal-input">
+              <p class="modal-hint">Maximum 60 days in the past, no future dates</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancelIssueBtn" class="btn-modern btn-gray">Cancel</button>
+          <button type="submit" form="awardedDateForm" class="btn-modern btn-primary">Issue Certificate</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Add modal to page
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  const modal = document.getElementById('awardedDateModal');
+  const form = document.getElementById('awardedDateForm');
+  const dateInput = document.getElementById('id_awarded_date');
+  const cancelBtn = document.getElementById('cancelIssueBtn');
+
+  // Set date constraints
+  const today = new Date().toISOString().split('T')[0];
+  const maxPastDate = new Date();
+  maxPastDate.setDate(maxPastDate.getDate() - 60);
+  const minDate = maxPastDate.toISOString().split('T')[0];
+  dateInput.setAttribute('max', today);
+  dateInput.setAttribute('min', minDate);
+  dateInput.value = today; // Default to today
+
+  // Open modal on Issue button click
+  issueButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const issueUrl = this.getAttribute('data-issue-url');
+      form.setAttribute('action', issueUrl);
+      modal.classList.remove('hidden');
+    });
+  });
+
+  // Close modal
+  cancelBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    form.reset();
+  });
+
+  // Close on backdrop click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+      form.reset();
+    }
+  });
+
+  // Handle form submission with validation and AJAX
+  form.addEventListener('submit', function(e) {
+    e.preventDefault(); // Always prevent default to handle via AJAX
+    
+    const dateValue = dateInput.value;
+    if (!dateValue) {
+      alert('Please select an awarded date.');
+      return;
+    }
+
+    // Validate date client-side
+    const selectedDate = new Date(dateValue);
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+    const minDateObj = new Date(maxPastDate);
+
+    if (selectedDate > todayDate) {
+      alert('Awarded date cannot be in the future.');
+      dateInput.focus();
+      return;
+    }
+
+    if (selectedDate < minDateObj) {
+      alert('Awarded date cannot be more than 60 days in the past.');
+      dateInput.focus();
+      return;
+    }
+
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Issuing...';
+    }
+
+    // Submit via AJAX
+    const formData = new FormData(form);
+    const issueUrl = form.getAttribute('action');
+    
+    fetch(issueUrl, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Close modal
+        modal.classList.add('hidden');
+        form.reset();
+        dateInput.value = today;
+        
+        // Open PDF in new tab
+        if (data.download_url) {
+          window.open(data.download_url, '_blank');
+        }
+        
+        // Reload page to show updated certificate status
+        window.location.reload();
+      } else {
+        alert(data.message || 'Failed to issue certificate. Please try again.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Issue Certificate';
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while issuing the certificate. Please try again.');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Issue Certificate';
+      }
+    });
+  });
+})();
+</script>
+{% endblock %}
+{% endblock %}

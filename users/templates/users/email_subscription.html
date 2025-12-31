@@ -1,0 +1,51 @@
+{% extends "base1.html" %}
+{% load static %}
+
+{% block title %}Email Subscription | LICQUAL{% endblock %}
+
+{% block content %}
+<section class="bg-gradient-to-b from-[#0e1b33] via-[#14284a] to-[#0e1b33] text-white py-16 mt-[88px]">
+  <div class="container mx-auto px-4 max-w-xl">
+    <div class="bg-white/5 border border-white/10 p-8 rounded-2xl shadow-lg">
+      <h1 class="text-2xl font-bold">Stay in touch</h1>
+      <p class="text-white/80 mt-2">
+        Get updates on ISO certifications, training programs, and industry insights.
+      </p>
+
+      {% if messages %}
+        <div class="mt-4 space-y-2">
+          {% for message in messages %}
+            <div class="rounded-lg px-4 py-3 text-sm
+                        {% if message.tags == 'success' %}bg-emerald-500/15 border border-emerald-400/40 text-emerald-100
+                        {% elif message.tags == 'info' %}bg-blue-500/15 border border-blue-400/40 text-blue-100
+                        {% else %}bg-red-500/15 border border-red-400/40 text-red-100{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form action="{% url 'users:email_subscription' %}" method="post" class="mt-6 space-y-4">
+        {% csrf_token %}
+        <div>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <p class="text-sm text-red-300 mt-2">
+              {% for e in form.email.errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+            </p>
+          {% endif %}
+        </div>
+
+        <button type="submit"
+                class="w-full bg-secondary text-[#1a2b4b] font-semibold px-6 py-3 rounded-full hover:bg-secondary/90 transition">
+          Subscribe
+        </button>
+
+        <p class="text-xs text-white/60 mt-3">
+          We respect your privacy. Unsubscribe anytime via the link in our emails.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

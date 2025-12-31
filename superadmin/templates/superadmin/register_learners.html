@@ -1,0 +1,1355 @@
+{% extends "superadmin/business_base.html" %}
+{% block title %}Register Learners • LICQUAL{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* Import modern font */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.75rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.9375rem;
+    margin: 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header-subtitle strong {
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Two Column Layout Container */
+  .top-cards-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .top-cards-container {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Course Info Card - Professional Design */
+  .course-info-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .course-info-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    border-color: #cbd5e1;
+  }
+
+  .course-info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .course-info-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f1f5f9;
+  }
+
+  .course-info-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .course-info-label::before {
+    content: '📚';
+    font-size: 0.875rem;
+  }
+
+  .course-title-display {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 4.5rem 0;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+  }
+
+  .course-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .course-meta-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .course-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .course-meta-item:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.03) 0%, rgba(59, 130, 246, 0.03) 100%);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .course-meta-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .course-meta-item:nth-child(1) .course-meta-label::before {
+    content: '🔢';
+    font-size: 0.875rem;
+  }
+
+  .course-meta-item:nth-child(2) .course-meta-label::before {
+    content: '⏱️';
+    font-size: 0.875rem;
+  }
+
+  .course-meta-item:nth-child(3) .course-meta-label::before {
+    content: '📁';
+    font-size: 0.875rem;
+  }
+
+  .course-meta-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .course-meta-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.625rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+  }
+
+  .course-meta-item:hover .course-meta-badge {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+    transform: scale(1.02);
+  }
+
+  /* Advance Payment Notice - New Design */
+  .advance-payment-notice {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(239, 68, 68, 0.08) 100%);
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .advance-payment-notice::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(135deg, #3b82f6 0%, #ef4444 100%);
+  }
+
+  .advance-payment-header {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .advance-payment-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #ef4444 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+  }
+
+  .advance-payment-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .advance-payment-title {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .advance-payment-text {
+    font-size: 0.9375rem;
+    color: #475569;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  .advance-payment-note {
+    font-size: 0.8125rem;
+    color: #64748b;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 0.5rem;
+    border-left: 3px solid #3b82f6;
+  }
+
+  /* Messages */
+  .message-container {
+    margin-bottom: 2rem;
+  }
+
+  .message {
+    padding: 1.25rem 1.5rem;
+    border-radius: 1rem;
+    border: 2px solid;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .message:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .message-error {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #ef4444;
+    color: #991b1b;
+  }
+
+  .message-success {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-color: #16a34a;
+    color: #166534;
+  }
+
+  .message-info {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-color: #3b82f6;
+    color: #1e40af;
+  }
+
+  /* CSV Upload Section - Professional Design */
+  .csv-upload-section {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .csv-upload-section:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+  }
+
+  .csv-upload-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .csv-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f1f5f9;
+  }
+
+  .csv-section-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .csv-section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .csv-upload-section form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .file-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .file-input-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .file-input-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .file-input-label::before {
+    content: '📎';
+    font-size: 1rem;
+  }
+
+  .file-input {
+    width: 100%;
+    padding: 1.25rem;
+    border: 2px dashed #cbd5e1;
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    font-size: 0.9375rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    font-weight: 500;
+    color: #1e293b;
+  }
+
+  .file-input:hover {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  .file-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  .file-input::file-selector-button {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    margin-right: 1rem;
+    border-radius: 0.625rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .file-input::file-selector-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  .csv-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  @media (min-width: 640px) {
+    .csv-actions {
+      flex-direction: row;
+    }
+  }
+
+  .csv-actions .btn-modern {
+    flex: 1;
+  }
+
+  .csv-hint {
+    font-size: 0.8125rem;
+    color: #475569;
+    line-height: 1.7;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 0.875rem;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #3b82f6;
+    margin-top: 0.5rem;
+  }
+
+  .csv-hint strong {
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  .csv-hint code {
+    background: #ffffff;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    color: #1e293b;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    font-family: 'Inter', monospace;
+  }
+
+  /* Divider */
+  .or-divider {
+    position: relative;
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  .or-divider span {
+    position: relative;
+    z-index: 1;
+    background: #f8fafc;
+    padding: 0 1.5rem;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .or-divider::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 2px dashed #cbd5e1;
+    transform: translateY(-50%);
+  }
+
+  /* Manual Form Section - New Design */
+  .manual-form-section {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .manual-form-section:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+  }
+
+  .manual-form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .form-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-section-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .form-section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* Table Container - Clean Minimal Design */
+  .table-container-wrapper {
+    background: #ffffff;
+    border-radius: 1rem;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  /* Table Styling - Clean Minimal Design */
+  .learners-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+  }
+
+  .learners-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-bottom: none;
+  }
+
+  .learners-table thead th {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem 1.25rem;
+    text-align: center;
+    border: none;
+  }
+
+  .learners-table thead th:first-child {
+    padding-left: 1.5rem;
+    text-align: left;
+  }
+
+  .learners-table thead th:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+  }
+
+  .learners-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.2s ease;
+    background: #ffffff;
+  }
+
+  .learners-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .learners-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+
+  .learners-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .learners-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+  }
+
+  .learners-table tbody td {
+    padding: 1.25rem 1.25rem;
+    vertical-align: middle;
+  }
+
+  .learners-table tbody td:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .learners-table tbody td:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+  }
+
+  /* Form Inputs - Clean Design */
+  .input-cell-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.875rem;
+    color: #94a3b8;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+    transition: color 0.2s ease;
+  }
+
+  .input-cell-wrapper:focus-within .input-icon {
+    color: #3b82f6;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    font-weight: 400;
+    color: #1e293b;
+  }
+
+  .form-input:hover {
+    border-color: #cbd5e1;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  /* Delete Button - Clean Design */
+  .btn-delete {
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-delete:hover {
+    background: #dc2626;
+  }
+
+  .btn-delete:active {
+    transform: scale(0.98);
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .learner-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .learner-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .learner-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Action Buttons */
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e2e8f0;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-yellow {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  .btn-yellow:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+  }
+
+  /* Inline Banner */
+  .inline-banner {
+    display: none;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1rem;
+    border: 2px solid #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    color: #991b1b;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  }
+
+  .inline-banner.show {
+    display: block;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .top-cards-container {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .course-info-card,
+    .csv-upload-section,
+    .manual-form-section {
+      padding: 1.5rem;
+    }
+
+    .course-title-display {
+      font-size: 1.25rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+    }
+
+    .table-container-wrapper {
+      border-radius: 0.75rem;
+    }
+
+    .learners-table thead th,
+    .learners-table tbody td {
+      padding: 0.875rem 0.75rem;
+    }
+
+    .learners-table thead th:first-child,
+    .learners-table tbody td:first-child {
+      padding-left: 1rem;
+    }
+
+    .learners-table thead th:last-child,
+    .learners-table tbody td:last-child {
+      padding-right: 1rem;
+    }
+
+    .input-icon {
+      left: 0.75rem;
+      font-size: 0.9375rem;
+    }
+
+    .form-input {
+      padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+      font-size: 0.875rem;
+    }
+
+    .btn-delete {
+      padding: 0.5rem 0.875rem;
+      font-size: 0.75rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block business_content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div>
+        <h1>Register Learners</h1>
+        <p class="page-header-subtitle">
+          <strong>Business:</strong> {{ business.business_name|default:business.name }}
+          <span style="opacity: 0.5;">•</span>
+          <strong>Email:</strong> {{ business.email }}
+        </p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_courses' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Django messages -->
+  {% if messages %}
+    <div class="message-container">
+      {% for message in messages %}
+        <div class="message {% if message.tags == 'error' %}message-error{% elif message.tags == 'success' %}message-success{% else %}message-info{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Advance Payment Notice -->
+  {% if business.advance_payment %}
+    <div class="advance-payment-notice">
+      <div class="advance-payment-header">
+        <div class="advance-payment-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+          </svg>
+        </div>
+        <h3 class="advance-payment-title">Advance Payment Required</h3>
+      </div>
+      <p class="advance-payment-text">
+        Your business requires advance payment for learner registrations. Learners will be registered immediately, but certificates can only be issued after the invoice is marked as paid (either via Stripe payment or manually by Superuser).
+      </p>
+      <div class="advance-payment-note">
+        <strong>Note:</strong> The "Issue" button will remain disabled until payment is completed.
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Inline validation/duplicate banner -->
+  <div id="dupe-banner" class="inline-banner"></div>
+
+  <!-- Course Info and CSV Upload Side by Side -->
+  <div class="top-cards-container">
+    <!-- Course Info Card -->
+    <div class="course-info-card">
+      <div class="course-info-header">
+        <div class="course-info-main">
+          <span class="course-info-label">Course Information</span>
+          <h2 class="course-title-display">{{ course.title }}</h2>
+          <div class="course-meta-grid">
+            <div class="course-meta-item">
+              <span class="course-meta-label">Course Number</span>
+              <span class="course-meta-value">
+                <span class="course-meta-badge">{{ course.course_number|default:"—" }}</span>
+              </span>
+            </div>
+            <div class="course-meta-item">
+              <span class="course-meta-label">Duration</span>
+              <span class="course-meta-value">
+                <span class="course-meta-badge">{{ course.duration_days }} day{{ course.duration_days|pluralize }}</span>
+              </span>
+            </div>
+            {% if course.category %}
+            <div class="course-meta-item">
+              <span class="course-meta-label">Category</span>
+              <span class="course-meta-value">
+                <span class="course-meta-badge">{{ course.category }}</span>
+              </span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSV Upload Section -->
+    <div class="csv-upload-section">
+      <div class="csv-section-header">
+        <div class="csv-section-icon">📄</div>
+        <h3 class="csv-section-title">Upload CSV File</h3>
+      </div>
+      <form method="post" enctype="multipart/form-data" id="csvForm">
+        {% csrf_token %}
+        <div class="file-input-container">
+          <label class="file-input-label">Select CSV File</label>
+          <input type="file" name="csv_file" accept=".csv" class="file-input" />
+        </div>
+        <div class="csv-actions">
+          <button type="submit" name="csv_upload" value="1" class="btn-modern btn-primary">
+            Upload CSV
+          </button>
+          <a href="?download=sample" class="btn-modern btn-yellow">
+            Download Sample CSV
+          </a>
+        </div>
+        <div class="csv-hint">
+          <strong>CSV Format:</strong> Columns: <code>learner_name</code>, <code>learner_email</code>, <code>learner_dob</code>.<br>
+          <strong>Name and Email are required.</strong> Date of Birth is optional (format: DD-MM-YYYY).
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="or-divider"><span>or</span></div>
+
+  <!-- Manual Add Form -->
+  <div class="manual-form-section">
+    <div class="form-section-header">
+      <div class="form-section-icon">✏️</div>
+      <h3 class="form-section-title">Add Learners Manually</h3>
+    </div>
+    <form method="post" id="regForm">
+      {% csrf_token %}
+
+      <!-- Desktop Table -->
+      <div class="desktop-table-container">
+        <div class="table-container-wrapper">
+          <table class="learners-table">
+            <colgroup>
+              <col style="width: 32%;">
+              <col style="width: 32%;">
+              <col style="width: 20%;">
+              <col style="width: 16%;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Learner Name</th>
+                <th>Learner Email</th>
+                <th>Date of Birth <span style="font-weight: 400; opacity: 0.6;">(Optional)</span></th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr>
+                <td>
+                  <div class="input-cell-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" name="learner_name" required
+                           class="form-input"
+                           placeholder="Full name">
+                  </div>
+                </td>
+                <td>
+                  <div class="input-cell-wrapper">
+                    <span class="input-icon">✉️</span>
+                    <input type="email" name="learner_email" required
+                           class="form-input"
+                           placeholder="name@example.com">
+                  </div>
+                </td>
+                <td>
+                  <div class="input-cell-wrapper">
+                    <span class="input-icon">📅</span>
+                    <input type="text" name="learner_dob"
+                           class="form-input"
+                           placeholder="DD-MM-YYYY (Optional)">
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="btn-delete" onclick="removeRow(this)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards-container" id="cards">
+        <div class="learner-card card-row">
+          <div style="margin-bottom: 1rem;">
+            <label class="form-label">Learner Name</label>
+            <input type="text" name="learner_name" required
+                   class="form-input"
+                   placeholder="Full name">
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label class="form-label">Learner Email</label>
+            <input type="email" name="learner_email" required
+                   class="form-input"
+                   placeholder="name@example.com">
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label class="form-label">Date of Birth <span style="font-weight: 400; opacity: 0.6;">(Optional)</span></label>
+            <input type="text" name="learner_dob"
+                   class="form-input"
+                   placeholder="DD-MM-YYYY (Optional)">
+          </div>
+          <div>
+            <button type="button" class="btn-delete" onclick="removeCard(this)">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-modern btn-secondary" onclick="addRow()">Add Row</button>
+        <button type="submit" class="btn-modern btn-primary">Register Learners</button>
+        <a href="{% url 'superadmin:business_courses' %}" class="btn-modern btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  /**
+   * Keep native HTML validation, but only on the VISIBLE set of inputs.
+   * We disable the hidden set so the browser doesn't try (and fail) to focus them.
+   */
+  function syncVisibleInputs() {
+    const desktop = window.matchMedia('(min-width: 768px)').matches; // Tailwind md breakpoint
+
+    // Enable validation on the visible set; disable the hidden set
+    const enableSet = desktop
+      ? document.querySelectorAll('#rows input[name]')
+      : document.querySelectorAll('#cards input[name]');
+
+    const disableSet = desktop
+      ? document.querySelectorAll('#cards input[name]')
+      : document.querySelectorAll('#rows input[name]');
+
+    // Disable hidden set so it's ignored by validation & not posted
+    disableSet.forEach(i => { i.disabled = true; i.removeAttribute('required'); });
+
+    // Enable visible set and ensure required is present
+    enableSet.forEach(i => { i.disabled = false; i.setAttribute('required', ''); });
+  }
+
+  // Run on load and on viewport changes
+  window.addEventListener('DOMContentLoaded', syncVisibleInputs);
+  window.addEventListener('resize', syncVisibleInputs);
+
+  // After adding/removing rows/cards, re-sync
+  const _addRow = window.addRow;
+  const _removeRow = window.removeRow;
+  const _removeCard = window.removeCard;
+
+  window.addRow = function () { _addRow(); syncVisibleInputs(); };
+  window.removeRow = function (btn) { _removeRow(btn); syncVisibleInputs(); };
+  window.removeCard = function (btn) { _removeCard(btn); syncVisibleInputs(); };
+
+  // Safety net: re-sync right before submit
+  document.getElementById('regForm')?.addEventListener('submit', () => {
+    syncVisibleInputs();
+  });
+</script>
+
+<script>
+  function removeRow(btn){
+    const tr = btn.closest('tr');
+    const tbody = document.getElementById('rows');
+    if (tbody && tbody.children.length > 1) tr.remove();
+  }
+  function addRow(){
+    // Desktop table row
+    const tbody = document.getElementById('rows');
+    if (tbody){
+      const tpl = tbody.children[0].cloneNode(true);
+      tpl.querySelectorAll('input').forEach(i => i.value = '');
+      tbody.appendChild(tpl);
+    }
+    // Mobile card
+    const cards = document.getElementById('cards');
+    if (cards){
+      const first = cards.querySelector('.card-row');
+      if (first){
+        const clone = first.cloneNode(true);
+        clone.querySelectorAll('input').forEach(i => i.value = '');
+        cards.appendChild(clone);
+      }
+    }
+  }
+  function removeCard(btn){
+    const card = btn.closest('.card-row');
+    const cards = document.getElementById('cards');
+    if (cards && cards.children.length > 1) card.remove();
+  }
+
+  (function () {
+    const form = document.getElementById('regForm');
+    const banner = document.getElementById('dupe-banner');
+
+    // This variable is provided by the view. If missing, default to empty list.
+    const existingEmails = (function () {
+      try {
+        return JSON.parse('{{ existing_emails_json|default:"[]"|safe }}').map(e => (e || '').toLowerCase());
+      } catch (e) {
+        return [];
+      }
+    })();
+
+    function collectEmails() {
+      const inputs = form ? form.querySelectorAll('input[name="learner_email"]') : [];
+      const emails = [];
+      inputs.forEach(i => {
+        const val = (i.value || '').trim().toLowerCase();
+        if (val) emails.push(val);
+      });
+      return emails;
+    }
+
+    function showBanner(msg) {
+      if (!banner) return;
+      banner.textContent = msg;
+      banner.classList.add('show');
+      banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function hideBanner() {
+      if (!banner) return;
+      banner.textContent = '';
+      banner.classList.remove('show');
+    }
+
+    // Validate on submit (manual form only)
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        hideBanner();
+
+        const emails = collectEmails();
+        const duplicatesAgainstExisting = emails.filter(email => existingEmails.includes(email));
+
+        // Also detect duplicates within the form itself
+        const seen = new Set();
+        const duplicatesInForm = emails.filter(email => {
+          if (seen.has(email)) return true;
+          seen.add(email);
+          return false;
+        });
+
+        if (duplicatesAgainstExisting.length > 0) {
+          e.preventDefault();
+          showBanner(
+            `The following email(s) are already registered for this course: ${Array.from(new Set(duplicatesAgainstExisting)).join(', ')}`
+          );
+          return;
+        }
+
+        if (duplicatesInForm.length > 0) {
+          e.preventDefault();
+          showBanner(
+            `Duplicate email(s) found within this form: ${Array.from(new Set(duplicatesInForm)).join(', ')}`
+          );
+          return;
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}
+{% endblock %}

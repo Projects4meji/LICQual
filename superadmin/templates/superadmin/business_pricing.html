@@ -1,0 +1,1081 @@
+{% extends "superadmin/business_base.html" %}
+{% block title %}Business Pricing • LICQual{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2.5rem;
+  }
+
+  /* Special Pricing Section - Completely New Design */
+  .special-pricing-section {
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .special-pricing-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
+
+  .special-pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #ef4444 0%, #3b82f6 50%, #ef4444 100%);
+    background-size: 200% 100%;
+    animation: shimmer-gradient 3s ease infinite;
+  }
+
+  @keyframes shimmer-gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .special-pricing-header {
+    padding: 2rem 2rem 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    border-bottom: 2px dashed #e2e8f0;
+  }
+
+  .special-pricing-icon-wrapper {
+    width: 72px;
+    height: 72px;
+    border-radius: 1.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .special-pricing-icon-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 1.5rem;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+
+  .special-pricing-title-group {
+    flex: 1;
+  }
+
+  .special-pricing-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .special-pricing-title::after {
+    content: '✨';
+    font-size: 1.25rem;
+    animation: sparkle 2s ease infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.7; }
+  }
+
+  .special-pricing-subtitle {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .special-pricing-body {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .discount-feature-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .discount-feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .discount-feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+  }
+
+  .discount-feature-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .discount-percentage {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .discount-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+  }
+
+  .discount-description {
+    font-size: 0.9375rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Table Styling - Enhanced */
+  .pricing-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: visible;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .pricing-table th,
+  .pricing-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: left;
+  }
+
+  .pricing-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .pricing-table thead th {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1.35rem 1rem;
+    border: none;
+  }
+
+  .pricing-table thead th:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .pricing-table thead th:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .pricing-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pricing-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+  }
+
+  .pricing-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .pricing-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .pricing-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  .pricing-table tbody td:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .pricing-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .pricing-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+    z-index: 2;
+  }
+
+  /* Course Title Styling */
+  .course-title-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .course-title-main {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+  }
+
+  .course-title-number {
+    font-size: 0.8125rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  /* Price Styling - Enhanced */
+  .price-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .base-price {
+    text-decoration: line-through;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .final-price {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .discount-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #3b82f6;
+    margin-top: 0.25rem;
+  }
+
+  .currency-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  /* Status Badges - Enhanced */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .status-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .status-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  .status-default {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    color: #475569;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* Section Headers */
+  .section-header {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 1.75rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) 1;
+    letter-spacing: -0.01em;
+  }
+
+  /* Mobile Cards - Enhanced */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .pricing-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .pricing-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+  }
+
+  .pricing-card:hover::before {
+    opacity: 1;
+  }
+
+  .pricing-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .pricing-card-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0 0 1.25rem 0;
+    font-weight: 500;
+  }
+
+  .pricing-card-detail {
+    margin-bottom: 1.25rem;
+  }
+
+  .pricing-card-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .pricing-card-footer {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 2px solid #f1f5f9;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: visible;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* About Pricing Section - Completely New Design */
+  .about-pricing-section {
+    margin-top: 2.5rem;
+  }
+
+  .about-pricing-container {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
+
+  .about-pricing-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .about-pricing-header {
+    padding: 1.75rem 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .about-pricing-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .about-pricing-title {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .about-pricing-grid {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .pricing-info-item {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pricing-info-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.3s ease;
+  }
+
+  .pricing-info-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+  }
+
+  .pricing-info-item:hover::before {
+    transform: scaleY(1);
+  }
+
+  .pricing-info-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pricing-info-label::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    flex-shrink: 0;
+  }
+
+  .pricing-info-value {
+    font-size: 0.9375rem;
+    color: #1e293b;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .pricing-info-value strong {
+    color: #3b82f6;
+    font-weight: 700;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #94a3b8;
+  }
+
+  .empty-state svg {
+    margin: 0 auto 1.5rem;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .empty-state p {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0.5rem 0;
+    font-weight: 500;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Alert Messages */
+  .alert {
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .alert-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: #065f46;
+  }
+
+  .alert-error {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #991b1b;
+  }
+
+  /* Desktop table - hidden on mobile */
+  .desktop-table-container {
+    display: block;
+  }
+
+  .mobile-cards-container {
+    display: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .page-header-actions {
+      width: 100%;
+    }
+
+    .page-header-actions .btn-modern {
+      width: 100%;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .special-pricing-header {
+      padding: 1.5rem;
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .special-pricing-icon-wrapper {
+      width: 56px;
+      height: 56px;
+      font-size: 2rem;
+    }
+
+    .special-pricing-title {
+      font-size: 1.25rem;
+    }
+
+    .special-pricing-body {
+      grid-template-columns: 1fr;
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+
+    .about-pricing-grid {
+      grid-template-columns: 1fr;
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+
+    .section-header {
+      font-size: 1.5rem;
+    }
+
+    /* Hide desktop table, show mobile cards */
+    .desktop-table-container {
+      display: none;
+    }
+
+    .mobile-cards-container {
+      display: block;
+    }
+
+    .pricing-card {
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .pricing-card-title {
+      font-size: 1.125rem;
+    }
+
+    .pricing-card-detail {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .pricing-card-label {
+      font-size: 0.8125rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block business_content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Your Business Pricing</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_dashboard' %}" class="btn-modern btn-secondary">Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Special Pricing Section -->
+      {% if special_pricing_active %}
+        <div class="special-pricing-section">
+          <div class="special-pricing-card">
+            <div class="special-pricing-header">
+              <div class="special-pricing-icon-wrapper">🎉</div>
+              <div class="special-pricing-title-group">
+                <h3 class="special-pricing-title">Special Pricing Active</h3>
+                <p class="special-pricing-subtitle">Discounts applied based on your assigned courses</p>
+              </div>
+            </div>
+            <div class="special-pricing-body">
+              <div class="discount-feature-card">
+                <div class="discount-percentage">Up to {{ max_discount_percentage }}%</div>
+                <div class="discount-label">Discount Rate</div>
+                <p class="discount-description">Applied automatically to courses with configured discounts ({{ discounted_courses_count }}/{{ assigned_courses_count }})</p>
+              </div>
+              <div class="discount-feature-card">
+                <div class="discount-percentage" style="font-size: 2rem;">💰</div>
+                <div class="discount-label">Savings Benefit</div>
+                <p class="discount-description">Reduce your certificate costs with this exclusive pricing advantage</p>
+              </div>
+              <div class="discount-feature-card">
+                <div class="discount-percentage" style="font-size: 2rem;">⚡</div>
+                <div class="discount-label">Auto Applied</div>
+                <p class="discount-description">No action required - discount is automatically calculated on all invoices</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Course Pricing Section -->
+      {% if course_pricing %}
+        <h2 class="section-header">Course Pricing</h2>
+
+        <!-- Desktop Table -->
+        <div class="desktop-table-container">
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Sr #</th>
+                <th>Course Title</th>
+                <th>Currency</th>
+                <th>Affiliate Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in course_pricing %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    <div class="course-title-cell">
+                      <div class="course-title-main">{{ item.course.title }}</div>
+                      {% if item.course.course_number %}
+                        <div class="course-title-number">{{ item.course.course_number }}</div>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td>
+                    {% if item.pricing %}
+                      <span class="currency-chip">{{ item.pricing.currency }}</span>
+                    {% else %}
+                      <span style="color: #94a3b8;">—</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if item.pricing %}
+                      {% if item.has_discount %}
+                        <div class="price-container">
+                          <div class="base-price">
+                            {% if item.pricing.currency == "USD" %}${% elif item.pricing.currency == "GBP" %}£{% elif item.pricing.currency == "EUR" %}€{% elif item.pricing.currency == "INR" %}₹{% elif item.pricing.currency == "PKR" %}₨{% elif item.pricing.currency == "AED" %}د.إ{% elif item.pricing.currency == "SAR" %}ر.س{% else %}{{ item.pricing.currency }} {% endif %}{{ item.pricing.affiliate_price }}
+                          </div>
+                          <div class="final-price">
+                            {% if item.pricing.currency == "USD" %}${% elif item.pricing.currency == "GBP" %}£{% elif item.pricing.currency == "EUR" %}€{% elif item.pricing.currency == "INR" %}₹{% elif item.pricing.currency == "PKR" %}₨{% elif item.pricing.currency == "AED" %}د.إ{% elif item.pricing.currency == "SAR" %}ر.س{% else %}{{ item.pricing.currency }} {% endif %}{{ item.final_affiliate_price }}
+                          </div>
+                          <span class="discount-badge">{{ item.discount_percentage }}% off</span>
+                        </div>
+                      {% else %}
+                        <div class="final-price">
+                          {% if item.pricing.currency == "USD" %}${% elif item.pricing.currency == "GBP" %}£{% elif item.pricing.currency == "EUR" %}€{% elif item.pricing.currency == "INR" %}₹{% elif item.pricing.currency == "PKR" %}₨{% elif item.pricing.currency == "AED" %}د.إ{% elif item.pricing.currency == "SAR" %}ر.س{% else %}{{ item.pricing.currency }} {% endif %}{{ item.final_affiliate_price }}
+                        </div>
+                      {% endif %}
+                    {% else %}
+                      <span style="color: #94a3b8; font-weight: 500;">Not set</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if not item.pricing %}
+                      <span class="status-badge status-warning">⚠️ Not Configured</span>
+                    {% elif item.has_discount %}
+                      <span class="status-badge status-success">✅ Special Pricing</span>
+                    {% else %}
+                      <span class="status-badge status-default">Standard</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="mobile-cards-container">
+          {% for item in course_pricing %}
+            <div class="pricing-card">
+              <h3 class="pricing-card-title">{{ item.course.title }}</h3>
+              {% if item.course.course_number %}
+                <div class="pricing-card-subtitle">{{ item.course.course_number }}</div>
+              {% endif %}
+
+              <div class="pricing-card-detail">
+                <div class="pricing-card-label">Currency</div>
+                {% if item.pricing %}
+                  <span class="currency-chip">{{ item.pricing.currency }}</span>
+                {% else %}
+                  <span style="color: #94a3b8;">Not set</span>
+                {% endif %}
+              </div>
+
+              <div class="pricing-card-detail">
+                <div class="pricing-card-label">Affiliate Price</div>
+                {% if item.pricing %}
+                  {% if item.has_discount %}
+                    <div class="price-container">
+                      <div class="base-price">
+                        {% if item.pricing.currency == "USD" %}${% elif item.pricing.currency == "GBP" %}£{% elif item.pricing.currency == "EUR" %}€{% elif item.pricing.currency == "INR" %}₹{% elif item.pricing.currency == "PKR" %}₨{% elif item.pricing.currency == "AED" %}د.إ{% elif item.pricing.currency == "SAR" %}ر.س{% else %}{{ item.pricing.currency }} {% endif %}{{ item.pricing.affiliate_price }}
+                      </div>
+                      <div class="final-price">
+                        {% if item.pricing.currency == "USD" %}${% elif item.pricing.currency == "GBP" %}£{% elif item.pricing.currency == "EUR" %}€{% elif item.pricing.currency == "INR" %}₹{% elif item.pricing.currency == "PKR" %}₨{% elif item.pricing.currency == "AED" %}د.إ{% elif item.pricing.currency == "SAR" %}ر.س{% else %}{{ item.pricing.currency }} {% endif %}{{ item.final_affiliate_price }}
+                      </div>
+                      <span class="discount-badge">{{ item.discount_percentage }}% off</span>
+                    </div>
+                  {% else %}
+                    <div class="final-price">
+                      {% if item.pricing.currency == "USD" %}${% elif item.pricing.currency == "GBP" %}£{% elif item.pricing.currency == "EUR" %}€{% elif item.pricing.currency == "INR" %}₹{% elif item.pricing.currency == "PKR" %}₨{% elif item.pricing.currency == "AED" %}د.إ{% elif item.pricing.currency == "SAR" %}ر.س{% else %}{{ item.pricing.currency }} {% endif %}{{ item.final_affiliate_price }}
+                    </div>
+                  {% endif %}
+                {% else %}
+                  <span style="color: #94a3b8;">Not set</span>
+                {% endif %}
+              </div>
+
+              <div class="pricing-card-footer">
+                {% if not item.pricing %}
+                  <span class="status-badge status-warning">⚠️ Pricing not configured</span>
+                {% elif item.has_discount %}
+                  <span class="status-badge status-success">✅ Special pricing applied</span>
+                {% else %}
+                  <span class="status-badge status-default">Standard pricing</span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <h3>No Courses Assigned</h3>
+          <p>You don't have any courses assigned to your business yet.</p>
+          <p>Contact your administrator to get courses assigned to your business.</p>
+        </div>
+      {% endif %}
+
+      <!-- About Pricing Section -->
+      <div class="about-pricing-section">
+        <div class="about-pricing-container">
+          <div class="about-pricing-header">
+            <div class="about-pricing-icon">📋</div>
+            <h4 class="about-pricing-title">About Pricing</h4>
+          </div>
+          <div class="about-pricing-grid">
+            <div class="pricing-info-item">
+              <div class="pricing-info-label">Affiliate Price</div>
+              <p class="pricing-info-value">The amount you pay for each certificate issued to your learners</p>
+            </div>
+            <div class="pricing-info-item">
+              <div class="pricing-info-label">Special Pricing</div>
+              <p class="pricing-info-value">Discounts may apply to specific courses assigned to your business</p>
+            </div>
+            <div class="pricing-info-item">
+              <div class="pricing-info-label">Currency</div>
+              <p class="pricing-info-value">All prices are displayed in the currency shown for each course</p>
+            </div>
+            <div class="pricing-info-item">
+              <div class="pricing-info-label">Updates</div>
+              <p class="pricing-info-value">Pricing may be updated by administrators at any time</p>
+            </div>
+            <div class="pricing-info-item">
+              <div class="pricing-info-label">Hard Copy Delivery</div>
+              <p class="pricing-info-value"><strong>$50 USD</strong> per package if total certificate cost is less than <strong>$1000 USD</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,858 @@
+{% extends "base.html" %}
+{% load safe_urls %}
+
+{% block title %}Edit Qualification • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .modern-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .card-content {
+    padding: 2.5rem;
+  }
+
+  /* Form Styling */
+  .form-section {
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .section-title::before {
+    content: '📋';
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border-radius: 0.75rem;
+    border: 2px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-input,
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group input[type="file"] {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 0.9375rem;
+    color: #1e293b;
+    background: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    font-weight: 500;
+  }
+
+  .form-input:hover,
+  .form-group input[type="text"]:hover,
+  .form-group input[type="number"]:hover {
+    border-color: #cbd5e1;
+  }
+
+  .form-input:focus,
+  .form-group input[type="text"]:focus,
+  .form-group input[type="number"]:focus,
+  .form-group input[type="file"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .form-help {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .form-link {
+    color: #3b82f6;
+    text-decoration: underline;
+  }
+
+  .form-link:hover {
+    color: #2563eb;
+  }
+
+  /* Section Cards */
+  .section-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 0;
+    margin-bottom: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .section-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    padding: 1.25rem 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .section-header h3 {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.01em;
+  }
+
+  .btn-remove {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+  }
+
+  .btn-remove:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  }
+
+  /* Unit Rows */
+  .unit-row {
+    display: grid;
+    grid-template-columns: 80px 150px 1fr 110px 110px auto;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .unit-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-radius: 0.75rem 0 0 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .unit-row:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateX(4px);
+  }
+
+  .unit-row:hover::before {
+    opacity: 1;
+  }
+
+  .unit-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    color: #1e293b;
+    background: #ffffff;
+  }
+
+  .unit-input:hover {
+    border-color: #cbd5e1;
+  }
+
+  .unit-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .unit-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-add-unit {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-add-unit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-add-section {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-add-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+  }
+
+  /* Warning Box */
+  .warning-box {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid #fbbf24;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
+  }
+
+  .warning-box p {
+    font-size: 0.9375rem;
+    color: #92400e;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 2rem;
+    margin-top: 2.5rem;
+    border-top: 2px solid #f1f5f9;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* Section Actions Responsive */
+    .form-section > div[style*="display: flex"] {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 1rem !important;
+    }
+
+    .section-header {
+      padding: 1rem 1.25rem !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.75rem !important;
+    }
+
+    .section-header h3 {
+      font-size: 1rem !important;
+    }
+
+    .btn-remove-section {
+      font-size: 0.75rem !important;
+      padding: 0.375rem 0.75rem !important;
+    }
+
+    .btn-add-section {
+      font-size: 0.875rem !important;
+      padding: 0.5rem 1rem !important;
+    }
+
+    /* Ensure form-grids inside sections are responsive */
+    .section-card .form-grid {
+      grid-template-columns: 1fr !important;
+      gap: 1rem !important;
+    }
+
+    .unit-row {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Edit Qualification: {{ course.title }}</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:course_list' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data" id="qualificationForm" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h2 class="section-title">Basic Information</h2>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Qualification Title *</label>
+              <input type="text" name="title" value="{{ course.title }}" required class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Qualification Number *</label>
+              <input type="text" name="course_number" value="{{ course.course_number }}" required class="form-input">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label class="form-label">Category</label>
+            <input type="text" name="category" value="{{ course.category }}" class="form-input" placeholder="e.g., Engineering, Health & Safety, Business Management">
+            <p class="form-help">Optional: Specify the category for this qualification</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Duration</label>
+              <input type="text" name="duration" value="{{ course.duration }}" class="form-input" placeholder="e.g., 3 Days, 2 Years, 6 Months">
+              <p class="form-help">Enter duration as text (e.g., "3 Days", "2 Years")</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Credit Hours</label>
+              <input type="number" name="credit_hours" value="{{ course.credit_hours }}" min="0" step="0.01" class="form-input" placeholder="e.g., 1.5">
+              <p class="form-help">Total credit hours (e.g., 0.5, 1.6)</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1.5rem;">
+            <label class="form-label">Certificate Sample (PDF) - Optional</label>
+            <input type="file" name="certificate_sample" accept="application/pdf,.pdf" class="form-input">
+            {% if course.certificate_sample %}
+              <p class="form-help">Current: <a href="{{ course.certificate_sample.url }}" target="_blank" class="form-link">{{ course.certificate_sample.name }}</a></p>
+            {% endif %}
+            <p class="form-help">Upload a sample learner certificate in PDF format</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Certificate Template (Image) - Optional</label>
+            <input type="file" name="certificate_template" accept="image/png,image/jpeg,image/jpg,image/svg+xml,.png,.jpg,.jpeg,.svg" class="form-input">
+            {% if course.certificate_template %}
+              <p class="form-help">Current: <a href="{{ course.certificate_template.url }}" target="_blank" class="form-link">{{ course.certificate_template.name }}</a></p>
+            {% else %}
+              <p class="form-help" style="color: #64748b; font-style: italic;">Using default template: LICQual Certificate.jpg</p>
+            {% endif %}
+            <p class="form-help">Upload a custom certificate template image (PNG, JPG, or SVG). If not provided, the default template will be used automatically.</p>
+          </div>
+        </div>
+
+        <!-- Sections Container -->
+        <div class="form-section">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+            <h2 class="section-title" style="margin: 0; border: none; padding: 0;">Qualification Sections (Years/Levels)</h2>
+            <button type="button" onclick="addSection()" class="btn-add-section">+ Add Section</button>
+          </div>
+
+          {% if course.sections.all.count == 0 %}
+            <div class="warning-box">
+              <p>No sections found for this qualification. Click "+ Add Section" to create one.</p>
+            </div>
+          {% endif %}
+
+          <div id="sectionsContainer">
+            <!-- Load existing sections -->
+            {% for section in course.sections.all %}
+            <div class="section-card" id="section-{{ section.id }}">
+              <div class="section-header">
+                <h3>Section {{ forloop.counter }}</h3>
+                <button type="button" onclick="removeExistingSection('{{ section.id }}')" class="btn-remove">Remove Section</button>
+              </div>
+              
+              <div style="padding: 1.75rem;">
+                <input type="hidden" name="sections[{{ section.id }}][id]" value="{{ section.id }}">
+                <input type="hidden" name="sections[{{ section.id }}][order]" value="{{ section.order }}">
+                
+                <div style="margin-bottom: 1.5rem;">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                  <label class="form-label">Section Title (optional)</label>
+                  <input type="text" name="sections[{{ section.id }}][title]" value="{{ section.section_title }}" class="form-input">
+                  <p class="form-help">Leave empty if this section doesn't need a heading</p>
+                </div>
+                
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Credits *</label>
+                    <input type="number" name="sections[{{ section.id }}][credits]" value="{{ section.credits }}" required class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">TQT Hours *</label>
+                    <input type="number" name="sections[{{ section.id }}][tqt]" value="{{ section.tqt_hours }}" required class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">GLH Hours *</label>
+                    <input type="number" name="sections[{{ section.id }}][glh]" value="{{ section.glh_hours }}" required class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Remarks *</label>
+                    <input type="text" name="sections[{{ section.id }}][remarks]" value="{{ section.remarks }}" required class="form-input">
+                  </div>
+                </div>
+              </div>
+              
+                <div style="margin-top: 1.5rem;">
+                  <h4 style="font-size: 0.9375rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">Units</h4>
+                <div id="units-container-{{ section.id }}">
+                  {% for unit in section.units.all %}
+                  <div class="unit-row" id="unit-{{ section.id }}-{{ unit.id }}">
+                    <input type="hidden" name="sections[{{ section.id }}][units][{{ unit.id }}][id]" value="{{ unit.id }}">
+                    <div>
+                      <label class="unit-label">Order</label>
+                      <input type="number" name="sections[{{ section.id }}][units][{{ unit.id }}][order]" value="{{ unit.order }}" required class="unit-input">
+                    </div>
+                    <div>
+                      <label class="unit-label">Unit Ref *</label>
+                      <input type="text" name="sections[{{ section.id }}][units][{{ unit.id }}][ref]" value="{{ unit.unit_ref }}" required class="unit-input">
+                    </div>
+                    <div>
+                      <label class="unit-label">Unit Title *</label>
+                      <input type="text" name="sections[{{ section.id }}][units][{{ unit.id }}][title]" value="{{ unit.unit_title }}" required class="unit-input">
+                    </div>
+                    <div>
+                      <label class="unit-label">Credits</label>
+                      <input type="number" name="sections[{{ section.id }}][units][{{ unit.id }}][credits]" value="{{ unit.credits }}" min="0" required class="unit-input">
+                    </div>
+                    <div>
+                      <label class="unit-label">GLH</label>
+                      <input type="number" name="sections[{{ section.id }}][units][{{ unit.id }}][glh]" value="{{ unit.glh_hours }}" min="0" required class="unit-input">
+                    </div>
+                    <div>
+                      <button type="button" onclick="removeExistingUnit('{{ section.id }}', '{{ unit.id }}')" class="btn-remove" style="margin-top: 1.5rem;">Remove</button>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                  <button type="button" onclick="addUnit('{{ section.id }}')" class="btn-add-unit">+ Add Unit</button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-modern btn-primary">Save Changes</button>
+          <a href="{% url 'superadmin:course_list' %}" class="btn-modern btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let sectionCounter = Number("{{ course.sections.all|length }}");
+
+function addSection() {
+  sectionCounter++;
+  const newSectionId = 'new_' + sectionCounter;
+  const sectionsContainer = document.getElementById('sectionsContainer');
+  
+  const sectionDiv = document.createElement('div');
+  sectionDiv.className = 'section-card';
+  sectionDiv.id = `section-${newSectionId}`;
+  
+  sectionDiv.innerHTML = `
+    <div class="section-header">
+      <h3>New Section ${sectionCounter}</h3>
+      <button type="button" onclick="removeSection('${newSectionId}')" class="btn-remove">Remove Section</button>
+    </div>
+    
+    <input type="hidden" name="sections[${newSectionId}][order]" value="${sectionCounter}">
+    
+      <div style="margin-bottom: 1.5rem;">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label">Section Title (optional)</label>
+          <input type="text" name="sections[${newSectionId}][title]" class="form-input" placeholder="e.g., Year 1: Foundational Knowledge">
+          <p class="form-help">Leave empty if this section doesn't need a heading</p>
+        </div>
+        
+        <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Credits *</label>
+          <input type="number" name="sections[${newSectionId}][credits]" value="120" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">TQT Hours *</label>
+          <input type="number" name="sections[${newSectionId}][tqt]" value="1200" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">GLH Hours *</label>
+          <input type="number" name="sections[${newSectionId}][glh]" value="600" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Remarks *</label>
+          <input type="text" name="sections[${newSectionId}][remarks]" value="Grade Pass" required class="form-input">
+        </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem;">
+        <h4 style="font-size: 0.9375rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">Units</h4>
+        <div id="units-container-${newSectionId}">
+        </div>
+        <button type="button" onclick="addUnit('${newSectionId}')" class="btn-add-unit">+ Add Unit</button>
+      </div>
+    </div>
+  `;
+  
+  sectionsContainer.appendChild(sectionDiv);
+  addUnit(newSectionId);
+  updateSectionNumbers();
+}
+
+function updateSectionNumbers() {
+  const sectionsContainer = document.getElementById('sectionsContainer');
+  const sections = sectionsContainer.querySelectorAll('.section-card');
+  
+  sections.forEach((section, index) => {
+    const header = section.querySelector('.section-header h3');
+    if (header) {
+      header.textContent = `Section ${index + 1}`;
+    }
+  });
+}
+
+function removeSection(sectionId) {
+  const section = document.getElementById(`section-${sectionId}`);
+  if (section && confirm('Remove this section and all its units?')) {
+    section.remove();
+    updateSectionNumbers();
+  }
+}
+
+function removeExistingSection(sectionId) {
+  if (confirm('Remove this section and all its units? This action cannot be undone.')) {
+    const sectionsContainer = document.getElementById('sectionsContainer');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = `delete_sections[]`;
+    input.value = sectionId;
+    sectionsContainer.appendChild(input);
+    
+    const section = document.getElementById(`section-${sectionId}`);
+    if (section) section.remove();
+    
+    updateSectionNumbers();
+  }
+}
+
+let unitCounters = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+  // {% for section in course.sections.all %}
+    unitCounters[Number("{{ section.id }}")] = Number("{{ section.units.count }}");
+  // {% endfor %}
+});
+
+function addUnit(sectionId) {
+  if (!unitCounters[sectionId]) {
+    unitCounters[sectionId] = 0;
+  }
+  unitCounters[sectionId]++;
+  
+  const unitId = 'new_' + unitCounters[sectionId];
+  const unitsContainer = document.getElementById(`units-container-${sectionId}`);
+  
+  const unitDiv = document.createElement('div');
+  unitDiv.className = 'unit-row';
+  unitDiv.id = `unit-${sectionId}-${unitId}`;
+  
+  unitDiv.innerHTML = `
+    <div>
+      <label class="unit-label">Order</label>
+      <input type="number" name="sections[${sectionId}][units][${unitId}][order]" value="${unitCounters[sectionId]}" required class="unit-input">
+    </div>
+    <div>
+      <label class="unit-label">Unit Ref *</label>
+      <input type="text" name="sections[${sectionId}][units][${unitId}][ref]" required class="unit-input" placeholder="UNIT-${unitCounters[sectionId]}">
+    </div>
+    <div>
+      <label class="unit-label">Unit Title *</label>
+      <input type="text" name="sections[${sectionId}][units][${unitId}][title]" required class="unit-input" placeholder="Unit title">
+    </div>
+    <div>
+      <label class="unit-label">Credits</label>
+      <input type="number" name="sections[${sectionId}][units][${unitId}][credits]" value="0" min="0" required class="unit-input">
+    </div>
+    <div>
+      <label class="unit-label">GLH</label>
+      <input type="number" name="sections[${sectionId}][units][${unitId}][glh]" value="0" min="0" required class="unit-input">
+    </div>
+    <div>
+      <button type="button" onclick="removeUnit('${sectionId}', '${unitId}')" class="btn-remove" style="margin-top: 1.5rem;">Remove</button>
+    </div>
+  `;
+  
+  unitsContainer.appendChild(unitDiv);
+}
+
+function removeUnit(sectionId, unitId) {
+  const unit = document.getElementById(`unit-${sectionId}-${unitId}`);
+  if (unit) {
+    unit.remove();
+  }
+}
+
+function removeExistingUnit(sectionId, unitId) {
+  if (confirm('Remove this unit?')) {
+    const sectionsContainer = document.getElementById('sectionsContainer');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = `delete_units[]`;
+    input.value = unitId;
+    sectionsContainer.appendChild(input);
+    
+    const unit = document.getElementById(`unit-${sectionId}-${unitId}`);
+    if (unit) unit.remove();
+  }
+}
+</script>
+{% endblock %}

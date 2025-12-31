@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Certificate • LICQUAL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Modern gradient color scheme - red to blue */
+    .navy { color:#1e293b; }
+    .btn {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+      color:#ffffff; padding:14px 28px;
+      border-radius:0.75rem; font-weight:700; text-decoration:none; display:inline-block;
+      box-shadow:0 4px 12px rgba(239, 68, 68, 0.3);
+      transition:all 0.3s ease;
+    }
+    .muted { color:#64748b; font-size:0.8125rem; line-height:1.5; }
+    .card {
+      max-width:600px; margin:0 auto; background:#ffffff; border-radius:1.5rem;
+      box-shadow:0 10px 30px rgba(0,0,0,.12); overflow:hidden; border:1px solid #e2e8f0;
+    }
+    .header { 
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+      color:#fff; padding:24px 28px; position:relative; overflow:hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .body { padding:32px 28px; color:#1e293b; font-size:0.9375rem; line-height:1.6; }
+    .certificate-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+      border: 2px solid rgba(239, 68, 68, 0.2);
+      border-radius: 0.75rem;
+      margin: 16px 0;
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 1rem;
+    }
+    .certificate-badge::before {
+      content: '🎓';
+      font-size: 1.25rem;
+    }
+    .info-box {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-radius:0.75rem; padding:20px 24px; margin:24px 0;
+    }
+    .info-box div {
+      margin:10px 0;
+      color:#1e293b;
+      font-weight:500;
+      font-size:0.9375rem;
+    }
+    .info-box strong {
+      color:#475569;
+      font-weight:700;
+      text-transform:uppercase;
+      font-size:0.8125rem;
+      letter-spacing:0.05em;
+      display:inline-block;
+      min-width:120px;
+    }
+    .course-title {
+      font-size:1.25rem;
+      font-weight:800;
+      color:#1e293b;
+      margin:16px 0;
+      padding:16px 20px;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border-left:4px solid;
+      border-image: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) 1;
+      border-radius:0.5rem;
+    }
+  </style>
+</head>
+<body style="margin:0; background:#f3f4f6; padding:24px;">
+  <div class="card">
+    <div class="header">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="position:relative; z-index:1;">
+        <tr>
+          <td align="left" style="vertical-align:middle; padding-bottom:8px;">
+            {% if logo_url %}
+              <!-- Use hosted URL (most reliable - image loads directly from web server) -->
+              <img src="{{ logo_url }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">
+            {% elif logo_base64 %}
+              <!-- Base64 embedded image (fallback if hosted URL not available) -->
+              <img src="{{ logo_base64|safe }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">
+            {% elif logo_cid %}
+              <!-- CID attachment (fallback for email clients that support it) -->
+              <img src="cid:{{ logo_cid }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">
+            {% else %}
+              <!-- Text fallback if no image available -->
+              <span style="font-weight:800; letter-spacing:.3px; font-size:1.5rem; color:#ffffff;">LICQUAL</span>
+            {% endif %}
+          </td>
+          <td align="right" style="vertical-align:middle; font-weight:800; font-size:1.125rem; letter-spacing:0.05em; color:#ffffff;">Certificate Issued</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="body">
+      <h1 class="navy" style="font-size:1.75rem; margin:0 0 12px 0; font-weight:800; letter-spacing:-0.02em; color:#1e293b;">Congratulations! 🎉</h1>
+      
+      <p style="margin:0 0 20px 0; color:#475569; font-size:0.9375rem;">Dear <strong style="color:#1e293b;">{{ learner_name }}</strong>,</p>
+
+      <p style="margin:16px 0;">
+        Your Certificate has been successfully issued by <strong style="color:#1e293b;">{{ business_name }}</strong>.
+      </p>
+
+      <div class="certificate-badge">
+        Certificate Ready
+      </div>
+
+      <div class="info-box">
+        <div><strong>Course:</strong> <span style="color:#1e293b; font-weight:600;">{{ course_title }}</span></div>
+        <div><strong>Issued By:</strong> <span style="color:#1e293b; font-weight:600;">{{ business_name }}</span></div>
+      </div>
+
+      <div class="course-title">
+        {{ course_title }}
+      </div>
+
+      <p style="margin:20px 0; color:#475569;">
+        Your certificate PDF is attached to this email. You can also access it anytime from your Learner Dashboard.
+      </p>
+
+      {% if dashboard_url %}
+        <div style="margin-top:28px; text-align:center;">
+          <a class="btn" href="{{ dashboard_url }}" style="text-align:center; color:#ffffff !important;">Open Learner Dashboard</a>
+        </div>
+      {% endif %}
+
+      <p class="muted" style="margin-top:24px; padding:12px 16px; background:#f8fafc; border-radius:0.5rem; border-left:3px solid #3b82f6;">
+        <strong style="color:#3b82f6;">📎 Note:</strong> The PDF certificate is attached to this email for your records.
+      </p>
+
+      <p class="muted" style="margin-top:20px; padding-top:20px; border-top:1px solid #e2e8f0; color:#64748b; font-size:0.8125rem;">
+        If you have any questions, please contact {{ business_name }}.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

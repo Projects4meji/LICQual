@@ -1,0 +1,213 @@
+{% load static %}
+{% static 'images/avatar_default.png' as default_avatar %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>{% block title %}ICTQUAL{% endblock %}</title>
+  <link rel="icon" type="image/jpeg" href="{% static 'images/LICQual-Logo.jpg' %}">
+  <link rel="shortcut icon" type="image/jpeg" href="{% static 'images/LICQual-Logo.jpg' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/LICQual-Logo.jpg' %}">
+
+  <!-- Tailwind (utility only) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { theme: { extend: {} } };</script>
+
+  {% block extra_css %}{% endblock %}
+
+  <style>
+    :root{
+      --brand-navy:#00809d;           /* primary teal */
+      --brand-navy-600:#134b70;       /* deep teal/blue */
+      --brand-yellow:#ff7601;         /* accent orange */
+      --brand-yellow-600:#e56700;
+      --text-on-navy:#f8fbff;
+      --text-on-yellow:#0b2545;
+      --page-gutter:1rem;
+    }
+body{ margin:0; min-height:100vh; display:flex; flex-direction:column; background:#f9fafb; }
+    main.flex-grow{ padding:1rem var(--page-gutter) 2rem; }
+
+    /* Navbar */
+    .navbar{
+      /* Align with dark navy gradients used in app hero sections */
+      background:linear-gradient(130deg, #0e1b33 0%, #14284a 45%, #134b70 100%);
+      color:var(--text-on-navy);
+    }
+    .navbar a{ color:inherit; text-decoration:none; }
+    .nav-shell{
+      max-width:1600px; /* align with superadmin hero width */
+      margin:0 auto;
+      padding:1rem 1.5rem;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+    }
+    .nav-card{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+      background:linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+      border:1px solid rgba(255,255,255,0.12);
+      box-shadow:0 15px 35px rgba(0,0,0,0.18);
+      border-radius:18px;
+      padding:0.85rem 1rem;
+      backdrop-filter:blur(6px);
+    }
+    .brand-stack{
+      display:flex;
+      align-items:center;
+      gap:0.75rem;
+    }
+    .logo{ height:70px; width:auto; object-fit:contain; border:2px solid rgba(255,255,255,0.28); border-radius:12px; padding:6px; background:rgba(12,24,55,0.4); box-shadow:0 8px 18px rgba(0,0,0,0.22); }
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      gap:0.15rem;
+      line-height:1.2;
+    }
+    .brand-title{ font-weight:800; letter-spacing:0.02em; font-size:1.05rem; }
+    .brand-sub{ font-weight:500; color:rgba(255,255,255,0.78); font-size:0.9rem; }
+
+    /* Avatar / actions */
+    .nav-actions{ display:flex; align-items:center; gap:0.85rem; margin-left:auto; }
+    .user-chip{
+      display:flex;
+      align-items:center;
+      gap:0.65rem;
+      padding:0.6rem 0.9rem;
+      border-radius:12px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+    }
+    .nav-avatar{ width:64px; height:64px; object-fit:cover; border-radius:14px; border:2px solid rgba(255,255,255,.7); box-shadow:0 6px 14px rgba(0,0,0,0.2); }
+    .welcome-label{ display:flex; flex-direction:column; gap:0.1rem; }
+    .welcome-label .hi{ font-size:0.85rem; color:rgba(255,255,255,0.75); }
+    .welcome-label .name{ font-weight:700; color:#fff; }
+    .welcome-label .role{ font-size:0.8rem; color:var(--brand-yellow); letter-spacing:0.01em; font-weight:700; }
+    @media (max-width:768px){
+      .nav-shell{ padding:0.75rem 0.9rem; }
+      .nav-card{ flex-direction:row; padding:0.75rem 0.85rem; }
+      .logo{ height:58px; }
+      .brand-sub{ display:none; }
+      .nav-avatar{ width:54px; height:54px; border-radius:12px; }
+      .welcome-label{ display:none; }
+    }
+
+    /* Buttons */
+    .btn{ display:inline-flex; align-items:center; justify-content:center; font-weight:600; border-radius:.5rem; padding:.5rem 1rem; line-height:1.2; border:none; cursor:pointer; transition:background-color .2s ease, transform .02s ease; text-decoration:none; }
+    .btn:active{ transform:translateY(1px); }
+    .btn-navy{ background:var(--brand-navy); color:var(--text-on-navy)!important; }
+    .btn-navy:hover,.btn-navy:focus{ background:var(--brand-navy-600); }
+    .btn-yellow{ background:var(--brand-yellow); color:var(--text-on-yellow)!important; }
+    .btn-yellow:hover,.btn-yellow:focus{ background:var(--brand-yellow-600); }
+    .btn-green{ background:#10b981; color:white!important; }
+    .btn-green:hover,.btn-green:focus{ background:#059669; }
+
+    /* Card / Table */
+    .card{ background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+    .card-header{ padding:.75rem 1rem; border-bottom:1px solid #e5e7eb; background:#f9fafb; border-top-left-radius:.75rem; border-top-right-radius:.75rem; }
+    .card-body{ padding:1rem; }
+    .table{ width:100%; border-collapse:separate; border-spacing:0; border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; background:#fff; }
+    .table thead th{ background:var(--brand-navy); color:#fff; font-weight:700; text-align:left; padding:.75rem 1rem; }
+    .table tbody td{ padding:.75rem 1rem; border-top:1px solid #e5e7eb; }
+    .table tbody tr:nth-child(even) td{ background:#f9fafb; }
+
+    /* Alerts */
+    .alert{ padding:.75rem 1rem; border-radius:.5rem; margin-bottom:.75rem; font-weight:500; }
+    .alert-success{ background:#ecfdf5; color:#065f46; border:1px solid #d1fae5; }
+    .alert-error{ background:#fef2f2; color:#991b1b; border:1px solid #fee2e2; }
+
+    /* Footer */
+  .site-footer{
+    background:linear-gradient(180deg, #0e1b33 0%, #14284a 55%, #134b70 100%);
+    color:var(--text-on-navy);
+  }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar shadow-md">
+    <div class="nav-shell">
+      <div class="nav-card">
+        <!-- Brand -->
+        <a
+          href="{% if user.is_authenticated %}{% if user.is_superuser %}{% url 'superadmin:superadmin_dashboard' %}{% elif user.is_partner %}{% url 'superadmin:business_dashboard' %}{% elif user.is_learner %}{% url 'learners:learner_dashboard' %}{% else %}{% endif %}{% else %}{% url 'users:login' %}{% endif %}"
+          class="brand-stack"
+        >
+          <img src="{% static 'images/LICQual-Logo.jpg' %}" alt="LICQual Logo" class="logo">
+          <div class="brand-text">
+            <span class="brand-title">LICQual Console</span>
+            <span class="brand-sub">Certificates • Learners • Businesses</span>
+          </div>
+        </a>
+
+        <!-- User -->
+        {% if user.is_authenticated and request.resolver_match.url_name != 'login' %}
+          {% url 'users:change_avatar' as change_url %}
+          <div class="nav-actions">
+            <div class="user-chip">
+              <div class="welcome-label">
+                <span class="hi">Welcome back</span>
+                <span class="name">{{ user.full_name|default:user.email }}</span>
+                <span class="role">
+                  {% if user.is_superuser %}
+                    Superadmin
+                  {% elif user.is_learner %}
+                    Learner
+                  {% elif user.is_partner %}
+                    User
+                  {% else %}
+                    User
+                  {% endif %}
+                </span>
+              </div>
+              <a href="{{ change_url|default:'/users/change-avatar/' }}?next={{ request.path|urlencode }}"
+                 class="relative z-50"
+                 title="Change avatar">
+                <img src="{{ user.avatar_safe_url|default:default_avatar }}"
+                     alt="Avatar"
+                     class="nav-avatar cursor-pointer">
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="flex-grow">
+    {% if messages %}
+<div class="w-full mt-4">
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+<div class="w-full">
+  {% block content %}{% endblock %}
+</div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer mt-auto">
+    <div class="max-w-6xl mx-auto px-4 py-4 text-center">
+      <p class="text-sm">© {% now "Y" %} LICQUAL. All rights reserved.</p>
+    </div>
+  </footer>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

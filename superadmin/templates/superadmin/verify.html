@@ -1,0 +1,744 @@
+{% extends "base.html" %}
+{% block title %}Verify Certificate • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    min-height: 100vh;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header - Matching other pages */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .page-header-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.75rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-header-text h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-text p {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-back:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Centered Search Section - Kept as hero card */
+  .search-section {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 3rem 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .search-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .search-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .verify-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .verify-input-wrapper {
+    flex: 1;
+    position: relative;
+  }
+
+  .verify-input-wrapper::before {
+    content: '🔍';
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.125rem;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .verify-input {
+    width: 100%;
+    padding: 1.125rem 1.25rem 1.125rem 3.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f7fafc;
+    color: #1a202c;
+  }
+
+  .verify-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .verify-input::placeholder {
+    color: #a0aec0;
+    font-weight: 400;
+  }
+
+  .btn-verify {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.125rem 2.25rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-verify:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-verify:active {
+    transform: translateY(0);
+  }
+
+  /* Modern Status Cards - Completely New Design */
+  .status-card {
+    background: #ffffff;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .status-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  .status-card-verified {
+    border-left: 5px solid #10b981;
+  }
+
+  .status-card-verified::before {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .status-card-revoked {
+    border-left: 5px solid #ef4444;
+  }
+
+  .status-card-revoked::before {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  .status-card-error {
+    border-left: 5px solid #f59e0b;
+  }
+
+  .status-card-error::before {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .status-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .status-icon-verified {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .status-icon-revoked {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  .status-icon-error {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .status-content {
+    flex: 1;
+  }
+
+  .status-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+  }
+
+  .status-message {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Modern Certificate Card - New Design */
+  .certificate-card {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .certificate-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .certificate-card-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    padding: 2.5rem 2.5rem;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .certificate-card-header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .certificate-card-header-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .certificate-card-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+
+  .certificate-card-subtitle {
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.95;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .certificate-card-body {
+    padding: 2.5rem;
+  }
+
+  /* Modern Info Grid - Card Style */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .info-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .info-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .info-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+    transform: translateY(-2px);
+    background: #ffffff;
+  }
+
+  .info-card:hover::before {
+    opacity: 1;
+  }
+
+  .info-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .info-label::before {
+    content: '▸';
+    color: #3b82f6;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .info-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.5;
+  }
+
+  .info-value-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1.5rem 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .page-header-title {
+      width: 100%;
+    }
+
+    .page-header-text h1 {
+      font-size: 1.5rem;
+    }
+
+    .page-header-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 1.5rem;
+    }
+
+    .btn-back {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .search-section {
+      padding: 2rem 1.5rem;
+    }
+
+    .verify-form {
+      flex-direction: column;
+    }
+
+    .verify-input {
+      width: 100%;
+    }
+
+    .btn-verify {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .status-card {
+      flex-direction: column;
+      padding: 1.5rem;
+    }
+
+    .status-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.5rem;
+    }
+
+    .certificate-card-header {
+      padding: 2rem 1.5rem;
+    }
+
+    .certificate-card-title {
+      font-size: 1.5rem;
+    }
+
+    .certificate-card-body {
+      padding: 1.5rem;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-header-title">
+        <div class="page-header-icon">✓</div>
+        <div class="page-header-text">
+          <h1>Certificate Verification</h1>
+          <p>Validate certificate authenticity</p>
+        </div>
+      </div>
+      <div>
+        {% if registration and registration.learner %}
+          <a href="{% url 'superadmin:learner_specific' registration.learner.id %}" class="btn-back">← Back</a>
+        {% else %}
+          <a href="javascript:history.back()" class="btn-back">← Back</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Centered Search Section - Hero Card -->
+  <div class="search-section">
+    <label class="search-label">Enter Certificate Number</label>
+    <form id="verify-form" class="verify-form" autocomplete="off">
+      <div class="verify-input-wrapper">
+        <input
+          id="code"
+          name="code"
+          type="text"
+          inputmode="text"
+          autocapitalize="characters"
+          placeholder="e.g. ATC123456"
+          value="{{ code|default:'' }}"
+          class="verify-input"
+          required
+          autofocus
+        >
+      </div>
+      <button type="submit" class="btn-verify">Verify</button>
+    </form>
+  </div>
+
+  {# Status Cards - New Design #}
+  {% if code and revoked %}
+    <div class="status-card status-card-revoked">
+      <div class="status-icon-wrapper status-icon-revoked">⚠️</div>
+      <div class="status-content">
+        <h3 class="status-title">Certificate Revoked</h3>
+        <p class="status-message">This certificate has been revoked and is not valid.</p>
+      </div>
+    </div>
+  {% elif code and not registration and not atp_business %}
+    <div class="status-card status-card-error">
+      <div class="status-icon-wrapper status-icon-error">❌</div>
+      <div class="status-content">
+        <h3 class="status-title">Certificate Not Found</h3>
+        <p class="status-message">No certificate found for <strong>{{ code }}</strong>.</p>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ===== ATP (Business) ===== #}
+  {% if atp_business %}
+    {% with b=atp_business %}
+      <div class="status-card status-card-verified">
+        <div class="status-icon-wrapper status-icon-verified">✅</div>
+        <div class="status-content">
+          <h3 class="status-title">Certificate Verified</h3>
+          <p class="status-message">This certificate is valid and authentic.</p>
+        </div>
+      </div>
+
+      <div class="certificate-card">
+        <div class="certificate-card-header">
+          <div class="certificate-card-header-content">
+            <h2 class="certificate-card-title">{{ b.business_name|default:b.name }}</h2>
+            <p class="certificate-card-subtitle">Certificate # {{ b.atp_number }}</p>
+          </div>
+        </div>
+        <div class="certificate-card-body">
+          <div class="info-grid">
+            <div class="info-card">
+              <div class="info-label">Certificate Type</div>
+              <div class="info-value">Authorized Training Partner (ATP)</div>
+            </div>
+            <div class="info-card">
+              <div class="info-label">Status</div>
+              <div class="info-value">
+                <span class="info-value-chip">Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endwith %}
+  {% endif %}
+
+  {# ===== Training Certificate (LearnerRegistration) ===== #}
+  {% if registration %}
+    {% with reg=registration %}
+      {% if reg.is_revoked %}
+        <div class="status-card status-card-revoked">
+          <div class="status-icon-wrapper status-icon-revoked">⚠️</div>
+          <div class="status-content">
+            <h3 class="status-title">Certificate Revoked</h3>
+            <p class="status-message">This certificate has been revoked and is not valid.</p>
+          </div>
+        </div>
+      {% else %}
+        <div class="status-card status-card-verified">
+          <div class="status-icon-wrapper status-icon-verified">✅</div>
+          <div class="status-content">
+            <h3 class="status-title">Certificate Verified</h3>
+            <p class="status-message">This certificate is valid and authentic.</p>
+          </div>
+        </div>
+
+        <div class="certificate-card">
+          <div class="certificate-card-header">
+            <div class="certificate-card-header-content">
+              <h2 class="certificate-card-title">{{ reg.learner.full_name|default:"Legacy Certificate Holder" }}</h2>
+              <p class="certificate-card-subtitle">Certificate # {{ reg.certificate_number }}</p>
+            </div>
+          </div>
+          <div class="certificate-card-body">
+            <div class="info-grid">
+              <div class="info-card">
+                <div class="info-label">Qualification Title</div>
+                <div class="info-value">{{ reg.course.title }}</div>
+              </div>
+
+              {% if not reg.learner.email|slice:":7" == "legacy_" %}
+              <div class="info-card">
+                <div class="info-label">Learner Number</div>
+                <div class="info-value">{{ reg.learner_number|default:"—" }}</div>
+              </div>
+              {% endif %}
+
+              {% if not reg.learner.email|slice:":7" == "legacy_" %}
+              <div class="info-card">
+                <div class="info-label">Issued On</div>
+                <div class="info-value">
+                  {% if reg.certificate_issue_date %}{{ reg.certificate_issue_date|date:"d M Y" }}{% else %}—{% endif %}
+                </div>
+              </div>
+              {% endif %}
+
+              <div class="info-card">
+                <div class="info-label">Certificate Number</div>
+                <div class="info-value">
+                  <span class="info-value-chip">{{ reg.certificate_number }}</span>
+                </div>
+              </div>
+
+              {% if reg.certificate_expiry_date %}
+              <div class="info-card">
+                <div class="info-label">Expiry Date</div>
+                <div class="info-value">{{ reg.certificate_expiry_date|date:"d M Y" }}</div>
+              </div>
+              {% endif %}
+
+              <div class="info-card">
+                <div class="info-label">Status</div>
+                <div class="info-value">
+                  <span class="info-value-chip">Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
+  {% endif %}
+</div>
+
+<script>
+(function () {
+  const form = document.getElementById('verify-form');
+  const input = document.getElementById('code');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const code = (input.value || '').trim();
+    if (!code) return;
+
+    const pattern = "{% url 'verify_certificate' '__CODE__' %}";
+    const url = pattern.replace('__CODE__', encodeURIComponent(code));
+    window.location.href = url;
+  });
+})();
+</script>
+{% endblock %}

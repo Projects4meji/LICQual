@@ -1,0 +1,1289 @@
+{# pricing/templates/pricing/invoices_list.html #}
+{% extends "base.html" %}
+{% block title %}Invoices • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Layout Grid */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Filter Panel - Sticky Card */
+  .filters-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    z-index: 5;
+    background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+    border-color: #dde4ee;
+  }
+
+  .panel-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .panel-body {
+    padding: 1rem 1.25rem 1.25rem;
+  }
+
+  /* Main Content Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2.5rem;
+  }
+
+  /* Search Input - Enhanced */
+  .search-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .search-form {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .search-input-wrapper::before {
+    content: '🔍';
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.125rem;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
+    line-height: 1;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 1rem 1.25rem 1rem 3.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #1e293b;
+    background: #f8fafc;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    line-height: 1.5;
+  }
+
+  .search-input:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    background: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .search-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  /* Date Range Filters - Enhanced */
+  .date-range-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .filter-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .date-range-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    border-radius: 0.65rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.6rem;
+    width: 100%;
+  }
+
+  .date-range-btn-active {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  }
+
+  .date-range-btn-active:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+  }
+
+  .date-range-btn-inactive {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .date-range-btn-inactive:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .date-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .date-input-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .date-input {
+    padding: 0.65rem 0.875rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.65rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .date-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .date-range-info {
+    font-size: 0.8125rem;
+    color: #64748b;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .date-range-info strong {
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  .date-range-info .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Table Styling - Enhanced */
+  .invoices-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: visible;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .invoices-table th,
+  .invoices-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .invoices-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .invoices-table thead th {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1.35rem 1rem;
+    border: none;
+  }
+
+  .invoices-table thead th:first-child {
+    padding-left: 1.5rem;
+    text-align: center;
+    width: 3%;
+  }
+
+  .invoices-table thead th:nth-child(2) {
+    width: 20%;
+  }
+
+  .invoices-table thead th:nth-child(3) {
+    width: 15%;
+  }
+
+  .invoices-table thead th:nth-child(4) {
+    width: 12%;
+  }
+
+  .invoices-table thead th:nth-child(5) {
+    width: 15%;
+  }
+
+  .invoices-table thead th:nth-child(6) {
+    width: 10%;
+  }
+
+  .invoices-table thead th:last-child {
+    padding-right: 1.5rem;
+    width: 15%;
+  }
+
+  .invoices-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .invoices-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+  }
+
+  .invoices-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .invoices-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .invoices-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .invoices-table thead th:nth-child(2),
+  .invoices-table tbody td:nth-child(2) {
+    text-align: left;
+  }
+
+  .invoices-table tbody td:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .invoices-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .invoices-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+    z-index: 2;
+  }
+
+  /* Links - Enhanced */
+  .invoice-link {
+    color: #3b82f6;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+  }
+
+  .invoice-link:hover {
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  /* Invoice Number */
+  .invoice-number {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.8125rem;
+    color: #475569;
+    font-weight: 600;
+  }
+
+  /* Amount Display - Chip Style */
+  .invoice-amount {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.9375rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .invoice-amount:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: rgba(239, 68, 68, 0.25);
+  }
+
+  /* Status Pills - Enhanced */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .pill-green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .pill-green:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  .pill-red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .pill-red:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
+  /* Action Buttons - Enhanced */
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .action-btn-view {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+  }
+
+  .action-btn-view:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  }
+
+  .action-btn-toggle {
+    background: transparent;
+    color: #64748b;
+    font-size: 1.25rem;
+    padding: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    line-height: 1;
+  }
+
+  .action-btn-toggle.toggle-paid {
+    color: #059669;
+    font-weight: 900;
+    text-shadow: 0 1px 2px rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  .action-btn-toggle.toggle-paid:hover {
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+    transform: scale(1.1);
+    text-shadow: 0 2px 4px rgba(16, 185, 129, 0.4);
+  }
+
+  .action-btn-toggle.toggle-pending {
+    color: #dc2626;
+    font-weight: 900;
+    text-shadow: 0 1px 2px rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  .action-btn-toggle.toggle-pending:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #b91c1c;
+    transform: scale(1.1);
+    text-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+  }
+
+  .status-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  /* Checkbox Styling */
+  .invoice-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+    border-radius: 0.25rem;
+  }
+
+  .select-all-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+    border-radius: 0.25rem;
+  }
+
+  /* Bulk Actions */
+  .bulk-actions {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .bulk-actions-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .bulk-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .bulk-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    border-radius: 0.65rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.6rem;
+    width: 100%;
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .bulk-action-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .bulk-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .bulk-action-btn.mark-paid {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  }
+
+  .bulk-action-btn.mark-paid:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  }
+
+  .bulk-action-btn.mark-pending {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  }
+
+  .bulk-action-btn.mark-pending:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+  }
+
+  .selected-count {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    font-weight: 500;
+  }
+
+  /* Mobile Cards - Enhanced */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .invoice-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .invoice-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .invoice-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+  }
+
+  .invoice-card:hover::before {
+    opacity: 1;
+  }
+
+  .invoice-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 1.25rem 0;
+  }
+
+  .invoice-card-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9375rem;
+  }
+
+  .invoice-card-detail:last-of-type {
+    border-bottom: none;
+  }
+
+  .invoice-card-label {
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .invoice-card-value {
+    color: #1e293b;
+    font-weight: 700;
+    text-align: right;
+    font-size: 0.9375rem;
+  }
+
+  .invoice-card-actions {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 2px solid #f1f5f9;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: visible;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .filters-panel {
+      position: relative;
+      top: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .panel-body {
+      padding: 1rem 1.25rem 1.25rem;
+    }
+
+    .panel-header {
+      padding: 1rem 1.25rem 0.75rem;
+    }
+
+    .search-wrapper {
+      margin-bottom: 1.5rem;
+    }
+
+    .search-form {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+
+    .search-input-wrapper {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .search-input-wrapper::before {
+      left: 0.875rem;
+      font-size: 1rem;
+    }
+
+    .search-input {
+      padding: 0.875rem 1rem 0.875rem 2.75rem;
+      font-size: 0.875rem;
+    }
+
+    .search-form .btn-modern {
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+      font-size: 0.875rem;
+    }
+
+    .invoice-card {
+      padding: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Invoices</h1>
+      <div class="page-header-actions">
+        <form method="post" action="{% url 'pricing:issue_invoices_now' %}" style="display: inline;">
+          {% csrf_token %}
+          <input type="hidden" name="range" value="custom">
+          <input type="hidden" name="start" value="{{ start_param }}">
+          <input type="hidden" name="end" value="{{ end_param }}">
+          <button type="submit" class="btn-modern btn-primary">Issue Invoices</button>
+        </form>
+        <a href="{{ back_url }}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Grid Layout -->
+  <div class="content-grid">
+    <!-- Filters Panel - Sticky -->
+    <div class="filters-panel">
+      <div class="panel-header">
+        <h3 class="panel-title">Filters</h3>
+      </div>
+      <div class="panel-body">
+        <!-- Date Range Filters -->
+        <div class="date-range-filters">
+          <div class="filter-buttons">
+            <a href="?range=yesterday{% if search_query %}&search={{ search_query }}{% endif %}" 
+               class="date-range-btn {% if selected == 'yesterday' %}date-range-btn-active{% else %}date-range-btn-inactive{% endif %}">
+              Yesterday
+            </a>
+            <a href="?range=week{% if search_query %}&search={{ search_query }}{% endif %}" 
+               class="date-range-btn {% if selected == 'week' %}date-range-btn-active{% else %}date-range-btn-inactive{% endif %}">
+              This Week
+            </a>
+            <a href="?range=month{% if search_query %}&search={{ search_query }}{% endif %}" 
+               class="date-range-btn {% if selected == 'month' %}date-range-btn-active{% else %}date-range-btn-inactive{% endif %}">
+              This Month
+            </a>
+          </div>
+
+          <form method="get" class="date-input-group">
+            <input type="hidden" name="range" value="custom">
+            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+            <div class="date-input-wrapper">
+              <label class="date-input-label">From Date</label>
+              <input type="date" name="start" value="{{ start_param }}" class="date-input">
+            </div>
+            <div class="date-input-wrapper">
+              <label class="date-input-label">To Date</label>
+              <input type="date" name="end" value="{{ end_param }}" class="date-input">
+            </div>
+            <button class="date-range-btn date-range-btn-active" type="submit" style="margin-top: 0.5rem;">Apply</button>
+          </form>
+
+          <div class="date-range-info">
+            <div><strong>Window:</strong></div>
+            <div>{{ start|date:"j M Y, H:i" }}</div>
+            <div>to</div>
+            <div>{{ end|date:"j M Y, H:i" }}</div>
+            {% if search_query %}
+              <div class="filter-tag">Filtered: "{{ search_query }}"</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions">
+          <div class="bulk-actions-title">Bulk Actions</div>
+          <div class="bulk-action-buttons">
+            <button type="button" class="bulk-action-btn mark-paid" id="bulkMarkPaid" disabled>
+              ✓ Mark as Paid
+            </button>
+            <button type="button" class="bulk-action-btn mark-pending" id="bulkMarkPending" disabled>
+              ✗ Mark as Pending
+            </button>
+          </div>
+          <div class="selected-count" id="selectedCount">0 selected</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div>
+      <!-- Main Content Card -->
+      <div class="modern-card">
+        <div class="card-content">
+          <!-- Search Field -->
+          <div class="search-wrapper">
+            <form method="get" class="search-form">
+              <input type="hidden" name="range" value="{{ selected }}">
+              <input type="hidden" name="start" value="{{ start_param }}">
+              <input type="hidden" name="end" value="{{ end_param }}">
+              <div class="search-input-wrapper">
+                <input 
+                  type="text" 
+                  name="search" 
+                  value="{{ search_query }}" 
+                  placeholder="Search businesses, invoice numbers, or status..." 
+                  class="search-input"
+                >
+              </div>
+              <button type="submit" class="btn-modern btn-primary">Search</button>
+              {% if search_query %}
+                <a href="?range={{ selected }}&start={{ start_param }}&end={{ end_param }}" class="btn-modern btn-secondary">Clear</a>
+              {% endif %}
+            </form>
+          </div>
+
+      <!-- Desktop Table -->
+      <div class="desktop-table-container">
+        <table class="invoices-table">
+          <thead>
+            <tr>
+              <th style="width: 3%;">
+                <input type="checkbox" class="select-all-checkbox" id="selectAll" title="Select All">
+              </th>
+              <th>Business Name (Affiliate)</th>
+              <th>Invoice #</th>
+              <th>Invoice Date</th>
+              <th>Invoice Amount</th>
+              <th>Payment Proof</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if rows %}
+              {% for r in rows %}
+                <tr>
+                  <td>
+                    <input type="checkbox" class="invoice-checkbox" name="invoice_ids" value="{{ r.id }}" data-invoice-id="{{ r.id }}">
+                  </td>
+                  <td>
+                    <a class="invoice-link" href="{% url 'pricing:invoice_detail' %}?invoice_id={{ r.id }}">
+                      {{ r.business.business_name|default:r.business.name }}
+                    </a>
+                  </td>
+                  <td>
+                    <span class="invoice-number">{{ r.invoice_no }}</span>
+                  </td>
+                  <td>{{ r.issue_date|date:"j M Y, H:i" }}</td>
+                  <td>
+                    <span class="invoice-amount">
+                      {% if r.currency == "USD" %}${% elif r.currency == "GBP" %}£{% elif r.currency == "EUR" %}€{% elif r.currency == "INR" %}₹{% elif r.currency == "PKR" %}₨{% elif r.currency == "AED" %}د.إ{% elif r.currency == "SAR" %}ر.س{% else %}{{ r.currency }} {% endif %}{{ r.amount }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if r.proof_url %}
+                      <a href="{{ r.proof_url }}" target="_blank" class="action-btn action-btn-view">View</a>
+                    {% else %}
+                      <span style="color: #94a3b8;">—</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="status-actions">
+                      {% with s=r.status|default:"pending" %}
+                        {% if s|lower == "paid" %}
+                          <span class="pill pill-green">Paid</span>
+                          <form method="post" action="{% url 'pricing:toggle_invoice_status' %}" style="display:inline-block; margin:0; padding:0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="invoice_id" value="{{ r.id }}">
+                            <button type="submit" class="action-btn-toggle toggle-pending" title="Mark as Pending">✗</button>
+                          </form>
+                        {% else %}
+                          <span class="pill pill-red">Pending</span>
+                          <form method="post" action="{% url 'pricing:toggle_invoice_status' %}" style="display:inline-block; margin:0; padding:0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="invoice_id" value="{{ r.id }}">
+                            <button type="submit" class="action-btn-toggle toggle-paid" title="Mark as Paid">✓</button>
+                          </form>
+                        {% endif %}
+                      {% endwith %}
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="7" class="empty-state">No invoices in this window.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards-container">
+        {% for r in rows %}
+          <div class="invoice-card">
+            <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem;">
+              <input type="checkbox" class="invoice-checkbox" name="invoice_ids" value="{{ r.id }}" data-invoice-id="{{ r.id }}" style="margin-top: 0.25rem;">
+              <h3 class="invoice-card-title" style="flex: 1; margin: 0;">
+                <a class="invoice-link" href="{% url 'pricing:invoice_detail' %}?invoice_id={{ r.id }}">
+                  {{ r.business.business_name|default:r.business.name }}
+                </a>
+              </h3>
+            </div>
+            <div class="invoice-card-detail">
+              <span class="invoice-card-label">Invoice #</span>
+              <span class="invoice-card-value">
+                <span class="invoice-number">{{ r.invoice_no }}</span>
+              </span>
+            </div>
+            <div class="invoice-card-detail">
+              <span class="invoice-card-label">Date</span>
+              <span class="invoice-card-value">{{ r.issue_date|date:"j M Y, H:i" }}</span>
+            </div>
+            <div class="invoice-card-detail">
+              <span class="invoice-card-label">Amount</span>
+              <span class="invoice-card-value">
+                <span class="invoice-amount">
+                  {% if r.currency == "USD" %}${% elif r.currency == "GBP" %}£{% elif r.currency == "EUR" %}€{% elif r.currency == "INR" %}₹{% elif r.currency == "PKR" %}₨{% elif r.currency == "AED" %}د.إ{% elif r.currency == "SAR" %}ر.س{% else %}{{ r.currency }} {% endif %}{{ r.amount }}
+                </span>
+              </span>
+            </div>
+            <div class="invoice-card-detail">
+              <span class="invoice-card-label">Proof</span>
+              <span class="invoice-card-value">
+                {% if r.proof_url %}
+                  <a href="{{ r.proof_url }}" target="_blank" class="action-btn action-btn-view">View</a>
+                {% else %}
+                  <span style="color: #94a3b8;">—</span>
+                {% endif %}
+              </span>
+            </div>
+            <div class="invoice-card-actions">
+              {% with s=r.status|default:"pending" %}
+                {% if s|lower == "paid" %}
+                  <span class="pill pill-green">Paid</span>
+                  <form method="post" action="{% url 'pricing:toggle_invoice_status' %}" style="display:inline-block; margin:0; padding:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="invoice_id" value="{{ r.id }}">
+                    <button type="submit" class="action-btn-toggle toggle-pending" title="Mark as Pending">✗</button>
+                  </form>
+                {% else %}
+                  <span class="pill pill-red">Pending</span>
+                  <form method="post" action="{% url 'pricing:toggle_invoice_status' %}" style="display:inline-block; margin:0; padding:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="invoice_id" value="{{ r.id }}">
+                    <button type="submit" class="action-btn-toggle toggle-paid" title="Mark as Paid">✓</button>
+                  </form>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-state">No invoices in this window.</div>
+        {% endfor %}
+      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const invoiceCheckboxes = document.querySelectorAll('.invoice-checkbox');
+    const bulkMarkPaidBtn = document.getElementById('bulkMarkPaid');
+    const bulkMarkPendingBtn = document.getElementById('bulkMarkPending');
+    const selectedCountEl = document.getElementById('selectedCount');
+
+    // Update selected count and button states
+    function updateBulkActions() {
+      const selected = Array.from(invoiceCheckboxes).filter(cb => cb.checked);
+      const count = selected.length;
+      
+      selectedCountEl.textContent = count + ' selected';
+      bulkMarkPaidBtn.disabled = count === 0;
+      bulkMarkPendingBtn.disabled = count === 0;
+      
+      // Update select all checkbox state
+      if (selectAllCheckbox) {
+        selectAllCheckbox.checked = count === invoiceCheckboxes.length && invoiceCheckboxes.length > 0;
+        selectAllCheckbox.indeterminate = count > 0 && count < invoiceCheckboxes.length;
+      }
+    }
+
+    // Select all checkbox handler
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', function() {
+        invoiceCheckboxes.forEach(cb => {
+          cb.checked = this.checked;
+        });
+        updateBulkActions();
+      });
+    }
+
+    // Individual checkbox handlers
+    invoiceCheckboxes.forEach(cb => {
+      cb.addEventListener('change', updateBulkActions);
+    });
+
+    // Bulk mark as paid
+    bulkMarkPaidBtn.addEventListener('click', function() {
+      const selected = Array.from(invoiceCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      
+      if (selected.length === 0) return;
+      
+      if (confirm('Mark ' + selected.length + ' invoice(s) as Paid?')) {
+        bulkUpdateStatus(selected, 'paid');
+      }
+    });
+
+    // Bulk mark as pending
+    bulkMarkPendingBtn.addEventListener('click', function() {
+      const selected = Array.from(invoiceCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      
+      if (selected.length === 0) return;
+      
+      if (confirm('Mark ' + selected.length + ' invoice(s) as Pending?')) {
+        bulkUpdateStatus(selected, 'pending');
+      }
+    });
+
+    // Bulk update status function
+    function bulkUpdateStatus(invoiceIds, status) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '{% url "pricing:toggle_invoice_status" %}';
+      
+      // Add CSRF token - get from cookie or existing form
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      
+      const csrfToken = getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+      if (csrfToken) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+      }
+      
+      // Add invoice IDs
+      invoiceIds.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'invoice_ids';
+        input.value = id;
+        form.appendChild(input);
+      });
+      
+      // Add status
+      const statusInput = document.createElement('input');
+      statusInput.type = 'hidden';
+      statusInput.name = 'bulk_status';
+      statusInput.value = status;
+      form.appendChild(statusInput);
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    // Initial update
+    updateBulkActions();
+  })();
+</script>
+{% endblock %}

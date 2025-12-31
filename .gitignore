@@ -1,0 +1,16 @@
+﻿.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.env.*
+.settings/
+.idea/
+.vscode/
+.DS_Store
+*.sqlite3
+media/
+staticfiles/
+coverage/
+node_modules/

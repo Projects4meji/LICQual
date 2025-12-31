@@ -1,0 +1,1357 @@
+{% extends "base.html" %}
+{% block title %}Business Discounts • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2.5rem;
+    padding-bottom: 8rem;
+  }
+
+  .card-content {
+    padding: 2.5rem;
+  }
+
+  /* Table Styling */
+  .discounts-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: visible;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .discounts-table th,
+  .discounts-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .discounts-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .discounts-table thead th {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1.35rem 1rem;
+    border: none;
+  }
+
+  .discounts-table thead th:first-child {
+    padding-left: 1.5rem;
+    width: 5%;
+  }
+
+  .discounts-table thead th:nth-child(2) {
+    width: 20%;
+    text-align: left;
+  }
+
+  .discounts-table thead th:nth-child(3) {
+    width: 22%;
+  }
+
+  .discounts-table thead th:nth-child(4) {
+    width: 15%;
+  }
+
+  .discounts-table thead th:nth-child(5) {
+    width: 15%;
+  }
+
+  .discounts-table thead th:nth-child(6) {
+    width: 12%;
+  }
+
+  .discounts-table thead th:last-child {
+    padding-right: 1.5rem;
+    width: 11%;
+  }
+
+  .discounts-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .discounts-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+  }
+
+  .discounts-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .discounts-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .discounts-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  .discounts-table tbody td:nth-child(2) {
+    text-align: left;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  /* Enhanced cells */
+  .name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .name-initial {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
+    flex-shrink: 0;
+  }
+
+  .name-main {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .discounts-table tbody td:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .discounts-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .discounts-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+    z-index: 2;
+  }
+
+  /* Links */
+  .business-link {
+    color: #3b82f6;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+  }
+
+  .business-link:hover {
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  /* Email Chip */
+  .email-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .email-chip::before {
+    content: '✉';
+    font-size: 1rem;
+    opacity: 0.85;
+    font-weight: 600;
+  }
+
+  /* Date Cell - Vertical Layout */
+  .date-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .date-main {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.875rem;
+  }
+
+  .date-time {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  /* Creative Discount Display */
+  .discount-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  .discount-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+    position: relative;
+  }
+
+  .discount-value::after {
+    content: '%';
+    font-size: 1rem;
+    font-weight: 700;
+    opacity: 0.8;
+    margin-left: 0.1rem;
+  }
+
+  .discount-value.no-discount {
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.25rem;
+  }
+
+  .discount-value.no-discount::after {
+    display: none;
+  }
+
+  .discount-label-small {
+    font-size: 0.6875rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+  }
+
+  .discount-value.no-discount + .discount-label-small {
+    display: none;
+  }
+
+  /* Discount Badges (keeping for backward compatibility if needed) */
+  .discount-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .discount-badge.has-discount {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .discount-badge.has-discount:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  .discount-badge.no-discount {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+
+  .discount-badge.no-discount:hover {
+    background: #e2e8f0;
+    transform: scale(1.05);
+  }
+
+  /* Action Buttons - Dropdown Style */
+  .actions-wrapper {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 2000;
+  }
+
+  .discounts-table tbody tr:hover .actions-wrapper {
+    z-index: 1000;
+  }
+
+  .actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    font-size: 1.125rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .actions-trigger:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  .actions-trigger::after {
+    content: '⋯';
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .actions-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10000;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+
+  .actions-wrapper:hover .actions-menu,
+  .actions-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .action-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .action-item:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+
+  .action-item:last-child {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+  }
+
+  .action-item:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  .action-item.edit {
+    color: #3b82f6;
+  }
+
+  .action-item.edit:hover {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+
+  .action-item.reset {
+    color: #ef4444;
+  }
+
+  .action-item.reset:hover {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .discount-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .discount-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .discount-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+  }
+
+  .discount-card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .discount-card-email {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+  }
+
+  .discount-card-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+
+  .discount-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .discount-card-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .discount-card-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .discount-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Action buttons for cards (matching courses/learners page design) */
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.55rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .action-btn-edit {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .action-btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .action-btn-reset {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .action-btn-reset:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: visible;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .page-header-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .page-header-actions .btn-modern {
+      width: 100%;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .search-bar-wrapper {
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+
+    .search-input-inline {
+      width: 100%;
+      order: 1;
+    }
+
+    .search-divider {
+      display: none;
+    }
+
+    .filter-chips-container {
+      width: 100%;
+      order: 2;
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .search-action-btn {
+      width: 100%;
+      order: 3;
+      margin-top: 0.75rem;
+    }
+
+    .discount-card-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* Mobile action buttons - match courses/learners design */
+    .discount-card-actions .actions-wrapper {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .discount-card-actions .actions-trigger {
+      display: none;
+    }
+
+    .discount-card-actions .actions-menu {
+      position: static;
+      display: flex !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1;
+      visibility: visible;
+      transform: none !important;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      min-width: auto;
+    }
+
+    .discount-card-actions .actions-menu .action-item {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      border-radius: 0.5rem !important;
+      text-decoration: none !important;
+      border: none !important;
+      background: #f8fafc !important;
+      color: #475569 !important;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      min-height: 40px !important;
+      min-width: 44px !important;
+      white-space: nowrap !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      width: auto !important;
+      text-align: center !important;
+    }
+
+    .discount-card-actions .actions-menu .action-item:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .discount-card-actions .actions-menu .action-item.edit {
+      background: #3b82f6 !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    .discount-card-actions .actions-menu .action-item.edit:hover {
+      background: #2563eb !important;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+    }
+
+    .discount-card-actions .actions-menu .action-item.reset {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .discount-card-actions .actions-menu .action-item.reset:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .page-header-actions {
+      width: 100%;
+    }
+
+    .page-header-actions .btn-modern {
+      width: 100%;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .search-bar-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 1rem;
+    }
+
+    .discount-card-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .discount-card-actions {
+      flex-direction: column;
+    }
+
+    .discount-card-actions .btn-modern {
+      width: 100%;
+    }
+  }
+
+  /* Search Section - Minimal Inline Design */
+  .search-section {
+    margin-bottom: 2rem;
+  }
+
+  .search-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+  }
+
+  .search-bar-wrapper:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  .search-input-inline {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    background: transparent;
+    padding: 0.625rem 0;
+  }
+
+  .search-input-inline::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .search-divider {
+    width: 2px;
+    height: 40px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+  }
+
+  .filter-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1.25rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .filter-chip:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  .filter-chip.active {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .filter-chip-select {
+    appearance: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    display: none;
+  }
+
+  .filter-chip-select:hover {
+    background: #f8fafc;
+    color: #1e293b;
+  }
+
+  .filter-chip-select:focus {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  .search-action-btn {
+    padding: 0.625rem 1.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    white-space: nowrap;
+  }
+
+  .search-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .search-action-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .search-bar-wrapper {
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+
+    .search-input-inline {
+      width: 100%;
+      order: 1;
+    }
+
+    .search-divider {
+      display: none;
+    }
+
+    .filter-chips-container {
+      width: 100%;
+      order: 2;
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .search-action-btn {
+      width: 100%;
+      order: 3;
+      margin-top: 0.75rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Business Discounts</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:superadmin_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Section - Minimal Inline -->
+  <div class="search-section">
+    <form method="get" id="filterForm">
+      <div class="search-bar-wrapper">
+        <input
+          type="text"
+          id="liveSearch"
+          name="q"
+          value="{{ q }}"
+          placeholder="Search by business name, email, or name..."
+          class="search-input-inline"
+        />
+        <div class="search-divider"></div>
+        <div class="filter-chips-container">
+          <button
+            type="button"
+            class="filter-chip {% if not has_discount %}active{% endif %}"
+            data-has-discount=""
+            onclick="setHasDiscount('')"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="filter-chip {% if has_discount == 'yes' %}active{% endif %}"
+            data-has-discount="yes"
+            onclick="setHasDiscount('yes')"
+          >
+            Have Discount
+          </button>
+          <button
+            type="button"
+            class="filter-chip {% if has_discount == 'no' %}active{% endif %}"
+            data-has-discount="no"
+            onclick="setHasDiscount('no')"
+          >
+            No Discount
+          </button>
+          <select id="hasDiscountSelect" name="has_discount" class="filter-chip-select" style="display: none;">
+            <option value="" {% if not has_discount %}selected{% endif %}>All</option>
+            <option value="yes" {% if has_discount == 'yes' %}selected{% endif %}>Have Discount</option>
+            <option value="no" {% if has_discount == 'no' %}selected{% endif %}>No Discount</option>
+          </select>
+        </div>
+        <button type="submit" class="search-action-btn">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Desktop Table -->
+      <div class="desktop-table-container">
+        <table class="discounts-table">
+          <thead>
+            <tr>
+              <th>Sr #</th>
+              <th>Business Name</th>
+              <th>Email</th>
+              <th>Affiliate Discount</th>
+              <th>Learner Discount</th>
+              <th>Last Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if businesses %}
+              {% for business in businesses %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    <div class="name-cell">
+                      <div class="name-initial">
+                        {{ business.business_name|default:business.name|first|upper }}
+                      </div>
+                      <div class="name-main">
+                        <a href="{% url 'superadmin:business_details' business.id %}" class="business-link">
+                          {{ business.business_name|default:business.name }}
+                        </a>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="email-chip">{{ business.email }}</span>
+                  </td>
+                  <td>
+                    <div class="discount-display">
+                      {% if business.affiliate_total_discount %}
+                        {% if business.assigned_courses_count and business.assigned_courses_count > 0 %}
+                          {% with total=business.affiliate_total_discount count=business.assigned_courses_count %}
+                            {% if total > 0 and count > 0 %}
+                              {% widthratio total count 1 as avg_discount %}
+                              <span class="discount-value">{{ avg_discount }}</span>
+                              <span class="discount-label-small">OFF</span>
+                            {% else %}
+                              <span class="discount-value no-discount">—</span>
+                            {% endif %}
+                          {% endwith %}
+                        {% elif business.affiliate_total_discount > 0 %}
+                          <span class="discount-value">{{ business.affiliate_total_discount }}</span>
+                          <span class="discount-label-small">OFF</span>
+                        {% else %}
+                          <span class="discount-value no-discount">—</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="discount-value no-discount">—</span>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="discount-display">
+                      {% if business.learner_total_discount %}
+                        {% if business.assigned_courses_count and business.assigned_courses_count > 0 %}
+                          {% with total=business.learner_total_discount count=business.assigned_courses_count %}
+                            {% if total > 0 and count > 0 %}
+                              {% widthratio total count 1 as avg_discount %}
+                              <span class="discount-value">{{ avg_discount }}</span>
+                              <span class="discount-label-small">OFF</span>
+                            {% else %}
+                              <span class="discount-value no-discount">—</span>
+                            {% endif %}
+                          {% endwith %}
+                        {% elif business.learner_total_discount > 0 %}
+                          <span class="discount-value">{{ business.learner_total_discount }}</span>
+                          <span class="discount-label-small">OFF</span>
+                        {% else %}
+                          <span class="discount-value no-discount">—</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="discount-value no-discount">—</span>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td>
+                    {% if business.latest_discount_updated_at %}
+                      <div class="date-cell">
+                        <span class="date-main">{{ business.latest_discount_updated_at|date:"j M Y" }}</span>
+                        <span class="date-time">{{ business.latest_discount_updated_at|date:"H:i" }}</span>
+                      </div>
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="actions-wrapper">
+                      <button class="actions-trigger" aria-label="Actions menu"></button>
+                      <div class="actions-menu">
+                        <a href="{% url 'superadmin:edit_business_discount' business.id %}" class="action-item edit">
+                          {% if business.latest_discount_updated_at %}Edit Discount{% else %}Set Discount{% endif %}
+                        </a>
+                        {% if business.latest_discount_updated_at %}
+                          <form method="post" action="{% url 'superadmin:delete_business_discount' business.id %}" style="display:contents;"
+                                onsubmit="return confirm('Remove discount settings for {{ business.business_name|default:business.name }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="action-item reset">
+                              Reset Discount
+                            </button>
+                          </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="7" class="empty-state">No businesses found.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards-container">
+        {% if businesses %}
+          {% for business in businesses %}
+            <div class="discount-card">
+              <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <div class="name-initial">
+                  {{ business.business_name|default:business.name|first|upper }}
+                </div>
+                <h3 class="discount-card-title" style="margin: 0;">
+                  <a href="{% url 'superadmin:business_details' business.id %}" class="business-link">
+                    {{ business.business_name|default:business.name }}
+                  </a>
+                </h3>
+              </div>
+              <div class="discount-card-email">{{ business.email }}</div>
+              <div class="discount-card-date">
+                {% if business.latest_discount_updated_at %}
+                  Last updated: {{ business.latest_discount_updated_at|date:"j M Y" }}
+                {% else %}
+                  No discount set
+                {% endif %}
+              </div>
+              <div class="discount-card-grid">
+                <div class="discount-card-item">
+                  <div class="discount-card-label">Affiliate Discount</div>
+                  <div class="discount-display" style="margin-top: 0.5rem;">
+                    {% if business.affiliate_total_discount %}
+                      {% if business.assigned_courses_count and business.assigned_courses_count > 0 %}
+                        {% with total=business.affiliate_total_discount count=business.assigned_courses_count %}
+                          {% if total > 0 and count > 0 %}
+                            {% widthratio total count 1 as avg_discount %}
+                            <span class="discount-value">{{ avg_discount }}</span>
+                            <span class="discount-label-small">OFF</span>
+                          {% else %}
+                            <span class="discount-value no-discount">—</span>
+                          {% endif %}
+                        {% endwith %}
+                      {% elif business.affiliate_total_discount > 0 %}
+                        <span class="discount-value">{{ business.affiliate_total_discount }}</span>
+                        <span class="discount-label-small">OFF</span>
+                      {% else %}
+                        <span class="discount-value no-discount">—</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="discount-value no-discount">—</span>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="discount-card-item">
+                  <div class="discount-card-label">Learner Discount</div>
+                  <div class="discount-display" style="margin-top: 0.5rem;">
+                    {% if business.learner_total_discount %}
+                      {% if business.assigned_courses_count and business.assigned_courses_count > 0 %}
+                        {% with total=business.learner_total_discount count=business.assigned_courses_count %}
+                          {% if total > 0 and count > 0 %}
+                            {% widthratio total count 1 as avg_discount %}
+                            <span class="discount-value">{{ avg_discount }}</span>
+                            <span class="discount-label-small">OFF</span>
+                          {% else %}
+                            <span class="discount-value no-discount">—</span>
+                          {% endif %}
+                        {% endwith %}
+                      {% elif business.learner_total_discount > 0 %}
+                        <span class="discount-value">{{ business.learner_total_discount }}</span>
+                        <span class="discount-label-small">OFF</span>
+                      {% else %}
+                        <span class="discount-value no-discount">—</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="discount-value no-discount">—</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="discount-card-actions">
+                <a href="{% url 'superadmin:edit_business_discount' business.id %}" class="action-btn action-btn-edit">
+                  {% if business.latest_discount_updated_at %}Edit Discount{% else %}Set Discount{% endif %}
+                </a>
+                {% if business.latest_discount_updated_at %}
+                  <form method="post" action="{% url 'superadmin:delete_business_discount' business.id %}" style="display:inline;"
+                        onsubmit="return confirm('Remove discount settings for {{ business.business_name|default:business.name }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn action-btn-reset">
+                      Reset Discount
+                    </button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">No businesses found.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setHasDiscount(value) {
+    document.getElementById('hasDiscountSelect').value = value;
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.classList.remove('active');
+    });
+    event.target.closest('.filter-chip').classList.add('active');
+    document.getElementById('filterForm').submit();
+  }
+</script>
+{% endblock %}

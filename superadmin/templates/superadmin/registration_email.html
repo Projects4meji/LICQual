@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Course Registration — LICQUAL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Modern gradient color scheme - red to blue (same as welcome email) */
+    .navy { color:#1e293b; }
+    .btn {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+      color:#ffffff; padding:14px 28px;
+      border-radius:0.75rem; font-weight:700; text-decoration:none; display:inline-block;
+      box-shadow:0 4px 12px rgba(239, 68, 68, 0.3);
+      transition:all 0.3s ease;
+    }
+    .muted { color:#64748b; font-size:0.8125rem; line-height:1.5; }
+    .card {
+      max-width:600px; margin:0 auto; background:#ffffff; border-radius:1.5rem;
+      box-shadow:0 10px 30px rgba(0,0,0,.12); overflow:hidden; border:1px solid #e2e8f0;
+    }
+    .header { 
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+      color:#fff; padding:24px 28px; position:relative; overflow:hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .body { padding:32px 28px; color:#1e293b; font-size:0.9375rem; line-height:1.6; }
+    .row { margin-top:16px; }
+    .kv { 
+      width:100px; color:#475569; display:inline-block; vertical-align:top; 
+      font-weight:700; text-transform:uppercase; font-size:0.8125rem; letter-spacing:0.05em;
+    }
+    .info-box {
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:0.75rem; padding:16px 20px; margin:20px 0;
+    }
+    .info-box div {
+      margin:8px 0;
+      color:#1e293b;
+      font-weight:500;
+    }
+    .info-box strong {
+      color:#475569;
+      font-weight:700;
+    }
+    .footer {
+      background:#f9fafb;
+      padding:24px 28px;
+      text-align:center;
+      color:#6b7280;
+      font-size:0.8125rem;
+      line-height:1.6;
+      border-top:1px solid #e2e8f0;
+    }
+    .footer-logo {
+      max-height:30px;
+      margin:0 auto 12px auto;
+      padding:0;
+      border-radius:6px;
+      opacity:0.75;
+      display:block;
+    }
+  </style>
+</head>
+<body style="margin:0; background:#f3f4f6; padding:24px;">
+  <div class="card">
+    <div class="header">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="position:relative; z-index:1;">
+        <tr>
+          <td align="left" style="vertical-align:middle; padding-bottom:8px;">
+            {% if logo_url %}
+              <img src="{{ logo_url }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">
+            {% elif logo_cid %}
+              <img src="cid:{{ logo_cid }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">              
+            {% elif logo_base64 %}
+              <img src="{{ logo_base64|safe }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">
+            {% else %}
+              <span style="font-weight:800; letter-spacing:.3px; font-size:1.5rem; color:#ffffff;">LICQUAL</span>
+            {% endif %}
+          </td>
+          <td align="right" style="vertical-align:middle; font-weight:800; font-size:1.125rem; letter-spacing:0.05em; color:#ffffff;">Course Registration</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="body">
+      <p style="margin:0 0 14px 0; color:#475569; font-size:0.9375rem;">Dear <strong style="color:#1e293b;">{{ learner_name }}</strong>,</p>
+
+      <p class="row" style="margin-top:0; margin-bottom:18px;">
+        Welcome! You have been successfully registered by <strong class="business-name">{{ business_name }}</strong> for the following qualification:
+      </p>
+
+      <div class="info-box" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%); border: 1px solid rgba(239, 68, 68, 0.15); text-align:center;">
+        <h2 style="margin:0 0 8px 0; font-size:1.25rem; font-weight:700; color:#1e293b;">{{ course_title }}</h2>
+        <p style="margin:0; font-size:0.9rem; color:#64748b;">Qualification Registration</p>
+      </div>
+
+      <div class="info-box">
+        <div style="text-transform:uppercase; font-size:0.78rem; color:#6b7280; letter-spacing:0.08em; margin-bottom:6px;">For Questions or Support</div>
+        <div style="margin:0; font-size:0.95rem; color:#1e293b;">Please contact: {{ contact_email }}</div>
+      </div>
+
+      <p class="row" style="margin-top:16px; margin-bottom:0; color:#64748b; font-size:0.9rem;">
+        We look forward to supporting you throughout your learning journey. <strong class="business-name">{{ business_name }}</strong> will guide you through the qualification requirements and assessment process.
+      </p>
+    </div>
+
+    <div class="footer">
+      {% if logo_url %}
+        <img src="{{ logo_url }}" alt="LICQual" class="footer-logo">
+      {% elif logo_cid %}
+        <img src="cid:{{ logo_cid }}" alt="LICQual" class="footer-logo">
+      {% elif logo_base64 %}
+        <img src="{{ logo_base64|safe }}" alt="LICQual" class="footer-logo">
+      {% endif %}
+      <p style="margin:6px 0;">This email was sent via LICQual AB.</p>
+      <p style="margin:6px 0;">Please do not reply to this message.</p>
+      <p style="margin:10px 0 0 0; font-size:0.75rem; color:#9ca3af;">© 2025 LICQual AB. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

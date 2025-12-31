@@ -1,0 +1,680 @@
+{% extends "base.html" %}
+{% block title %}Superadmin Dashboard • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Dashboard Container */
+  .dashboard-container { 
+    max-width: 1600px; 
+    margin: 0 auto; 
+    padding: 2rem 1.5rem; 
+  }
+
+  /* Page Header */
+  .dashboard-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+  
+  .dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .dashboard-header p {
+    color: rgba(255,255,255,.95);
+    font-size: 1rem;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Statistics Grid - Top Row */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #cbd5e1;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stat-icon.business { background: #dbeafe; }
+  .stat-icon.course { background: #fef3c7; }
+  .stat-icon.learner { background: #d1fae5; }
+  .stat-icon.registration { background: #e9d5ff; }
+  .stat-icon.pending { background: #fed7aa; }
+  .stat-icon.issued { background: #bbf7d0; }
+
+  .stat-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  .stat-icon.business svg { color: #3b82f6; }
+  .stat-icon.course svg { color: #f59e0b; }
+  .stat-icon.learner svg { color: #10b981; }
+  .stat-icon.registration svg { color: #a855f7; }
+  .stat-icon.pending svg { color: #f97316; }
+  .stat-icon.issued svg { color: #059669; }
+
+  .stat-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1;
+  }
+
+  /* Main Content Layout - Two Column */
+  .dashboard-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .dashboard-layout {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  /* Main Actions Section */
+  .actions-section {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: #3b82f6;
+    border-radius: 2px;
+  }
+
+  /* Action Groups */
+  .action-group {
+    margin-bottom: 2rem;
+  }
+
+  .action-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .action-group-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 1rem 0;
+  }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .action-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .action-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .action-card:hover {
+    background: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .action-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .action-card-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: #ffffff;
+  }
+
+  .action-card-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .action-card-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .action-card-desc {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Sidebar Section */
+  .sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .widget {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .widget-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 1rem 0;
+  }
+
+  .widget-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .widget-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .widget-item:last-child {
+    border-bottom: none;
+  }
+
+  .widget-item-name {
+    font-size: 0.875rem;
+    color: #475569;
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.35;
+  }
+
+  .widget-item-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .widget-item-link:hover {
+    text-decoration: underline;
+  }
+
+  .widget-empty {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .quick-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .quick-action-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .quick-action-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .action-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>Superadmin Dashboard</h1>
+    <p>Overview and quick access to all system features</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon business">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M3 21V7a2 2 0 0 1 2-2h6v16"></path>
+          <path d="M13 21V3h6a2 2 0 0 1 2 2v16"></path>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Total Businesses</p>
+        <p class="stat-value">{{ total_businesses|default:0 }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon course">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20V6a2 2 0 0 0-2-2H6"></path>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Total Courses</p>
+        <p class="stat-value">{{ total_courses|default:0 }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon learner">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Total Learners</p>
+        <p class="stat-value">{{ total_learners|default:0 }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon registration">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Total Registrations</p>
+        <p class="stat-value">{{ total_registrations|default:0 }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon pending">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Pending Certificates</p>
+        <p class="stat-value">{{ pending_certificates|default:0 }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon issued">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Issued Certificates</p>
+        <p class="stat-value">{{ issued_certificates|default:0 }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Layout: Actions + Sidebar -->
+  <div class="dashboard-layout">
+    <!-- Main Actions Section -->
+    <div class="actions-section">
+      <h2 class="section-title">Quick Actions</h2>
+
+      <!-- Partners & Businesses -->
+      <div class="action-group">
+        <h3 class="action-group-title">Partners & Businesses</h3>
+        <div class="action-grid">
+          <a href="{% url 'superadmin:add_business' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <path d="M12 8v8M8 12h8"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">Add Business</h4>
+              <p class="action-card-desc">Create a new partner account</p>
+            </div>
+          </a>
+          <a href="{% url 'superadmin:business_list' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21V7a2 2 0 0 1 2-2h6v16"></path>
+                <path d="M13 21V3h6a2 2 0 0 1 2 2v16"></path>
+                <path d="M9 10h.01M9 14h.01M17 7h.01M17 11h.01M17 15h.01"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">View Businesses</h4>
+              <p class="action-card-desc">Manage partner profiles</p>
+            </div>
+          </a>
+          <a href="{% url 'superadmin:business_performance' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18"></path>
+                <path d="M7 13l4-4 4 3 5-6"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">Performance</h4>
+              <p class="action-card-desc">Track registrations</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Courses -->
+      <div class="action-group">
+        <h3 class="action-group-title">Courses</h3>
+        <div class="action-grid">
+          <a href="{% url 'superadmin:add_course' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20V6a2 2 0 0 0-2-2H6"></path>
+                <path d="M12 10v4M10 12h4"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">Add Course</h4>
+              <p class="action-card-desc">Create a new training course</p>
+            </div>
+          </a>
+          <a href="{% url 'superadmin:course_list' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20V6a2 2 0 0 0-2-2H6"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">View Courses</h4>
+              <p class="action-card-desc">Browse and edit courses</p>
+            </div>
+          </a>
+          <a href="{% url 'superadmin:learners_list' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">Manage Learners</h4>
+              <p class="action-card-desc">View and manage learners</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Finance -->
+      <div class="action-group">
+        <h3 class="action-group-title">Finance</h3>
+        <div class="action-grid">
+          <a href="{% url 'pricing:pricing_list' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 21V3l3 2 3-2 3 2 3-2 3 2v18l-3-2-3 2-3-2-3 2-3-2z"></path>
+                <path d="M8 13h8M8 17h8M8 9h8"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">Pricing</h4>
+              <p class="action-card-desc">Manage pricing and plans</p>
+            </div>
+          </a>
+          <a href="{% url 'superadmin:business_discounts' %}" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 12l2 2 4-4"></path>
+                <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
+                <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
+                <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"></path>
+                <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"></path>
+              </svg>
+            </div>
+            <div class="action-card-content">
+              <h4 class="action-card-title">Discounts</h4>
+              <p class="action-card-desc">Business-specific discounts</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar-section">
+      <!-- Recent Businesses -->
+      <div class="widget">
+        <h3 class="widget-title">Recent Businesses</h3>
+        {% if recent_businesses %}
+          <ul class="widget-list">
+            {% for business in recent_businesses %}
+              <li class="widget-item">
+                <span class="widget-item-name">{{ business.business_name|default:business.name }}</span>
+                <a href="{% url 'superadmin:business_details' business.id %}" class="widget-item-link">View</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="widget-empty">No businesses yet</p>
+        {% endif %}
+        <div style="margin-top: 1rem;">
+          <a href="{% url 'superadmin:business_list' %}" class="quick-action-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 20V10"></path>
+              <path d="M12 20V4"></path>
+              <path d="M6 20v-6"></path>
+            </svg>
+            View All
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Courses -->
+      <div class="widget">
+        <h3 class="widget-title">Recent Courses</h3>
+        {% if recent_courses %}
+          <ul class="widget-list">
+            {% for course in recent_courses %}
+              <li class="widget-item">
+                <span class="widget-item-name">{{ course.title }}</span>
+                <a href="{% url 'superadmin:edit_course' course.id %}" class="widget-item-link">Edit</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="widget-empty">No courses yet</p>
+        {% endif %}
+        <div style="margin-top: 1rem;">
+          <a href="{% url 'superadmin:course_list' %}" class="quick-action-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20V6a2 2 0 0 0-2-2H6"></path>
+            </svg>
+            View All
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

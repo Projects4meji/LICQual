@@ -1,0 +1,915 @@
+{% extends "base.html" %}
+{% load safe_urls %}
+{% block title %}Qualifications • LICQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2.25rem 1.5rem 2.5rem;
+    background: radial-gradient(circle at 18% 18%, rgba(59,130,246,0.08), transparent 36%), radial-gradient(circle at 82% 8%, rgba(239,68,68,0.08), transparent 42%), linear-gradient(180deg, #f8fafc 0%, #ffffff 45%, #f8fafc 100%);
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: radial-gradient(120% 140% at 80% 0%, rgba(59,130,246,0.16), transparent), radial-gradient(120% 140% at 20% 20%, rgba(239,68,68,0.18), transparent), linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.6rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 14px 36px rgba(59, 130, 246, 0.26);
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .header-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .badge-soft {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  /* Table Styling */
+  .courses-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    table-layout: fixed;
+  }
+
+  .courses-table th,
+  .courses-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .courses-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .courses-table thead th {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.25rem 1rem;
+    border: none;
+  }
+
+  .courses-table thead th:first-child {
+    border-top-left-radius: 1rem;
+    padding-left: 1.5rem;
+    width: 8%;
+  }
+
+  .courses-table thead th:nth-child(2) {
+    width: 35%;
+    text-align: left;
+  }
+
+  .courses-table thead th:nth-child(3) {
+    width: 20%;
+  }
+
+  .courses-table thead th:nth-child(4) {
+    width: 22%;
+  }
+
+  .courses-table thead th:last-child {
+    border-top-right-radius: 1rem;
+    padding-right: 1.5rem;
+    width: 15%;
+    text-align: center;
+  }
+
+  .courses-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .courses-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+  }
+
+  .courses-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .courses-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .courses-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  .courses-table tbody td:nth-child(2) {
+    text-align: left;
+    padding-left: 1rem;
+  }
+
+  .courses-table tbody td:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+    position: relative;
+    z-index: auto;
+  }
+
+  .courses-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .courses-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+    z-index: 2;
+  }
+
+  /* Enhanced cells */
+  .name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .name-initial {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
+    flex-shrink: 0;
+  }
+
+  .name-main {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .chip-gradient {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  /* Links */
+  .course-link {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.9375rem;
+  }
+
+  .course-link:hover {
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .course-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    transition: all 0.25s ease;
+  }
+
+  .course-card:hover {
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    border-color: #cbd5e1;
+    transform: translateY(-3px);
+  }
+
+  .course-card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1rem 0;
+  }
+
+  .course-card-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+  }
+
+  .course-card-detail:last-child {
+    border-bottom: none;
+  }
+
+  .course-card-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .course-card-value {
+    color: #1e293b;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .course-card-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.55rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .action-btn-edit {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .action-btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+  }
+
+  .action-btn-assign {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  }
+
+  .action-btn-assign:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.35);
+  }
+
+  .action-btn-pdf {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+  }
+
+  .action-btn-pdf:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  }
+
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 0.35rem;
+    background: rgba(255,255,255,0.18);
+    color: #ffffff;
+    font-size: 0.85rem;
+  }
+
+  /* Actions dropdown (desktop) */
+  .actions-wrapper {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 2000;
+  }
+
+  .actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    font-size: 1.125rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .actions-trigger:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  .actions-trigger::after {
+    content: '⋯';
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .actions-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5000;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+
+  .actions-wrapper:hover .actions-menu,
+  .actions-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .courses-table tbody tr:hover .actions-wrapper {
+    z-index: 1000;
+  }
+
+  .courses-table tbody tr:hover .actions-wrapper,
+  .courses-table tbody tr .actions-wrapper:hover,
+  .courses-table tbody tr .actions-wrapper:has(.actions-menu:hover) {
+    z-index: 1000;
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .action-item:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+
+  .action-item:last-child {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+  }
+
+  .action-item:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  .action-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Search Section - Minimal Inline Design */
+  .search-section {
+    margin-bottom: 2rem;
+  }
+
+  .search-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+  }
+
+  .search-bar-wrapper:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  .search-input-inline {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    background: transparent;
+    padding: 0.625rem 0;
+  }
+
+  .search-input-inline::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .search-divider {
+    width: 2px;
+    height: 40px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+  }
+
+  .filter-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1.25rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .filter-chip:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  .filter-chip.active {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .filter-chip-select {
+    appearance: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    display: none;
+  }
+
+  .filter-chip-select:hover {
+    background: #f8fafc;
+    color: #1e293b;
+  }
+
+  .filter-chip-select:focus {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  .search-action-btn {
+    padding: 0.625rem 1.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    white-space: nowrap;
+  }
+
+  .search-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .search-action-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .search-bar-wrapper {
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+
+    .search-input-inline {
+      width: 100%;
+      order: 1;
+    }
+
+    .search-divider {
+      display: none;
+    }
+
+    .filter-chips-container {
+      width: 100%;
+      order: 2;
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .search-action-btn {
+      width: 100%;
+      order: 3;
+      margin-top: 0.75rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div>
+        <h1>Qualifications</h1>
+        <div class="header-badges">
+          <span class="badge-soft">Total: {{ courses|length|default:0 }}</span>
+        </div>
+      </div>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:add_course' %}" class="btn-modern btn-primary">Add Qualification</a>
+        <a href="{% url 'superadmin:superadmin_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Section - Minimal Inline -->
+  <div class="search-section">
+    <form method="get" id="filterForm">
+      <div class="search-bar-wrapper">
+        <input
+          type="text"
+          id="liveSearch"
+          name="q"
+          value="{{ q }}"
+          placeholder="Search by qualification title, number, or category..."
+          class="search-input-inline"
+        />
+        <div class="search-divider"></div>
+        <div class="filter-chips-container">
+          <button
+            type="button"
+            class="filter-chip {% if not cert_sample %}active{% endif %}"
+            data-cert-sample=""
+            onclick="setCertSample('')"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="filter-chip {% if cert_sample == 'yes' %}active{% endif %}"
+            data-cert-sample="yes"
+            onclick="setCertSample('yes')"
+          >
+            Has Certificate Sample
+          </button>
+          <button
+            type="button"
+            class="filter-chip {% if cert_sample == 'no' %}active{% endif %}"
+            data-cert-sample="no"
+            onclick="setCertSample('no')"
+          >
+            No Certificate Sample
+          </button>
+          <select id="certSampleSelect" name="cert_sample" class="filter-chip-select" style="display: none;">
+            <option value="" {% if not cert_sample %}selected{% endif %}>All</option>
+            <option value="yes" {% if cert_sample == 'yes' %}selected{% endif %}>Has Certificate Sample</option>
+            <option value="no" {% if cert_sample == 'no' %}selected{% endif %}>No Certificate Sample</option>
+          </select>
+        </div>
+        <button type="submit" class="search-action-btn">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Mobile Cards -->
+      <div class="mobile-cards-container">
+        {% if courses %}
+          {% for c in courses %}
+            <div class="course-card">
+              <h3 class="course-card-title">
+                <a href="{% url 'superadmin:assignment' c.id %}" class="course-link">
+                  {{ c.title }}
+                </a>
+              </h3>
+              <div class="course-card-detail">
+                <span class="course-card-label">Qualification #:</span>
+                <span class="course-card-value">{{ c.course_number }}</span>
+              </div>
+              <div class="course-card-detail">
+                <span class="course-card-label">Certificate Sample:</span>
+                <span class="course-card-value">
+                  {% if c.certificate_sample %}
+                    <a href="{% url 'superadmin:view_certificate_sample' c.id %}" target="_blank" class="action-btn action-btn-pdf">
+                      <span class="btn-icon">📄</span>
+                      View PDF
+                    </a>
+                  {% else %}
+                    —
+                  {% endif %}
+                </span>
+              </div>
+              <div class="course-card-actions">
+                <a href="{% url 'superadmin:edit_course' c.id %}" class="action-btn action-btn-edit">Edit</a>
+                <a href="{% url 'superadmin:assign_course' c.id %}" class="action-btn action-btn-assign">Assign</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">No qualifications found.</div>
+        {% endif %}
+      </div>
+
+      <!-- Desktop Table -->
+      <div class="desktop-table-container">
+        <table class="courses-table">
+          <thead>
+            <tr>
+              <th>Sr #</th>
+              <th>Qualification Title</th>
+              <th>Qualification Number</th>
+              <th>Certificate Sample</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if courses %}
+              {% for c in courses %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    <div class="name-main">
+                      <a href="{% url 'superadmin:assignment' c.id %}" class="course-link">
+                        {{ c.title }}
+                      </a>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="chip-gradient">{{ c.course_number|default:"—" }}</span>
+                  </td>
+                  <td>
+                    {% if c.certificate_sample %}
+                      <a href="{% url 'superadmin:view_certificate_sample' c.id %}" target="_blank" class="action-btn action-btn-pdf">
+                        <span class="btn-icon">📄</span>
+                        View PDF
+                      </a>
+                    {% else %}
+                      <span style="color: #94a3b8; font-style: italic;">—</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="actions-wrapper">
+                      <button class="actions-trigger" aria-label="Actions menu"></button>
+                      <div class="actions-menu">
+                        <a href="{% url 'superadmin:edit_course' c.id %}" class="action-item">Edit Qualification</a>
+                        <a href="{% url 'superadmin:assign_course' c.id %}" class="action-item">Assign Qualification</a>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5" class="empty-state">No qualifications found.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setCertSample(value) {
+    document.getElementById('certSampleSelect').value = value;
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.classList.remove('active');
+    });
+    event.target.closest('.filter-chip').classList.add('active');
+    document.getElementById('filterForm').submit();
+  }
+</script>
+{% endblock %}

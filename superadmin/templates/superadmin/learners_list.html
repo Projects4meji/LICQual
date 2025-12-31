@@ -1,0 +1,1186 @@
+{% extends "base.html" %}
+{% block title %}Learners • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+  }
+
+  /* Search Input */
+  .search-input {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 0.875rem;
+    width: 100%;
+    max-width: 400px;
+    min-width: 250px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    flex-shrink: 1;
+  }
+
+  .search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2rem 2rem 2.5rem;
+  }
+
+  /* Table Styling */
+  .learners-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: visible;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  }
+
+  .learners-table th,
+  .learners-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .learners-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .learners-table thead th {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1.35rem 1rem;
+    border: none;
+  }
+
+  .learners-table thead th:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .learners-table thead th:last-child {
+    padding-right: 1.5rem;
+  }
+
+.learners-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 100;
+  }
+
+  .learners-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.006);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    z-index: 200;
+  }
+
+  .learners-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .learners-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .learners-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  .learners-table tbody td:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+    position: relative;
+    z-index: auto;
+    overflow: visible;
+  }
+
+  .learners-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .learners-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+  }
+
+  /* Links */
+  .learner-link {
+    color: #3b82f6;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .learner-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
+  .issued-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.45rem;
+    background: #eef2ff;
+    color: #1e293b;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .issued-link:hover {
+    background: #e0e7ff;
+    color: #1d4ed8;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.18);
+    transform: translateY(-1px);
+  }
+
+  .email-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .name-initial {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
+    flex-shrink: 0;
+  }
+
+  .name-main {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    text-align: left;
+  }
+
+  .chip-gradient {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* Badges/Pills */
+  .pill-lock {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #fde8e8;
+    color: #991b1b;
+    margin-left: 0.5rem;
+  }
+
+  .pill-ok {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #e1f8e7;
+    color: #065f46;
+  }
+
+  /* Actions dropdown */
+  .actions-wrapper {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 6000;
+  }
+
+  .actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    font-size: 1.125rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .actions-trigger:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  .actions-trigger::after {
+    content: '⋯';
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .actions-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 12000;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+
+  .actions-wrapper:hover .actions-menu,
+  .actions-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .action-item:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+
+  .action-item:last-child {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+  }
+
+  .action-item:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  .action-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .action-item.lock {
+    color: #ef4444;
+  }
+
+  .action-item.lock:hover {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .learner-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .learner-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+  }
+
+  .learner-card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .learner-card-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+  }
+
+  .learner-card-detail:last-child {
+    border-bottom: none;
+  }
+
+  .learner-card-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .learner-card-value {
+    color: #1e293b;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .learner-card-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Action buttons for cards (matching courses page design) */
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.55rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .action-btn-edit {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .action-btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .action-btn-download {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  }
+
+  .action-btn-download:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.35);
+  }
+
+  .action-btn-share {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  }
+
+  .action-btn-share:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(16, 185, 129, 0.35);
+  }
+
+  .action-btn-lock {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+  }
+
+  .action-btn-lock:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow: visible;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  /* Selection mode helpers */
+  .select-col { display: none; }
+  #learnersPage.select-mode .select-col { display: table-cell; }
+
+  .mobile-select { 
+    display: none; 
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #learnersPage.select-mode .mobile-select { 
+    display: inline-block; 
+  }
+
+  .row-actions { display: block; }
+  #learnersPage.select-mode .row-actions { display: none; }
+
+  /* Sticky bulk action bar */
+  #bulkActions {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 12000;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #e2e8f0;
+    padding: 1rem 1.25rem;
+    border-radius: 0.9rem;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-width: 320px;
+    backdrop-filter: blur(6px);
+  }
+
+  #learnersPage.select-mode #bulkActions {
+    display: flex;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem 1rem 2rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    /* Responsive action buttons for desktop table */
+    .actions-wrapper {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: auto;
+    }
+
+    .actions-trigger {
+      display: none; /* Hide the dropdown trigger on mobile */
+    }
+
+    .actions-menu {
+      position: static;
+      display: flex !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1;
+      visibility: visible;
+      transform: none !important;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      min-width: auto;
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+    }
+
+    /* Mobile action buttons - modern design */
+    .actions-wrapper .actions-menu .action-item {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      border-radius: 0.5rem !important;
+      text-decoration: none !important;
+      border: none !important;
+      background: #f8fafc !important;
+      color: #475569 !important;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      min-height: 40px !important;
+      min-width: 44px !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      gap: 0.5rem !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item:active {
+      transform: translateY(0) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.download {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.download:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.share {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.share:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.edit {
+      background: #60a5fa !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.edit:hover {
+      background: #3b82f6 !important;
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.delete {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.delete:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.lock {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 50%, #374151 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.lock:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 50%, #1f2937 100%) !important;
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu button.action-item {
+      cursor: pointer !important;
+    }
+
+    /* Hide form wrapper display styles */
+    .actions-menu form {
+      display: contents;
+    }
+
+    .search-input {
+      max-width: 100%;
+    }
+
+    .page-header-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* Responsive bulk action bar */
+    #bulkActions {
+      position: fixed;
+      right: 1rem;
+      left: 1rem;
+      bottom: 1rem;
+      min-width: auto;
+      padding: 0.875rem 1rem;
+      border-radius: 0.75rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
+    }
+
+    #bulkActions > div:first-child {
+      text-align: center;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    #bulkActions .bulk-actions-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    #bulkActions .bulk-actions-buttons button {
+      width: 100%;
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+      border-radius: 0.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Learners</h1>
+      <div class="page-header-actions">
+        <input id="live-filter" type="search" placeholder="Search by name or email..." 
+               class="search-input" value="{{ q|default:'' }}" autocomplete="off">
+        <button type="button" id="selectToggleBtn" class="btn-modern btn-primary">Bulk Action</button>
+        <a href="{% url 'superadmin:superadmin_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card" id="learnersPage">
+    <div class="card-content">
+      <!-- Desktop Table -->
+      <div class="desktop-table-container">
+        <table class="learners-table">
+          <thead>
+            <tr>
+              <th class="select-col">
+                <input type="checkbox" id="selectAll">
+              </th>
+              <th>Sr #</th>
+              <th style="text-align:left;">Learner Name</th>
+              <th>Email ID</th>
+              <th>Total Certificates Issued</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            {% for item in learners_with_regs %}
+              {% with u=item.learner %}
+              <tr data-name="{{ u.full_name|default:''|lower }}" data-email="{{ u.email|lower }}">
+                <td class="select-col">
+                  <input type="checkbox" class="select-row" value="{{ u.id }}">
+                </td>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                  <div class="name-cell">
+                    <div class="name-initial">
+                      {{ u.full_name|default:u.email|first|upper }}
+                    </div>
+                    <div class="name-main">
+                      {{ u.full_name|default:"—" }}
+                      {% if u.is_profile_locked %}<span class="pill-lock">Locked</span>{% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td><span class="email-chip">{{ u.email }}</span></td>
+                <td>
+                  <a href="{% url 'superadmin:learner_specific' u.id %}" class="learner-link issued-link">
+                    {{ u.issued_total|default:0 }}
+                  </a>
+                </td>
+                <td class="row-actions">
+                  <div class="actions-wrapper">
+                    <button class="actions-trigger" aria-label="Actions menu"></button>
+                    <div class="actions-menu">
+                      {% if u.issued_total > 0 %}
+                        <a href="{% url 'superadmin:learner_specific' u.id %}" class="action-item">Download Certificates</a>
+                        {% if item.most_recent_reg_id %}
+                          <form method="post" action="{% url 'learners:share_certificate_email' item.most_recent_reg_id %}" style="display:contents;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit" class="action-item">Share Certificate</button>
+                          </form>
+                        {% else %}
+                          <a href="{% url 'superadmin:learner_specific' u.id %}" class="action-item">Share Certificate</a>
+                        {% endif %}
+                      {% endif %}
+                <a href="{% url 'superadmin:edit_user' u.id %}" class="action-item">Edit Learner</a>
+                <form method="post" action="{% url 'superadmin:toggle_profile_lock' u.id %}" style="display:contents;" onsubmit="return confirm('Toggle lock for this user?');">
+                  {% csrf_token %}
+                  <button type="submit" class="action-item lock">
+                    {% if u.is_profile_locked %}Unlock{% else %}Lock{% endif %} Profile
+                  </button>
+                </form>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endwith %}
+            {% empty %}
+              <tr>
+                <td colspan="6" class="empty-state">No learners found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards-container" id="cards">
+        {% for item in learners_with_regs %}
+          {% with u=item.learner %}
+          <div class="learner-card"
+               data-name="{{ u.full_name|default:''|lower }}"
+               data-email="{{ u.email|lower }}">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <input type="checkbox" class="select-row mobile-select" value="{{ u.id }}">
+              <h3 class="learner-card-title" style="flex: 1; margin: 0;">
+                {{ u.full_name|default:"—" }}
+                {% if u.is_profile_locked %}<span class="pill-lock">Locked</span>{% endif %}
+              </h3>
+            </div>
+            <div class="learner-card-detail">
+              <span class="learner-card-label">Email:</span>
+              <span class="learner-card-value"><span class="email-chip">{{ u.email }}</span></span>
+            </div>
+            <div class="learner-card-detail">
+              <span class="learner-card-label">Issued Certificates:</span>
+              <span class="learner-card-value">
+                <a href="{% url 'superadmin:learner_specific' u.id %}" class="learner-link issued-link">
+                  {{ u.issued_total|default:0 }}
+                </a>
+              </span>
+            </div>
+            <div class="learner-card-actions row-actions">
+              {% if u.issued_total > 0 %}
+                <a href="{% url 'superadmin:learner_specific' u.id %}" class="action-btn action-btn-download">Download Certificates</a>
+              {% endif %}
+              <a href="{% url 'superadmin:edit_user' u.id %}" class="action-btn action-btn-edit">Edit</a>
+              {% if u.issued_total > 0 %}
+                {% if item.most_recent_reg_id %}
+                  <form method="post" action="{% url 'learners:share_certificate_email' item.most_recent_reg_id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'superadmin:learners_list' %}">
+                    <button type="submit" class="action-btn action-btn-share">Share Certificate</button>
+                  </form>
+                {% else %}
+                  <a href="{% url 'superadmin:learner_specific' u.id %}" class="action-btn action-btn-share">Share Certificate</a>
+                {% endif %}
+              {% endif %}
+              <form method="post" action="{% url 'superadmin:toggle_profile_lock' u.id %}" style="display:inline;" onsubmit="return confirm('Toggle lock for this user?');">
+                {% csrf_token %}
+                <button type="submit" class="action-btn action-btn-lock">
+                  {% if u.is_profile_locked %}Unlock{% else %}Lock{% endif %}
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endwith %}
+        {% empty %}
+          <div class="empty-state">No learners found.</div>
+        {% endfor %}
+      </div>
+
+      <!-- Hidden form for bulk submit -->
+      <form id="bulkForm" method="post" action="{% url 'superadmin:bulk_toggle_profile_lock' %}" style="display:none;">
+        {% csrf_token %}
+      </form>
+
+      <!-- Sticky bulk action bar -->
+      <div id="bulkActions" class="hidden">
+        <div>
+          Selected: <span id="selCount">0</span>
+        </div>
+        <div class="bulk-actions-buttons">
+          <button type="button" id="bulkLockBtn" class="btn-modern btn-primary" disabled>
+            Lock Selected
+          </button>
+          <button type="button" id="bulkUnlockBtn" class="btn-modern btn-primary" disabled>
+            Unlock Selected
+          </button>
+          <button type="button" id="cancelSelectBtn" class="btn-modern btn-secondary">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const input = document.getElementById('live-filter');
+  if (!input) return;
+
+  const norm = s => (s || '').toLowerCase().trim();
+
+  function applyFilter() {
+    const q = norm(input.value);
+
+    document.querySelectorAll('#rows tr').forEach(tr => {
+      const nm = tr.getAttribute('data-name') || '';
+      const em = tr.getAttribute('data-email') || '';
+      tr.style.display = (nm.includes(q) || em.includes(q)) ? '' : 'none';
+    });
+
+    document.querySelectorAll('#cards > div[data-name]').forEach(card => {
+      const nm = card.getAttribute('data-name') || '';
+      const em = card.getAttribute('data-email') || '';
+      card.style.display = (nm.includes(q) || em.includes(q)) ? '' : 'none';
+    });
+  }
+
+  input.addEventListener('input', applyFilter);
+})();
+</script>
+
+<script>
+(function () {
+  const page = document.getElementById('learnersPage');
+  const toggleBtn = document.getElementById('selectToggleBtn');
+  const selectAll = document.getElementById('selectAll');
+  const bulkBar = document.getElementById('bulkActions');
+  const selCountEl = document.getElementById('selCount');
+  const bulkLockBtn = document.getElementById('bulkLockBtn');
+  const bulkUnlockBtn = document.getElementById('bulkUnlockBtn');
+  const cancelBtn = document.getElementById('cancelSelectBtn');
+  const bulkForm = document.getElementById('bulkForm');
+
+  function getChecks() {
+    return Array.from(document.querySelectorAll('input.select-row'));
+  }
+  function getChecked() {
+    return getChecks().filter(c => c.checked);
+  }
+
+  function updateUI() {
+    const count = getChecked().length;
+    selCountEl.textContent = count;
+
+    if (page.classList.contains('select-mode') && count > 0) {
+      bulkBar.classList.remove('hidden');
+      bulkLockBtn.removeAttribute('disabled');
+      bulkUnlockBtn.removeAttribute('disabled');
+    } else {
+      bulkBar.classList.add('hidden');
+      bulkLockBtn.setAttribute('disabled', 'disabled');
+      bulkUnlockBtn.setAttribute('disabled', 'disabled');
+    }
+
+    if (selectAll) {
+      const all = getChecks();
+      if (all.length) {
+        selectAll.indeterminate = count > 0 && count < all.length;
+        selectAll.checked = count === all.length;
+      } else {
+        selectAll.indeterminate = false;
+        selectAll.checked = false;
+      }
+    }
+  }
+
+  function clearSelection() {
+    getChecks().forEach(c => { c.checked = false; });
+    updateUI();
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      if (page.classList.contains('select-mode')) {
+        page.classList.remove('select-mode');
+        clearSelection();
+        toggleBtn.textContent = 'Bulk Action';
+      } else {
+        page.classList.add('select-mode');
+        toggleBtn.textContent = 'Done';
+      }
+      updateUI();
+    });
+  }
+
+  if (selectAll) {
+    selectAll.addEventListener('change', (e) => {
+      const checks = getChecks();
+      checks.forEach(c => { c.checked = e.target.checked; });
+      updateUI();
+    });
+  }
+
+  document.addEventListener('change', (e) => {
+    if (e.target && e.target.classList.contains('select-row')) {
+      updateUI();
+    }
+  });
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      page.classList.remove('select-mode');
+      clearSelection();
+      toggleBtn.textContent = 'Bulk Action';
+    });
+  }
+
+  function submitBulkAction(action) {
+    const selected = getChecked().map(c => c.value);
+    if (selected.length === 0) return;
+    
+    if (!confirm(`Are you sure you want to ${action} ${selected.length} learner profile(s)?`)) {
+      return;
+    }
+    
+    Array.from(bulkForm.querySelectorAll('input[name="user_ids"], input[name="action"]')).forEach(n => n.remove());
+    
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = action;
+    bulkForm.appendChild(actionInput);
+    
+    selected.forEach(id => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = 'user_ids';
+      inp.value = id;
+      bulkForm.appendChild(inp);
+    });
+    
+    bulkForm.submit();
+  }
+
+  if (bulkLockBtn) {
+    bulkLockBtn.addEventListener('click', () => {
+      submitBulkAction('lock');
+    });
+  }
+
+  if (bulkUnlockBtn) {
+    bulkUnlockBtn.addEventListener('click', () => {
+      submitBulkAction('unlock');
+    });
+  }
+
+  updateUI();
+})();
+</script>
+{% endblock %}

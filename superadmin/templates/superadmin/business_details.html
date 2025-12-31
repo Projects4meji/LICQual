@@ -1,0 +1,652 @@
+{% extends "base.html" %}
+{% block title %}Business Details • LICQual{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Import modern font */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  /* Business Info Section */
+  .info-section {
+    padding: 0;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+  }
+
+  .info-header {
+    padding: 2rem 2rem 1.5rem 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .info-header-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .info-main {
+    padding: 2rem;
+  }
+
+  .info-primary {
+    margin-bottom: 2rem;
+  }
+
+  .info-primary-name {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .info-primary-email {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #64748b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .info-primary-email::before {
+    content: '✉';
+    font-size: 1.125rem;
+  }
+
+  .info-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  @media (min-width: 768px) {
+    .info-details {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .info-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .info-detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .info-detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+
+  .info-detail-value.empty {
+    color: #cbd5e1;
+    font-style: italic;
+  }
+
+  /* Courses Section */
+  .courses-section {
+    padding: 0;
+  }
+
+  .courses-header {
+    padding: 1.75rem 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .courses-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* Table Styling */
+  .courses-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+  }
+
+  .courses-table th,
+  .courses-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .courses-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .courses-table thead th {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.5rem 1rem;
+    border: none;
+  }
+
+  .courses-table thead th:first-child {
+    padding-left: 1.5rem;
+    width: 6%;
+  }
+
+  .courses-table thead th:nth-child(2) {
+    width: 22%;
+    text-align: left;
+  }
+
+  .courses-table thead th:nth-child(3) {
+    width: 12%;
+  }
+
+  .courses-table thead th:nth-child(4) {
+    width: 12%;
+  }
+
+  .courses-table thead th:nth-child(5) {
+    width: 10%;
+  }
+
+  .courses-table thead th:nth-child(6) {
+    width: 10%;
+  }
+
+  .courses-table thead th:nth-child(7) {
+    width: 12%;
+  }
+
+  .courses-table thead th:last-child {
+    padding-right: 1.5rem;
+    width: 16%;
+  }
+
+  .courses-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+  }
+
+  .courses-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .courses-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .courses-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+  }
+
+  .courses-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  .courses-table tbody td:nth-child(2) {
+    text-align: left;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .courses-table tbody td:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .courses-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .courses-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .course-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .course-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+  }
+
+  .course-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1.25rem 0;
+    letter-spacing: -0.01em;
+  }
+
+  .course-card-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+  }
+
+  .course-card-detail:last-child {
+    border-bottom: none;
+  }
+
+  .course-card-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .course-card-value {
+    color: #1e293b;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: visible;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Links */
+  .learner-link {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    display: inline-block;
+  }
+
+  .learner-link:hover {
+    color: #2563eb;
+    background: #eff6ff;
+    text-decoration: none;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
+  /* Category Badge Styling */
+  .category-badge {
+    display: inline-block;
+    padding: 0.375rem 0.625rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.875rem;
+    word-break: break-word;
+    max-width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    line-height: 1.4;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .info-section {
+      padding: 1.5rem;
+    }
+
+    .courses-header {
+      padding: 1.25rem 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>Business Details</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_list' %}" class="btn-modern btn-secondary">Back</a>
+        <a href="{% url 'superadmin:superadmin_dashboard' %}" class="btn-modern btn-secondary">Dashboard</a>
+        <a href="{% url 'superadmin:assign_courses' business.id %}" class="btn-modern btn-primary">Assign Courses</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <!-- Business Info Section -->
+    <div class="info-section">
+      <div class="info-header">
+        <div class="info-header-title">Business Information</div>
+      </div>
+      <div class="info-main">
+        <div class="info-primary">
+          <h2 class="info-primary-name">{{ business.business_name|default:business.name }}</h2>
+          <p class="info-primary-email">{{ business.email }}</p>
+        </div>
+        <div class="info-details">
+          <div class="info-detail-item">
+            <span class="info-detail-label">Country</span>
+            <span class="info-detail-value {% if not business.country %}empty{% endif %}">
+              {{ business.country|default:"Not specified" }}
+            </span>
+          </div>
+          <div class="info-detail-item">
+            <span class="info-detail-label">Registration Date</span>
+            <span class="info-detail-value">{{ business.created_at|date:"F j, Y" }}</span>
+          </div>
+          <div class="info-detail-item">
+            <span class="info-detail-label">Registration Time</span>
+            <span class="info-detail-value">{{ business.created_at|date:"g:i A" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assigned Courses Section -->
+    <div class="courses-section">
+      <div class="courses-header">
+        <h2>Assigned Courses</h2>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards-container">
+        {% if assigned_courses %}
+          {% for c in assigned_courses %}
+            <div class="course-card">
+              <h3 class="course-card-title">{{ c.title }}</h3>
+              <div class="course-card-detail">
+                <span class="course-card-label">Category:</span>
+                <span class="category-badge">{{ c.category|default:"—" }}</span>
+              </div>
+              <div class="course-card-detail">
+                <span class="course-card-label">Course Number:</span>
+                <span class="course-card-value">{{ c.course_number }}</span>
+              </div>
+              <div class="course-card-detail">
+                <span class="course-card-label">Duration:</span>
+                <span class="course-card-value">{{ c.duration|default:"—" }}</span>
+              </div>
+              <div class="course-card-detail">
+                <span class="course-card-label">Credit Hours:</span>
+                <span class="course-card-value">{{ c.credit_hours|default:"0" }}</span>
+              </div>
+              <div class="course-card-detail">
+                <span class="course-card-label">Total Learners:</span>
+                <span class="course-card-value">
+                  <a href="{% url 'superadmin:list_of_learners' business.id %}?course_id={{ c.id }}" class="learner-link">
+                    {{ c.learner_count|default:0 }}
+                  </a>
+                </span>
+              </div>
+              <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+                <form method="post" action="{% url 'superadmin:unassign_course_from_business' business.id c.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="action-btn">Unassign</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">No courses assigned.</div>
+        {% endif %}
+      </div>
+
+      <!-- Desktop Table -->
+      <div class="desktop-table-container">
+        <table class="courses-table">
+          <thead>
+            <tr>
+              <th>Sr #</th>
+              <th>Course Title</th>
+              <th>Category</th>
+              <th>Course Number</th>
+              <th>Duration</th>
+              <th>Credit Hours</th>
+              <th>Total Learners</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if assigned_courses %}
+              {% for c in assigned_courses %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ c.title }}</td>
+                  <td>
+                    <span class="category-badge">{{ c.category|default:"—" }}</span>
+                  </td>
+                  <td>{{ c.course_number }}</td>
+                  <td>{{ c.duration|default:"—" }}</td>
+                  <td>{{ c.credit_hours|default:"0" }}</td>
+                  <td>
+                    <a href="{% url 'superadmin:list_of_learners' business.id %}?course_id={{ c.id }}" class="learner-link">
+                      {{ c.learner_count|default:0 }}
+                    </a>
+                  </td>
+                  <td>
+                    <form method="post" action="{% url 'superadmin:unassign_course_from_business' business.id c.id %}" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="action-btn">Unassign</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="8" class="empty-state">No courses assigned.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

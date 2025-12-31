@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to LICQUAL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Modern gradient color scheme - red to blue */
+    .navy { color:#1e293b; }
+    .btn {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+      color:#ffffff; padding:14px 28px;
+      border-radius:0.75rem; font-weight:700; text-decoration:none; display:inline-block;
+      box-shadow:0 4px 12px rgba(239, 68, 68, 0.3);
+      transition:all 0.3s ease;
+    }
+    .muted { color:#64748b; font-size:0.8125rem; line-height:1.5; }
+    .card {
+      max-width:600px; margin:0 auto; background:#ffffff; border-radius:1.5rem;
+      box-shadow:0 10px 30px rgba(0,0,0,.12); overflow:hidden; border:1px solid #e2e8f0;
+    }
+    .header { 
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+      color:#fff; padding:24px 28px; position:relative; overflow:hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .body { padding:32px 28px; color:#1e293b; font-size:0.9375rem; line-height:1.6; }
+    .row { margin-top:16px; }
+    .kv { 
+      width:100px; color:#475569; display:inline-block; vertical-align:top; 
+      font-weight:700; text-transform:uppercase; font-size:0.8125rem; letter-spacing:0.05em;
+    }
+    .info-box {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-radius:0.75rem; padding:16px 20px; margin:20px 0;
+    }
+    .info-box div {
+      margin:8px 0;
+      color:#1e293b;
+      font-weight:500;
+    }
+    .info-box strong {
+      color:#475569;
+      font-weight:700;
+    }
+  </style>
+</head>
+<body style="margin:0; background:#f3f4f6; padding:24px;">
+  <div class="card">
+    <div class="header">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="position:relative; z-index:1;">
+        <tr>
+          <td align="left" style="vertical-align:middle; padding-bottom:8px;">
+            {% if logo_url %}
+              <!-- Use hosted URL (most reliable - image loads directly from web server) -->
+              <img src="{{ logo_url }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">
+            {% elif logo_cid %}
+              <!-- CID attachment (fallback for email clients that support it) -->
+              <img src="cid:{{ logo_cid }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">              
+            {% elif logo_base64 %}
+              <!-- Base64 embedded image (fallback if hosted URL not available) -->
+              <img src="{{ logo_base64|safe }}" alt="LICQUAL" width="80" style="width:80px; max-width:80px; height:auto; display:block; padding:8px; margin:0; border-radius:8px; background:rgba(255,255,255,0.15); border:none;">
+            {% else %}
+              <!-- Text fallback if no image available -->
+              <span style="font-weight:800; letter-spacing:.3px; font-size:1.5rem; color:#ffffff;">LICQUAL</span>
+            {% endif %}
+          </td>
+          <td align="right" style="vertical-align:middle; font-weight:800; font-size:1.125rem; letter-spacing:0.05em; color:#ffffff;">Welcome</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="body">
+      <h1 class="navy" style="font-size:1.75rem; margin:0 0 12px 0; font-weight:800; letter-spacing:-0.02em; color:#1e293b;">Welcome to {{ business_name|default:"LICQUAL" }}!</h1>
+      <p style="margin:0 0 20px 0; color:#475569; font-size:0.9375rem;">Dear <strong style="color:#1e293b;">{{ full_name|default:email }}</strong>,</p>
+
+      <p class="row" style="margin-top:0;">
+        Your account has been set up{% if role_label %} as <strong>{{ role_label }}</strong>{% endif %}.
+        Below are your sign-in details.
+      </p>
+
+      <div class="info-box">
+        <div><span class="kv">Email</span> <span style="color:#1e293b; font-weight:600;">{{ email }}</span></div>
+        {% if password %}
+          <div><span class="kv">Password</span> <span style="color:#1e293b; font-weight:600; font-family:ui-monospace, monospace;">{{ password }}</span></div>
+        {% endif %}
+      </div>
+
+      {% if portal_url %}
+        <div class="row" style="margin-top:24px; text-align:center;">
+          <a class="btn" href="{{ portal_url }}" style="text-align:center; color:#ffffff !important;">Log in to LICQUAL</a>
+        </div>
+      {% endif %}
+
+      {% if password %}
+        <p class="muted" style="margin-top:20px; padding:12px 16px; background:#f8fafc; border-radius:0.5rem; border-left:3px solid #3b82f6;">
+          <strong style="color:#3b82f6;">💡 Tip:</strong> You can change your password later via the "Forgot Password" link on the login page.
+        </p>
+      {% endif %}
+
+      <p class="row" style="margin-top:24px; padding-top:20px; border-top:1px solid #e2e8f0; color:#64748b; font-size:0.8125rem;">
+        If you didn't expect this message, you can ignore it.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

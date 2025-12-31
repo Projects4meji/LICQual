@@ -1,0 +1,728 @@
+{% extends "base.html" %}
+{% block title %}Business Performance • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Shell */
+  .page-shell {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 2.5rem;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 40%, #f8fafc 100%);
+  }
+
+  /* Hero */
+  .hero-card {
+    background: radial-gradient(120% 140% at 80% 0%, rgba(59,130,246,0.15), transparent),
+                radial-gradient(120% 140% at 20% 20%, rgba(239,68,68,0.18), transparent),
+                linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 36px rgba(59, 130, 246, 0.28);
+  }
+
+  .hero-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 60% 30%, rgba(255,255,255,0.18), transparent 35%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+
+  .hero-subtitle {
+    margin: 0.35rem 0 0;
+    font-size: 0.975rem;
+    opacity: 0.9;
+    max-width: 720px;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: flex-end;
+  }
+
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.25);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #fff;
+  }
+
+  /* Layout */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Panels */
+  .panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+  }
+
+  .filters-panel {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    z-index: 5;
+    background:
+      linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(59, 130, 246, 0.08) 100%),
+      #ffffff;
+    border-color: #dde4ee;
+  }
+
+  .panel-header {
+    padding: 1.25rem 1.5rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .panel-body {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  /* Filters */
+  .filter-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.65rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    border-radius: 0.65rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.6rem;
+  }
+
+  .filter-btn-active {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 8px 18px rgba(59, 130, 246, 0.25);
+  }
+
+  .filter-btn-inactive {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .filter-btn-inactive:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  /* Custom Date Range Form */
+  .custom-date-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+    align-items: end;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  .custom-date-form label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #475569;
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .date-input {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.65rem;
+    font-size: 0.9rem;
+    color: #1f2937;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .date-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+
+  .date-submit-btn {
+    padding: 0.7rem 1.1rem;
+    border-radius: 0.65rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+  }
+
+  .date-submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.25);
+  }
+
+  /* Insights */
+  .insights-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .insight-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 1rem;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+  }
+
+  .insight-label {
+    font-weight: 700;
+    color: #475569;
+    font-size: 0.9rem;
+  }
+
+  .insight-value {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 1rem;
+  }
+
+  .muted {
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  /* Date Range Filters */
+  /* Table Styling */
+  .performance-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+    table-layout: fixed; /* Fixed layout for better column control */
+  }
+
+  /* Column width distribution */
+  .performance-table th:nth-child(1), /* Business Name */
+  .performance-table td:nth-child(1) {
+    width: 40%; /* Slightly reduced */
+  }
+
+  .performance-table th:nth-child(2), /* Registrations */
+  .performance-table td:nth-child(2) {
+    width: 20%; /* Slightly increased */
+    text-align: center;
+  }
+
+  .performance-table th:nth-child(3), /* Fee */
+  .performance-table td:nth-child(3) {
+    width: 40%; /* Slightly increased */
+    text-align: right;
+  }
+
+  .performance-table th,
+  .performance-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+  }
+
+  .performance-table th:first-child,
+  .performance-table td:first-child {
+    text-align: left; /* Keep business name left-aligned */
+  }
+
+  .performance-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .performance-table thead th {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1.25rem 1rem;
+    border: none;
+  }
+
+  .performance-table thead th:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .performance-table thead th:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .performance-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+  }
+
+  .performance-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.005);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  }
+
+  .performance-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .performance-table tbody td {
+    color: #475569;
+    font-size: 0.9375rem;
+  }
+
+  .performance-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .performance-table tbody td:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .performance-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .performance-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+  }
+
+  /* Links */
+  .registration-link {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .registration-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .performance-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .performance-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+  }
+
+  .performance-card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1rem 0;
+  }
+
+  .performance-card-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9375rem;
+  }
+
+  .performance-card-detail:last-child {
+    border-bottom: none;
+  }
+
+  .performance-card-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .performance-card-value {
+    color: #1e293b;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: auto;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Back Button */
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    background: #ffffff;
+    color: #475569;
+    min-height: 2.75rem;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  .btn-back:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .page-shell {
+      padding: 1rem;
+    }
+
+    .hero-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+    }
+
+    .hero-title {
+      font-size: 1.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 0.875rem;
+    }
+
+    .hero-inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hero-meta {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .content-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .filters-panel {
+      position: static;
+    }
+
+    .filter-buttons {
+      grid-template-columns: 1fr;
+    }
+
+    .custom-date-form {
+      grid-template-columns: 1fr;
+    }
+
+    .panel-header,
+    .panel-body {
+      padding: 1rem;
+    }
+
+    .insight-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .insight-value {
+      text-align: left;
+    }
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .filter-buttons {
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+    }
+
+    .custom-date-form {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .date-input {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+  <!-- Hero -->
+  <div class="hero-card">
+    <div class="hero-inner">
+      <div>
+        <h1 class="hero-title">Business Performance</h1>
+        <p class="hero-subtitle">Track registrations and fees across all businesses with quick ranges or custom dates.</p>
+      </div>
+      <div class="hero-meta">
+        <a href="{% url 'superadmin:superadmin_dashboard' %}" class="btn-back">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <!-- Filters Panel -->
+    <div class="panel filters-panel">
+      <div class="panel-header">
+        <h3 class="panel-title">Date Filters</h3>
+      </div>
+      <div class="panel-body">
+        <div class="filter-buttons">
+          <a href="?range=today" class="filter-btn {% if selected == 'today' %}filter-btn-active{% else %}filter-btn-inactive{% endif %}">Today</a>
+          <a href="?range=week" class="filter-btn {% if selected == 'week' %}filter-btn-active{% else %}filter-btn-inactive{% endif %}">This Week</a>
+          <a href="?range=month" class="filter-btn {% if selected == 'month' %}filter-btn-active{% else %}filter-btn-inactive{% endif %}">This Month</a>
+          <a href="?range=quarter" class="filter-btn {% if selected == 'quarter' %}filter-btn-active{% else %}filter-btn-inactive{% endif %}">This Quarter</a>
+          <a href="?range=year" class="filter-btn {% if selected == 'year' %}filter-btn-active{% else %}filter-btn-inactive{% endif %}">This Year</a>
+        </div>
+
+        <form method="get" class="custom-date-form">
+          <input type="hidden" name="range" value="custom">
+          <div>
+            <label for="start-date">From</label>
+            <input type="date" name="start" id="start-date" class="date-input" value="{% if selected == 'custom' and start_param %}{{ start_param }}{% endif %}">
+          </div>
+          <div>
+            <label for="end-date">To</label>
+            <input type="date" name="end" id="end-date" class="date-input" value="{% if selected == 'custom' and end_param %}{{ end_param }}{% endif %}">
+          </div>
+          <div>
+            <button type="submit" class="date-submit-btn">Apply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Insights & Table Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h3 class="panel-title">Performance</h3>
+      </div>
+      <div class="panel-body">
+        {% if start and end %}
+          <div class="date-info" style="margin-bottom: 1rem;">
+            Showing registrations from <strong>{{ start|date:"j M Y" }}</strong> to
+            <strong>{{ end|date:"j M Y" }}</strong>.
+          </div>
+        {% endif %}
+
+        <div class="insights-list" style="margin-bottom: 1rem;">
+          <div class="insight-row">
+            <span class="insight-label">Businesses in view</span>
+            <span class="insight-value">{{ businesses|length|default:0 }}</span>
+          </div>
+          <div class="insight-row">
+            <span class="insight-label">Selected range</span>
+            <span class="insight-value">{{ selected|default:"—" }}</span>
+          </div>
+          {% if start and end %}
+          <div class="insight-row">
+            <span class="insight-label">Window</span>
+            <span class="insight-value">{{ start|date:"j M Y" }} — {{ end|date:"j M Y" }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="mobile-cards-container">
+          {% if businesses %}
+            {% for b in businesses %}
+              <div class="performance-card">
+                <h3 class="performance-card-title">{{ b.business_name|default:b.name }}</h3>
+                <div class="performance-card-detail">
+                  <span class="performance-card-label">Registrations:</span>
+                  <span class="performance-card-value">
+                    {% if b.registrations_count %}
+                      <a href="{% url 'superadmin:list_of_learners' b.id %}?range={{ selected }}{% if selected == 'custom' and start_param %}&start={{ start_param }}{% endif %}{% if selected == 'custom' and end_param %}&end={{ end_param }}{% endif %}" class="registration-link">
+                        {{ b.registrations_count }}
+                      </a>
+                    {% else %}
+                      0
+                    {% endif %}
+                  </span>
+                </div>
+                <div class="performance-card-detail">
+                  <span class="performance-card-label">Fee:</span>
+                  <span class="performance-card-value">{{ b.calculated_fee|default:"—" }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">No data found for the selected period.</div>
+          {% endif %}
+        </div>
+
+        <!-- Desktop Table -->
+        <div class="desktop-table-container">
+          <table class="performance-table">
+            <thead>
+              <tr>
+                <th>Business Name</th>
+                <th>Registrations</th>
+                <th>Fee</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if businesses %}
+                {% for b in businesses %}
+                  <tr>
+                    <td>{{ b.business_name|default:b.name }}</td>
+                    <td>
+                      {% if b.registrations_count %}
+                        <a href="{% url 'superadmin:list_of_learners' b.id %}?range={{ selected }}{% if selected == 'custom' and start_param %}&start={{ start_param }}{% endif %}{% if selected == 'custom' and end_param %}&end={{ end_param }}{% endif %}" class="registration-link">
+                          {{ b.registrations_count }}
+                        </a>
+                      {% else %}
+                        0
+                      {% endif %}
+                    </td>
+                    <td>{{ b.calculated_fee|default:"—" }}</td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="3" class="empty-state">No data found for the selected period.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

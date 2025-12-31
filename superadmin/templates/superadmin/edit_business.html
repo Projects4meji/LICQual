@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Partner • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Modern Card */
+  .form-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Form Styling */
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    color: #1f2937;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .form-error {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  /* Checkbox Styling */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-group:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  .checkbox-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+  }
+
+  .checkbox-label {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  /* Form Grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .form-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Buttons */
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    min-height: 2.75rem;
+    box-sizing: border-box;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    background: #ffffff;
+    color: #475569;
+    min-height: 2.75rem;
+    box-sizing: border-box;
+  }
+
+  .btn-cancel:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  /* Alert Messages */
+  .alert {
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+
+  .alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #d1fae5;
+  }
+
+  .alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fee2e2;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .form-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <h1>Edit Partner: {{ business.business_name|default:business.name }}</h1>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="form-grid">
+        <!-- Name -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.name.id_for_label }}">Name</label>
+          <input 
+            type="text" 
+            name="{{ form.name.name }}" 
+            id="{{ form.name.id_for_label }}"
+            value="{{ form.name.value|default:'' }}"
+            class="form-input"
+            placeholder="Full name"
+            maxlength="255"
+            autocomplete="name"
+          >
+          {% if form.name.errors %}
+            <span class="form-error">{{ form.name.errors|striptags }}</span>
+          {% endif %}
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.email.id_for_label }}">Email ID</label>
+          <input 
+            type="email" 
+            name="{{ form.email.name }}" 
+            id="{{ form.email.id_for_label }}"
+            value="{{ form.email.value|default:'' }}"
+            class="form-input"
+            placeholder="user@example.com"
+            autocomplete="email"
+          >
+          {% if form.email.errors %}
+            <span class="form-error">{{ form.email.errors|striptags }}</span>
+          {% endif %}
+        </div>
+
+        <!-- Business Name -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.business_name.id_for_label }}">Business Name</label>
+          <input 
+            type="text" 
+            name="{{ form.business_name.name }}" 
+            id="{{ form.business_name.id_for_label }}"
+            value="{{ form.business_name.value|default:'' }}"
+            class="form-input"
+            placeholder="Business name"
+            maxlength="255"
+            autocomplete="organization"
+          >
+          {% if form.business_name.errors %}
+            <span class="form-error">{{ form.business_name.errors|striptags }}</span>
+          {% endif %}
+        </div>
+
+        <!-- Country -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.country.id_for_label }}">Country</label>
+          <input 
+            type="text" 
+            name="{{ form.country.name }}" 
+            id="{{ form.country.id_for_label }}"
+            value="{{ form.country.value|default:'' }}"
+            class="form-input"
+            placeholder="Country"
+            maxlength="100"
+            autocomplete="country-name"
+          >
+          {% if form.country.errors %}
+            <span class="form-error">{{ form.country.errors|striptags }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Advance Payment -->
+      <div class="form-group">
+        <div class="checkbox-group">
+          <input 
+            type="checkbox" 
+            name="{{ form.advance_payment.name }}" 
+            id="{{ form.advance_payment.id_for_label }}"
+            {% if form.advance_payment.value %}checked{% endif %}
+            class="checkbox-input"
+          >
+          <label class="checkbox-label" for="{{ form.advance_payment.id_for_label }}">
+            Advance Payment Required
+          </label>
+        </div>
+        {% if form.advance_payment.errors %}
+          <span class="form-error">{{ form.advance_payment.errors|striptags }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Update Partner</button>
+        <a href="{% url 'superadmin:business_list' %}" class="btn-cancel">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light only">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Certificate Issued — LICQual AB</title>
+  <style>
+    /* Reset and base styles */
+    body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+    table { border-collapse: collapse; }
+    img { border: 0; display: block; outline: none; text-decoration: none; }
+    
+    /* Container styles */
+    .email-wrapper { width: 100%; background-color: #f3f4f6; padding: 20px 0; }
+    .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+    
+    /* Header styles */
+    .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 30px 40px; text-align: center; }
+    .logo { width: 80px; max-width: 80px; height: auto; margin: 0; padding: 0; border: 2px solid red; border-radius: 8px; }
+    .header-title { color: #ffffff; font-size: 24px; font-weight: 700; margin: 15px 0 0 0; letter-spacing: 0.5px; }
+    
+    /* Content styles */
+    .content { padding: 40px 40px 30px 40px; color: #374151; line-height: 1.8; }
+    .greeting { font-size: 16px; color: #1f2937; margin-bottom: 20px; }
+    .message-text { font-size: 15px; color: #4b5563; margin-bottom: 15px; }
+    
+    /* Certificate card */
+    .cert-card { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 4px solid #2563eb; padding: 25px; margin: 25px 0; border-radius: 8px; }
+    .cert-icon { text-align: center; margin-bottom: 15px; }
+    .cert-icon svg { width: 48px; height: 48px; }
+    .cert-title { font-size: 20px; font-weight: 700; color: #1e3a8a; text-align: center; margin: 0; line-height: 1.4; }
+    .cert-subtitle { font-size: 14px; color: #1e40af; text-align: center; margin-top: 8px; font-weight: 500; }
+    
+    /* Call to action */
+    .cta-text { font-size: 15px; color: #4b5563; margin: 25px 0 15px 0; }
+    .business-name { color: #1e3a8a; font-weight: 600; }
+    
+    /* Divider */
+    .divider { height: 1px; background: linear-gradient(to right, transparent, #e5e7eb, transparent); margin: 30px 0; }
+    
+    /* Footer styles */
+    .footer { background-color: #f9fafb; padding: 25px 40px; text-align: center; color: #6b7280; font-size: 13px; line-height: 1.6; }
+    .footer-logo { max-height: 30px; margin: 0 auto 15px auto; padding: 0; border: 2px solid red; border-radius: 6px; opacity: 0.6; }
+    .footer-text { margin: 8px 0; }
+    .footer-copyright { margin-top: 15px; font-size: 12px; color: #9ca3af; }
+    
+    /* Responsive */
+    @media only screen and (max-width: 600px) {
+      .email-wrapper { padding: 10px 0; }
+      .header { padding: 25px 20px; }
+      .content { padding: 30px 20px 20px 20px; }
+      .footer { padding: 20px; }
+      .header-title { font-size: 20px; }
+      .cert-card { padding: 20px; }
+      .cert-title { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="email-container">
+      <!-- Header with Logo -->
+      <div class="header">
+        {% if logo_url %}
+          <img src="{{ logo_url }}" alt="LICQual AB Logo" class="logo" width="80" style="width:80px; max-width:80px; height:auto;">
+        {% elif logo_cid %}
+          <img src="cid:{{ logo_cid }}" alt="LICQual AB Logo" class="logo" width="80" style="width:80px; max-width:80px; height:auto;">
+        {% else %}
+          <div class="header-title">LICQual AB</div>
+        {% endif %}
+      </div>
+      
+      <!-- Main Content -->
+      <div class="content">
+        <div class="greeting">Dear {{ learner_name }},</div>
+        
+        <p class="message-text">
+          Congratulations! We are pleased to inform you that <span class="business-name">{{ business_name }}</span> has issued your Certificate of Achievement.
+        </p>
+        
+        <!-- Certificate Card -->
+        <div class="cert-card">
+          <div class="cert-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 class="cert-title">{{ course_title }}</h2>
+          <p class="cert-subtitle">Certificate of Achievement</p>
+        </div>
+        
+        <p class="cta-text">
+          Your certificate is now ready. Please contact <span class="business-name">{{ business_name }}</span> to receive your official certificate document.
+        </p>
+        
+        <div class="divider"></div>
+        
+        <p class="message-text" style="font-size: 14px; color: #6b7280; margin-bottom: 0;">
+          This achievement represents your dedication and successful completion of the qualification requirements. We wish you continued success in your professional journey.
+        </p>
+      </div>
+      
+      <!-- Footer -->
+      <div class="footer">
+        {% if logo_url %}
+          <img src="{{ logo_url }}" alt="LICQual AB" class="footer-logo">
+        {% elif logo_cid %}
+          <img src="cid:{{ logo_cid }}" alt="LICQual AB" class="footer-logo">
+        {% endif %}
+        <p class="footer-text">This email was sent via LICQual AB.</p>
+        <p class="footer-text">Please do not reply to this message.</p>
+        <p class="footer-copyright">&copy; 2025 LICQual AB. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+{% block title %}Assign Courses • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .page-header-subtitle {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  /* Search Input */
+  .search-input {
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    width: 100%;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .search-input:hover {
+    border-color: #cbd5e1;
+  }
+
+  /* Table Styling */
+  .courses-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .courses-table th,
+  .courses-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: left;
+  }
+
+  .courses-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .courses-table thead th {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1.25rem 1rem;
+    border: none;
+  }
+
+  .courses-table thead th:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .courses-table thead th:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .courses-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+    background: #ffffff;
+  }
+
+  .courses-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+
+  .courses-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .courses-table tbody td {
+    color: #475569;
+    font-size: 0.9375rem;
+  }
+
+  .courses-table tbody td:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .courses-table tbody td:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .courses-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .courses-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+  }
+
+  /* Checkbox Styling */
+  .checkbox-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .course-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .course-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  }
+
+  .course-card input[type="checkbox"]:checked ~ .course-card-content {
+    background: #f0f9ff;
+  }
+
+  .course-card input[type="checkbox"] {
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .course-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .course-card-detail {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: auto;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div>
+        <h1>Assign Courses</h1>
+        <p class="page-header-subtitle">
+          {{ business.business_name|default:business.name }} — {{ business.email }}
+        </p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_details' business.id %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Search -->
+      <form method="get" class="mb-3">
+        <input
+          type="text"
+          name="q"
+          value="{{ q }}"
+          placeholder="Search courses by title, number, or category…"
+          class="search-input"
+          autocomplete="off"
+        />
+      </form>
+
+      {% if not courses %}
+        <div class="empty-state">
+          No unassigned courses found{% if q %} for "{{ q }}"{% endif %}.
+        </div>
+      {% else %}
+        <form method="post" class="space-y-3">
+          {% csrf_token %}
+
+          <!-- Desktop Table -->
+          <div class="desktop-table-container">
+            <table class="courses-table">
+              <thead>
+                <tr>
+                  <th>
+                    <input type="checkbox" id="chk-all" class="checkbox-input" />
+                  </th>
+                  <th>Course Title</th>
+                  <th>Course Number</th>
+                  <th>Duration</th>
+                  <th>Category</th>
+                </tr>
+              </thead>
+              <tbody id="course-tbody">
+                {% for c in courses %}
+                  <tr>
+                    <td>
+                      <input type="checkbox" name="course_ids" value="{{ c.id }}" class="row-chk checkbox-input">
+                    </td>
+                    <td>{{ c.title }}</td>
+                    <td>{{ c.course_number|default:"—" }}</td>
+                    <td>{{ c.duration_days }} day{{ c.duration_days|pluralize }}</td>
+                    <td>{{ c.category|default:"—" }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards -->
+          <div class="mobile-cards-container">
+            {% for c in courses %}
+              <label class="course-card flex items-start">
+                <input type="checkbox" name="course_ids" value="{{ c.id }}" class="row-chk checkbox-input">
+                <div class="course-card-content" style="flex: 1;">
+                  <div class="course-card-title">{{ c.title }}</div>
+                  <div class="course-card-detail"># {{ c.course_number|default:"—" }}</div>
+                  <div class="course-card-detail">{{ c.duration_days }} day{{ c.duration_days|pluralize }}</div>
+                  <div class="course-card-detail">Category: {{ c.category|default:"—" }}</div>
+                </div>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-modern btn-primary">Assign Selected Courses</button>
+            <a href="{% url 'superadmin:business_details' business.id %}" class="btn-modern btn-secondary">Cancel</a>
+          </div>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  // "Select All" checkbox
+  (function(){
+    var all = document.getElementById('chk-all');
+    if(!all) return;
+    all.addEventListener('change', function(){
+      document.querySelectorAll('.row-chk').forEach(function(cb){ cb.checked = all.checked; });
+    });
+  })();
+</script>
+{% endblock %}
+{% endblock %}

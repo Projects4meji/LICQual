@@ -1,0 +1,1424 @@
+{% extends "superadmin/business_base.html" %}
+{% block title %}My Invoices • LICQual{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* Import modern font */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  /* Date Range Filters - Creative Tabbed Design */
+  .date-range-filters {
+    margin-bottom: 2rem;
+  }
+
+  .filter-wrapper {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 1.5rem;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 2px solid #e2e8f0;
+  }
+
+  .filter-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444 0%, #3b82f6 50%, #ef4444 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Tab Navigation */
+  .filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    background: #ffffff;
+    position: relative;
+  }
+
+  .filter-tab {
+    padding: 1rem 1.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 0.75rem 0.75rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .filter-tab::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .filter-tab.active {
+    color: #1e293b;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+  }
+
+  .filter-tab.active::before {
+    transform: scaleX(1);
+  }
+
+  .filter-tab:hover:not(.active) {
+    color: #475569;
+    background: #f8fafc;
+  }
+
+  .filter-tab-icon {
+    font-size: 1.125rem;
+  }
+
+  /* Tab Content */
+  .filter-tab-content {
+    display: none;
+    padding: 2rem 1.5rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .filter-tab-content.active {
+    display: block;
+  }
+
+  /* Quick Filters - Card Grid */
+  .quick-filters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .quick-filter-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .quick-filter-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .quick-filter-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #cbd5e1;
+  }
+
+  .quick-filter-card:hover::before {
+    opacity: 1;
+  }
+
+  .quick-filter-card.active {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+  }
+
+  .quick-filter-card.active::before {
+    opacity: 0;
+  }
+
+  .quick-filter-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .quick-filter-card:hover .quick-filter-icon {
+    transform: scale(1.1);
+  }
+
+  .quick-filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Custom Date Range - Visual Design */
+  .custom-date-container {
+    background: #ffffff;
+    border: 2px dashed #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .custom-date-container:focus-within {
+    border-color: #3b82f6;
+    border-style: solid;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  }
+
+  .custom-date-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .custom-date-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  }
+
+  .custom-date-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .custom-date-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1.25rem;
+    align-items: end;
+  }
+
+  .date-input-wrapper {
+    position: relative;
+  }
+
+  .date-input-wrapper::before {
+    content: '📅';
+    position: absolute;
+    left: 1rem;
+    bottom: 0.875rem;
+    font-size: 1.125rem;
+    pointer-events: none;
+    z-index: 1;
+    line-height: 1;
+  }
+
+  .date-input-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+
+  .date-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e293b;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .date-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .date-form-actions {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .btn-apply {
+    padding: 0.875rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-apply::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn-apply:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-apply span {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Current Range Display */
+  .current-range-display {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border-radius: 0.75rem;
+    border-left: 4px solid;
+    border-image: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .current-range-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .current-range-value {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .current-range-value::before {
+    content: '📊';
+    font-size: 1rem;
+  }
+
+  /* Table Styling */
+  .invoices-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    border-radius: 1rem;
+    overflow: visible;
+  }
+
+  .invoices-table th,
+  .invoices-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .invoices-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .invoices-table thead th {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.25rem 1rem;
+    border: none;
+  }
+
+  .invoices-table thead th:first-child {
+    padding-left: 1.5rem;
+    text-align: left;
+    width: 20%;
+  }
+
+  .invoices-table thead th:nth-child(2) {
+    width: 18%;
+  }
+
+  .invoices-table thead th:nth-child(3) {
+    width: 15%;
+  }
+
+  .invoices-table thead th:nth-child(4) {
+    width: 32%;
+  }
+
+  .invoices-table thead th:last-child {
+    padding-right: 1.5rem;
+    width: 15%;
+  }
+
+  .invoices-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .invoices-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+  }
+
+  .invoices-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .invoices-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .invoices-table tbody td:first-child {
+    padding-left: 1.5rem;
+    text-align: left;
+  }
+
+  .invoices-table tbody td:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .invoices-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .invoices-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+    z-index: 2;
+  }
+
+  /* Invoice Number */
+  .invoice-number {
+    font-size: 0.875rem;
+    font-weight: 800;
+    color: #3b82f6;
+    transition: all 0.3s ease;
+  }
+
+  /* Invoice Amount Chip */
+  .invoice-amount {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.2);
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.9375rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .invoice-amount:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  /* Date Cell */
+  .date-cell {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .date-main {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.875rem;
+  }
+
+  .date-time {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  /* Links */
+  .invoice-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #3b82f6;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9375rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.625rem;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border: 2px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    position: relative;
+  }
+
+  .invoice-link::after {
+    content: '→';
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+  }
+
+  .invoice-link:hover {
+    color: #2563eb;
+    text-decoration: none;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border-color: rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  }
+
+  .invoice-link:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .invoice-link:hover .invoice-number {
+    color: #2563eb;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .status-paid {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .status-paid::before {
+    content: '✓';
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .status-pending {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+
+  .status-pending::before {
+    content: '○';
+    font-size: 0.875rem;
+  }
+
+  /* Payment Actions Container - Compact Inline Design */
+  .payment-actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: auto;
+  }
+
+  /* Compact Action Buttons */
+  .payment-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .payment-action-btn.view-btn {
+    width: auto;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .payment-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .payment-action-btn:hover::before {
+    left: 100%;
+  }
+
+  .payment-action-btn.view-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+    width: auto;
+    align-self: center;
+    margin: 0 auto;
+  }
+
+  .payment-action-btn.view-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+
+  .payment-action-btn.pay-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+  }
+
+  .payment-action-btn.pay-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  /* Compact Upload Form */
+  .upload-form-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.625rem;
+    background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+    border: 1px dashed #fbbf24;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .upload-form-compact:focus-within {
+    border-color: #f59e0b;
+    border-style: solid;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
+  }
+
+  .upload-form-row-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .file-input-label-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 1px 4px rgba(245, 158, 11, 0.3);
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .file-input-label-compact::before {
+    content: '📎';
+    font-size: 0.875rem;
+  }
+
+  .file-input-label-compact:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+  }
+
+  .file-name-compact {
+    flex: 1;
+    font-size: 0.6875rem;
+    color: #92400e;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    background: #ffffff;
+    border-radius: 0.5rem;
+    border: 1px solid #fbbf24;
+    min-width: 80px;
+    text-align: center;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-name-compact.has-file {
+    border-color: #10b981;
+    color: #059669;
+    background: #f0fdf4;
+  }
+
+  .upload-submit-btn-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 4px rgba(239, 68, 68, 0.3);
+    flex: 1;
+    min-width: 80px;
+  }
+
+  .upload-submit-btn-compact:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  }
+
+  .hidden-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .mobile-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 0;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mobile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .mobile-card:hover {
+    box-shadow: 0 12px 32px rgba(239, 68, 68, 0.15);
+    border-color: #cbd5e1;
+    transform: translateY(-4px);
+  }
+
+  .mobile-card-header {
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .mobile-card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .mobile-card-footer {
+    padding: 1.25rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .mobile-card-footer .payment-actions-container {
+    min-width: 100%;
+  }
+
+  .invoice-card-title {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .mobile-card-header .invoice-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.625rem;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border: 2px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .mobile-card-header .invoice-link::after {
+    content: '→';
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+  }
+
+  .mobile-card-header .invoice-link:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border-color: rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  }
+
+  .mobile-card-header .invoice-link:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .invoice-card-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .invoice-card-detail:last-of-type {
+    border-bottom: none;
+  }
+
+  .invoice-card-label {
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .invoice-card-value {
+    color: #1e293b;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow: visible;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #94a3b8;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 0;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .filter-tabs {
+      padding: 1rem 1rem 0 1rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      justify-content: center;
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-tab {
+      padding: 0.875rem 1.25rem;
+      font-size: 0.8125rem;
+      white-space: nowrap;
+    }
+
+    .filter-tab-content {
+      padding: 1.5rem 1rem;
+    }
+
+    .quick-filters-container {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .quick-filter-card {
+      padding: 1rem;
+    }
+
+    .custom-date-form {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .date-form-actions {
+      width: 100%;
+    }
+
+    .btn-apply {
+      width: 100%;
+    }
+
+    .current-range-display {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .payment-actions-container {
+      min-width: 100%;
+    }
+
+    .upload-form-row-compact {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .file-input-label-compact,
+    .file-name-compact,
+    .upload-submit-btn-compact {
+      width: 100%;
+      min-width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block business_content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>My Invoices</h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:business_dashboard' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Date Range Filters - Creative Tabbed Design -->
+      <div class="date-range-filters">
+        <div class="filter-wrapper">
+          <!-- Tab Navigation -->
+          <div class="filter-tabs">
+            <button type="button" class="filter-tab active" data-tab="quick">
+              <span class="filter-tab-icon">⚡</span>
+              <span>Quick Filters</span>
+            </button>
+            <button type="button" class="filter-tab" data-tab="custom">
+              <span class="filter-tab-icon">📅</span>
+              <span>Custom Range</span>
+            </button>
+          </div>
+
+          <!-- Quick Filters Tab -->
+          <div class="filter-tab-content active" id="quick-tab">
+            <div class="quick-filters-container">
+              <a href="?range=yesterday" 
+                 class="quick-filter-card {% if selected == 'yesterday' %}active{% endif %}">
+                <span class="quick-filter-icon">📆</span>
+                <span class="quick-filter-label">Yesterday</span>
+              </a>
+              <a href="?range=week" 
+                 class="quick-filter-card {% if selected == 'week' %}active{% endif %}">
+                <span class="quick-filter-icon">📊</span>
+                <span class="quick-filter-label">This Week</span>
+              </a>
+              <a href="?range=month" 
+                 class="quick-filter-card {% if selected == 'month' %}active{% endif %}">
+                <span class="quick-filter-icon">📈</span>
+                <span class="quick-filter-label">This Month</span>
+              </a>
+            </div>
+            <div class="current-range-display">
+              <span class="current-range-label">Active Range</span>
+              <span class="current-range-value">{{ start|date:"j M Y" }} - {{ end|date:"j M Y" }}</span>
+            </div>
+          </div>
+
+          <!-- Custom Date Range Tab -->
+          <div class="filter-tab-content" id="custom-tab">
+            <div class="custom-date-container">
+              <div class="custom-date-header">
+                <div class="custom-date-icon">📅</div>
+                <h3 class="custom-date-title">Select Custom Date Range</h3>
+              </div>
+              <form method="get" class="custom-date-form">
+                <input type="hidden" name="range" value="custom">
+                <div class="date-input-wrapper">
+                  <label class="date-input-label">Start Date</label>
+                  <input type="date" name="start" value="{{ start_param }}" class="date-input">
+                </div>
+                <div class="date-input-wrapper">
+                  <label class="date-input-label">End Date</label>
+                  <input type="date" name="end" value="{{ end_param }}" class="date-input">
+                </div>
+                <div class="date-form-actions">
+                  <button class="btn-apply" type="submit">
+                    <span>Apply Filter</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div class="current-range-display">
+              <span class="current-range-label">Current Range</span>
+              <span class="current-range-value">{{ start|date:"j M Y" }} - {{ end|date:"j M Y" }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+          const tabs = document.querySelectorAll('.filter-tab');
+          const tabContents = document.querySelectorAll('.filter-tab-content');
+
+          tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+              const targetTab = this.getAttribute('data-tab');
+
+              // Remove active class from all tabs and contents
+              tabs.forEach(t => t.classList.remove('active'));
+              tabContents.forEach(content => content.classList.remove('active'));
+
+              // Add active class to clicked tab and corresponding content
+              this.classList.add('active');
+              document.getElementById(targetTab + '-tab').classList.add('active');
+            });
+          });
+        });
+      </script>
+
+      <!-- Desktop Table -->
+      <div class="desktop-table-container">
+        <table class="invoices-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Invoice Date</th>
+              <th>Amount</th>
+              <th>Payment Proof</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if rows %}
+              {% for r in rows %}
+                <tr>
+                  <td>
+                    <a href="{% url 'pricing:invoice_detail' %}?invoice_id={{ r.id }}" class="invoice-link">
+                      <span class="invoice-number">{{ r.invoice_no }}</span>
+                    </a>
+                  </td>
+                  <td>
+                    <span class="date-cell">
+                      <span class="date-main">{{ r.issue_date|date:"j M Y" }}</span>
+                      <span class="date-time">{{ r.issue_date|date:"H:i" }}</span>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="invoice-amount">
+                      {% if r.currency == "USD" %}${% elif r.currency == "GBP" %}£{% elif r.currency == "EUR" %}€{% elif r.currency == "INR" %}₹{% elif r.currency == "PKR" %}₨{% elif r.currency == "AED" %}د.إ{% elif r.currency == "SAR" %}ر.س{% else %}{{ r.currency }} {% endif %}{{ r.amount }}
+                    </span>
+                  </td>
+                  <td>
+                    {% with status=r.status|lower %}
+                      <div class="payment-actions-container">
+                        {% if r.has_proof and r.proof_url %}
+                          <a href="{{ r.proof_url }}" target="_blank" class="payment-action-btn view-btn">
+                            👁️ View Proof
+                          </a>
+                        {% endif %}
+
+                        {% if status != 'paid' %}
+                          <a href="{% url 'superadmin:pay_invoice_stripe' r.id %}" class="payment-action-btn pay-btn">
+                            💳 Pay with Stripe
+                          </a>
+                          
+                          <form method="post" action="{% url 'pricing:upload_payment_proof' %}" enctype="multipart/form-data" class="upload-form-compact">
+                            {% csrf_token %}
+                            <input type="hidden" name="invoice_id" value="{{ r.id }}">
+                            <div class="upload-form-row-compact">
+                              <input id="file-{{ forloop.counter }}" type="file" name="proof_file" accept="image/*,application/pdf" class="hidden-input" required>
+                              <label for="file-{{ forloop.counter }}" class="file-input-label-compact">Choose File</label>
+                              <span id="file-name-{{ forloop.counter }}" class="file-name-compact">No file</span>
+                              <button type="submit" class="upload-submit-btn-compact">Submit</button>
+                            </div>
+                          </form>
+                        {% endif %}
+                      </div>
+                    {% endwith %}
+                  </td>
+                  <td>
+                    {% if r.status|lower == 'paid' %}
+                      <span class="status-badge status-paid">Paid</span>
+                    {% else %}
+                      <span class="status-badge status-pending">{{ r.status|capfirst }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5" class="empty-state">No invoices in this window.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards-container">
+        {% for r in rows %}
+          <div class="mobile-card">
+            <div class="mobile-card-header">
+              <h3 class="invoice-card-title">
+                <a href="{% url 'pricing:invoice_detail' %}?invoice_id={{ r.id }}" class="invoice-link">
+                  {{ r.invoice_no }}
+                </a>
+              </h3>
+            </div>
+            <div class="mobile-card-body">
+              <div class="invoice-card-detail">
+                <span class="invoice-card-label">Date:</span>
+                <span class="invoice-card-value">{{ r.issue_date|date:"j M Y, H:i" }}</span>
+              </div>
+              <div class="invoice-card-detail">
+                <span class="invoice-card-label">Amount:</span>
+                <span class="invoice-card-value">
+                  <span class="invoice-amount">
+                    {% if r.currency == "USD" %}${% elif r.currency == "GBP" %}£{% elif r.currency == "EUR" %}€{% elif r.currency == "INR" %}₹{% elif r.currency == "PKR" %}₨{% elif r.currency == "AED" %}د.إ{% elif r.currency == "SAR" %}ر.س{% else %}{{ r.currency }} {% endif %}{{ r.amount }}
+                  </span>
+                </span>
+              </div>
+              <div class="invoice-card-detail">
+                <span class="invoice-card-label">Status:</span>
+                <span class="invoice-card-value">
+                  {% if r.status|lower == 'paid' %}
+                    <span class="status-badge status-paid">Paid</span>
+                  {% else %}
+                    <span class="status-badge status-pending">{{ r.status|capfirst }}</span>
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            <div class="mobile-card-footer">
+              {% with status=r.status|lower %}
+                <div class="payment-actions-container">
+                  {% if r.has_proof and r.proof_url %}
+                    <a href="{{ r.proof_url }}" target="_blank" class="payment-action-btn view-btn">
+                      👁️ View Proof
+                    </a>
+                  {% endif %}
+
+                  {% if status != 'paid' %}
+                    <a href="{% url 'superadmin:pay_invoice_stripe' r.id %}" class="payment-action-btn pay-btn">
+                      💳 Pay with Stripe
+                    </a>
+                    
+                    <form method="post" action="{% url 'pricing:upload_payment_proof' %}" enctype="multipart/form-data" class="upload-form-compact">
+                      {% csrf_token %}
+                      <input type="hidden" name="invoice_id" value="{{ r.id }}">
+                      <div class="upload-form-row-compact">
+                        <input id="mfile-{{ forloop.counter }}" type="file" name="proof_file" accept="image/*,application/pdf" class="hidden-input" required>
+                        <label for="mfile-{{ forloop.counter }}" class="file-input-label-compact">Choose File</label>
+                        <span id="mfile-name-{{ forloop.counter }}" class="file-name-compact">No file</span>
+                        <button type="submit" class="upload-submit-btn-compact">Submit</button>
+                      </div>
+                    </form>
+                  {% endif %}
+                </div>
+              {% endwith %}
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-state">No invoices in this window.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  (function(){
+    function bindFileLabel(inputId, nameSpanId){
+      const input = document.getElementById(inputId);
+      const nameEl = document.getElementById(nameSpanId);
+      if (!input || !nameEl) return;
+      input.addEventListener('change', function () {
+        const f = input.files && input.files[0];
+        if (f) {
+          nameEl.textContent = f.name.length > 20 ? f.name.substring(0, 20) + '...' : f.name;
+          nameEl.classList.add('has-file');
+        } else {
+          nameEl.textContent = 'No file';
+          nameEl.classList.remove('has-file');
+        }
+      });
+    }
+
+    // Desktop inputs
+    document.querySelectorAll('input[id^="file-"]').forEach(function(el){
+      const n = el.id.replace('file-','');
+      bindFileLabel(el.id, 'file-name-' + n);
+    });
+
+    // Mobile inputs
+    document.querySelectorAll('input[id^="mfile-"]').forEach(function(el){
+      const n = el.id.replace('mfile-','');
+      bindFileLabel(el.id, 'mfile-name-' + n);
+    });
+  })();
+</script>
+{% endblock %}
+{% endblock %}

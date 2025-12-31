@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Assign Course • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  /* Search Input */
+  .search-input {
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    width: 100%;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .search-input:hover {
+    border-color: #cbd5e1;
+  }
+
+  /* Business List */
+  .business-list {
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .business-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .business-row:last-child {
+    border-bottom: none;
+  }
+
+  .business-row:hover {
+    background-color: #f8fafc;
+  }
+
+  .business-row input[type="checkbox"]:checked ~ .business-row-content {
+    background: transparent;
+  }
+
+  .business-row input[type="checkbox"] {
+    margin-top: 0.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+  }
+
+  .business-row-content {
+    flex: 1;
+  }
+
+  .business-row-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .business-row-email {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .business-row-country {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .business-row[hidden] {
+    display: none !important;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .business-row {
+      padding: 1rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>
+        Assign: <span style="font-weight: 600;">{{ course.title }}</span>
+      </h1>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:course_list' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Search -->
+      <form method="get" action="" class="mb-4">
+        <input
+          id="liveSearch"
+          name="q"
+          class="search-input"
+          placeholder="Search businesses (name, email, country)…"
+          value="{{ query|default_if_none:'' }}"
+          autocomplete="off"
+        >
+      </form>
+
+      <!-- Business List Form -->
+      <form method="post" action="">
+        {% csrf_token %}
+
+        {% if businesses %}
+          <div class="business-list">
+            {% for b in businesses %}
+              <label class="business-row" data-text="{{ b.name }} {{ b.business_name }} {{ b.email }} {{ b.country }}">
+                <input type="checkbox" name="business_ids" value="{{ b.id }}">
+                <div class="business-row-content">
+                  <div class="business-row-name">{{ b.business_name|default:b.name }}</div>
+                  <div class="business-row-email">{{ b.email }}</div>
+                  <div class="business-row-country">{{ b.country|default:"—" }}</div>
+                </div>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-modern btn-primary">Assign this Course</button>
+            <a href="{% url 'superadmin:course_list' %}" class="btn-modern btn-secondary">Cancel</a>
+          </div>
+        {% else %}
+          <div class="empty-state">
+            No unassigned businesses found{% if query %} for "{{ query }}"{% endif %}.
+          </div>
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{% url 'superadmin:course_list' %}" class="btn-modern btn-secondary">Back to Courses</a>
+          </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function(){
+    const input = document.getElementById('liveSearch');
+    if (!input) return;
+    const rows = Array.from(document.querySelectorAll('.business-row'));
+    const qServer = (input.value || '').trim().toLowerCase();
+
+    // Client-side filter on top of server-side (?q=) to feel "live"
+    function applyFilter() {
+      const q = input.value.trim().toLowerCase();
+      rows.forEach(row => {
+        const hay = (row.getAttribute('data-text') || '').toLowerCase();
+        const match = !q || hay.includes(q);
+        row.hidden = !match;
+      });
+    }
+
+    input.addEventListener('input', applyFilter);
+    // Apply on load to reflect pre-filled server-side q
+    if (qServer) applyFilter();
+  })();
+</script>
+{% endblock %}

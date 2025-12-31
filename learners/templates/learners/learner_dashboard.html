@@ -1,0 +1,1123 @@
+{# learners/templates/learners/learner_dashboard.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Learner Dashboard • LICQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    background: radial-gradient(circle at 18% 18%, rgba(59,130,246,0.08), transparent 36%), radial-gradient(circle at 82% 8%, rgba(239,68,68,0.08), transparent 42%), linear-gradient(180deg, #f8fafc 0%, #ffffff 45%, #f8fafc 100%);
+    min-height: calc(100vh - 80px);
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .user-avatar-wrapper {
+    position: relative;
+  }
+
+  .user-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .user-info:hover .user-avatar {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.2);
+  }
+
+  .user-details h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .user-details p {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .user-details p::before {
+    content: '👤';
+    font-size: 1.125rem;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Stats Cards Section */
+  .stats-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e1;
+  }
+
+  .stat-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.2);
+    margin-bottom: 1rem;
+    font-size: 1.75rem;
+    transition: all 0.4s ease;
+  }
+
+  .stat-card:hover .stat-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    transform: rotate(5deg) scale(1.1);
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Modern Tabs */
+  .tabs-container {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tabs a {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: #64748b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    text-align: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .tabs a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .tabs a:hover::before {
+    opacity: 1;
+  }
+
+  .tabs a:hover {
+    color: #3b82f6;
+    transform: translateY(-2px);
+  }
+
+  .tabs a.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .tabs a.active::before {
+    opacity: 0;
+  }
+
+  .tabs a.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    overflow: visible;
+    position: relative;
+  }
+
+  .modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .card-content {
+    padding: 2.5rem;
+  }
+
+  /* Table Styling */
+  .learners-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: visible;
+    border: 2px solid #e2e8f0;
+    table-layout: auto;
+  }
+
+  .learners-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .learners-table thead th {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border: none;
+  }
+
+  .learners-table thead th:first-child {
+    padding-left: 1.5rem;
+    width: 8%;
+    text-align: center;
+    border-top-left-radius: 1rem;
+  }
+
+  .learners-table thead th:nth-child(2) {
+    width: 35%;
+    text-align: left;
+  }
+
+  .learners-table thead th:nth-child(3) {
+    width: 25%;
+    text-align: center;
+  }
+
+  .learners-table thead th:nth-child(4) {
+    width: 18%;
+    text-align: center;
+  }
+
+  .learners-table thead th:nth-child(5) {
+    text-align: center;
+  }
+
+  .learners-table thead th:nth-child(6) {
+    text-align: center;
+  }
+
+  .learners-table thead th:last-child {
+    padding-right: 1.5rem;
+    width: 18%;
+    text-align: center;
+    border-top-right-radius: 1rem;
+  }
+
+  .learners-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .learners-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+  }
+
+  .learners-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .learners-table tbody td {
+    padding: 1.25rem 1rem;
+    color: #475569;
+    font-size: 0.875rem;
+    font-weight: 400;
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .learners-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .learners-table tbody td:nth-child(2) {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.875rem;
+    text-align: left;
+  }
+
+  .learners-table tbody td:nth-child(3),
+  .learners-table tbody td:nth-child(4),
+  .learners-table tbody td:nth-child(5),
+  .learners-table tbody td:nth-child(6) {
+    text-align: center;
+  }
+
+  .learners-table tbody td:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .learners-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .learners-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+    z-index: 2;
+  }
+
+  /* Pills/Badges */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  .pill-ok {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .pill-ok::before {
+    content: '✓';
+    font-size: 0.875rem;
+    font-weight: 800;
+  }
+
+  .pill-ok:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  }
+
+  .pill-warn {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .pill-warn::before {
+    content: '⏳';
+    font-size: 0.875rem;
+  }
+
+  .pill-warn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+  }
+
+  /* Business/Issued By Chip */
+  .business-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.625rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    transition: all 0.3s ease;
+  }
+
+  .business-chip:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%);
+    border-color: rgba(239, 68, 68, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .business-chip::before {
+    content: '🏢';
+    font-size: 0.875rem;
+    opacity: 0.7;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .learner-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .learner-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .learner-card:hover {
+    box-shadow: 0 12px 32px rgba(239, 68, 68, 0.15);
+    border-color: #cbd5e1;
+    transform: translateY(-4px);
+  }
+
+  .learner-card-header {
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .learner-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .learner-card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .learner-card-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9375rem;
+  }
+
+  .learner-card-detail:last-child {
+    border-bottom: none;
+  }
+
+  .learner-card-label {
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .learner-card-value {
+    color: #1e293b;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: auto;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #94a3b8;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-primary span:first-child {
+    color: #ffffff;
+    filter: brightness(0) invert(1);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-navy {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-navy:hover {
+    background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30, 41, 59, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 2rem 1.5rem;
+      border-radius: 1rem;
+    }
+
+    .user-details h1 {
+      font-size: 1.5rem;
+    }
+
+    .user-avatar {
+      width: 70px;
+      height: 70px;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+    }
+
+    .tabs-container {
+      padding: 0.5rem;
+    }
+
+    .tabs-container > div {
+      flex-direction: column;
+    }
+
+    .tabs {
+      width: 100%;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .tabs a {
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+    }
+
+    .tabs-container .btn-modern {
+      width: 100%;
+      margin-left: 0 !important;
+      margin-top: 0.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="user-info">
+        <div class="user-avatar-wrapper">
+          {% if user.avatar and user.avatar.name %}
+            <img
+              src="{{ user.avatar.url }}"
+              alt="Avatar"
+              class="user-avatar"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='{% static 'images/avatar_default.png' %}'"
+            >
+          {% else %}
+            <img
+              src="{% static 'images/avatar_default.png' %}"
+              alt="Avatar"
+              class="user-avatar"
+              loading="lazy"
+            >
+          {% endif %}
+        </div>
+        <div class="user-details">
+          <h1>{{ user.full_name|default:user.email }}</h1>
+          <p>Learner Dashboard</p>
+        </div>
+      </div>
+      <div class="page-header-actions">
+        {% if show_business_btn %}
+          <a href="{% url 'superadmin:business_dashboard' %}" class="btn-modern btn-navy">
+            Business Dashboard
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  {% if all_registrations %}
+    <div class="stats-section">
+      <div class="stats-grid">
+        {% if active_tab == 'courses' %}
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value">{{ all_registrations|length }}</div>
+            <p class="stat-label">Total Courses</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📜</div>
+            <div class="stat-value" id="cert-count">0</div>
+            <p class="stat-label">Certificates</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-value" id="pending-count">0</div>
+            <p class="stat-label">Pending</p>
+          </div>
+        {% else %}
+          <div class="stat-card">
+            <div class="stat-icon">📜</div>
+            <div class="stat-value" id="total-certs-count">0</div>
+            <p class="stat-label">Total Certificates</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="shared-certs-count">0</div>
+            <p class="stat-label">Shared Certificates</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📤</div>
+            <div class="stat-value" id="uploaded-certs-count">0</div>
+            <p class="stat-label">Uploaded Certificates</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Modern Tabs -->
+  <div class="tabs-container">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+      <div class="tabs">
+        <a href="{% url 'learners:learner_dashboard' %}?tab=courses" class="{% if active_tab == 'courses' %}active{% endif %}">
+          <span>📚</span>
+          <span>My Courses</span>
+        </a>
+        <a href="{% url 'learners:learner_dashboard' %}?tab=certificates" class="{% if active_tab == 'certificates' %}active{% endif %}">
+          <span>📜</span>
+          <span>My Certificates</span>
+        </a>
+      </div>
+      {% if active_tab == 'certificates' %}
+        <a href="{% url 'learners:add_cert' %}" class="btn-modern btn-primary" style="margin-left: auto;">
+          <span style="color: #ffffff !important;">➕</span>
+          <span>Add Certificate</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      {% if active_tab == 'courses' %}
+        {% if registrations %}
+          <!-- Desktop Table -->
+          <div class="desktop-table-container">
+            <table class="learners-table">
+              <colgroup>
+                <col style="width: 8ch;">
+                <col style="width: 35%;">
+                <col style="width: 25%;">
+                <col style="width: 18ch;">
+                <col style="width: 20%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Sr #</th>
+                  <th>Course Title</th>
+                  <th>Registered By</th>
+                  <th>Registered On</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reg in registrations %}
+                  <tr>
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                    <td style="font-weight: 600; color: #1e293b; text-align: left;">{{ reg.course.title }}</td>
+                    <td style="text-align: center;">
+                      <span class="business-chip" style="display: inline-flex;">{{ reg.business.business_name|default:reg.business.name }}</span>
+                    </td>
+                    <td style="text-align: center;">{{ reg.created_at|date:"d M Y" }}</td>
+                    <td style="text-align: center;">
+                      {% if reg.certificate_shared_at %}
+                        <a href="{% url 'learners:view_certificate' reg.id %}" class="pill pill-ok" style="display: inline-flex;">View Certificate</a>
+                      {% elif reg.certificate_issued_at %}
+                        <span class="pill pill-warn" style="display: inline-flex;">Issued — Not Shared Yet</span>
+                      {% else %}
+                        <span class="pill pill-warn" style="display: inline-flex;">No Certificate Issued</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards -->
+          <div class="mobile-cards-container">
+            {% for reg in registrations %}
+              <div class="learner-card">
+                <h3 class="learner-card-title">{{ reg.course.title }}</h3>
+                <div class="learner-card-detail">
+                  <span class="learner-card-label">Registered By:</span>
+                  <span class="learner-card-value">
+                    <span class="business-chip">{{ reg.business.business_name|default:reg.business.name }}</span>
+                  </span>
+                </div>
+                <div class="learner-card-detail">
+                  <span class="learner-card-label">Registered On:</span>
+                  <span class="learner-card-value">{{ reg.created_at|date:"d M Y" }}</span>
+                </div>
+                <div class="learner-card-detail">
+                  <span class="learner-card-label">Status:</span>
+                  <span class="learner-card-value">
+                    {% if reg.certificate_shared_at %}
+                      <a href="{% url 'learners:view_certificate' reg.id %}" class="pill pill-ok">View Certificate</a>
+                    {% elif reg.certificate_issued_at %}
+                      <span class="pill pill-warn">Issued — Not Shared Yet</span>
+                    {% else %}
+                      <span class="pill pill-warn">No Certificate Issued</span>
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">No Courses Found</h3>
+            <p style="color: #64748b; font-size: 1rem;">You haven't been registered for any courses yet.</p>
+          </div>
+        {% endif %}
+
+      {% elif active_tab == 'certificates' %}
+        {% if certificate_rows %}
+          <!-- Desktop Table -->
+          <div class="desktop-table-container">
+            <table class="learners-table">
+              <colgroup>
+                <col style="width: 8ch;">
+                <col>
+                <col style="width: 18ch;">
+                <col style="width: 26ch;">
+                <col style="width: 18ch;">
+                <col style="width: 14ch;">
+                <col style="width: 30ch;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Sr#</th>
+                  <th>Title</th>
+                  <th>Issue Date</th>
+                  <th>Issued By</th>
+                  <th>Expiry Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in certificate_rows %}
+                  <tr>
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                    <td style="font-weight: 600; color: #1e293b; text-align: left;">{{ row.title }}</td>
+                    <td style="text-align: center;">{{ row.issue_date|date:"d M Y"|default:"—" }}</td>
+                    <td style="text-align: center;">
+                      {% if row.kind == 'system' %}
+                        <span class="business-chip" style="display: inline-flex;">LICQual</span>
+                      {% else %}
+                        <span class="business-chip" style="display: inline-flex;">{{ row.issued_by|default:"—" }}</span>
+                      {% endif %}
+                    </td>
+                    <td style="text-align: center;">{% if row.expiry %}{{ row.expiry|date:"d M Y" }}{% else %}N/A{% endif %}</td>
+                    <td style="text-align: center;">
+                      {% if row.status == 'active' %}
+                        <span class="pill pill-ok" style="display: inline-flex;">Active</span>
+                      {% else %}
+                        <span class="pill pill-warn" style="display: inline-flex;">Expired</span>
+                      {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem;">
+                        {% if row.delete_url %}
+                          <form method="post" action="{{ row.delete_url }}" onsubmit="return confirm('Delete this certificate?');" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="pill pill-warn" style="padding: 0.375rem 0.75rem; font-size: 0.6875rem;" title="Delete" aria-label="Delete certificate">🗑️</button>
+                          </form>
+                        {% endif %}
+
+                        {% if row.can_edit %}
+                          <a href="{{ row.edit_url }}" class="pill pill-ok" style="padding: 0.375rem 0.75rem; font-size: 0.6875rem;" title="Edit" aria-label="Edit certificate">✎</a>
+                        {% endif %}
+
+                        {% if row.kind == 'system' and not row.can_view %}
+                          <span class="pill pill-warn" title="An admin must share this certificate with you.">Issued — Not Shared Yet</span>
+                        {% else %}
+                          <a href="{{ row.view_url }}" class="pill pill-ok">View Certificate</a>
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards -->
+          <div class="mobile-cards-container">
+            {% for row in certificate_rows %}
+              <div class="learner-card">
+                <div class="learner-card-header">
+                  <h3 class="learner-card-title">{{ row.title }}</h3>
+                </div>
+                <div class="learner-card-body">
+                  <div class="learner-card-detail">
+                    <span class="learner-card-label">Issue Date</span>
+                    <span class="learner-card-value">{{ row.issue_date|date:"d M Y"|default:"—" }}</span>
+                  </div>
+                  <div class="learner-card-detail">
+                    <span class="learner-card-label">Issued By</span>
+                    <span class="learner-card-value">
+                      {% if row.kind == 'system' %}
+                        <span class="business-chip">LICQual</span>
+                      {% else %}
+                        <span class="business-chip">{{ row.issued_by|default:"—" }}</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                  <div class="learner-card-detail">
+                    <span class="learner-card-label">Expiry Date</span>
+                    <span class="learner-card-value">{% if row.expiry %}{{ row.expiry|date:"d M Y" }}{% else %}N/A{% endif %}</span>
+                  </div>
+                  <div class="learner-card-detail">
+                    <span class="learner-card-label">Status</span>
+                    <span class="learner-card-value">
+                      {% if row.status == 'active' %}
+                        <span class="pill pill-ok">Active</span>
+                      {% else %}
+                        <span class="pill pill-warn">Expired</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                  <div class="learner-card-detail">
+                    <span class="learner-card-label">Action</span>
+                    <span class="learner-card-value" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                      {% if row.delete_url %}
+                        <form method="post" action="{{ row.delete_url }}" onsubmit="return confirm('Delete this certificate?');" style="display:inline;">
+                          {% csrf_token %}
+                          <button type="submit" class="pill pill-warn" style="padding: 0.375rem 0.75rem; font-size: 0.6875rem;" title="Delete">🗑️</button>
+                        </form>
+                      {% endif %}
+
+                      {% if row.can_edit %}
+                        <a href="{{ row.edit_url }}" class="pill pill-ok" style="padding: 0.375rem 0.75rem; font-size: 0.6875rem;" title="Edit">✎</a>
+                      {% endif %}
+
+                      {% if row.kind == 'system' and not row.can_view %}
+                        <span class="pill pill-warn" title="An admin must share this certificate with you.">Issued — Not Shared Yet</span>
+                      {% else %}
+                        <a href="{{ row.view_url }}" class="pill pill-ok">View Certificate</a>
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">📜</div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">No Certificates Found</h3>
+            <p style="color: #64748b; font-size: 1rem;">You don't have any certificates yet.</p>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  // Calculate stats properly
+  (function() {
+    {% if active_tab == 'courses' %}
+      const certCountEl = document.getElementById('cert-count');
+      const pendingCountEl = document.getElementById('pending-count');
+      if (certCountEl && pendingCountEl) {
+        let certs = 0, pending = 0;
+        {% for reg in all_registrations %}
+          {% if reg.certificate_shared_at %}
+            certs++;
+          {% elif not reg.certificate_issued_at %}
+            pending++;
+          {% endif %}
+        {% endfor %}
+        certCountEl.textContent = certs;
+        pendingCountEl.textContent = pending;
+      }
+    {% else %}
+      const totalCertsEl = document.getElementById('total-certs-count');
+      const sharedCertsEl = document.getElementById('shared-certs-count');
+      const uploadedCertsEl = document.getElementById('uploaded-certs-count');
+      
+      if (totalCertsEl && sharedCertsEl && uploadedCertsEl) {
+        let shared = 0, uploaded = 0;
+        {% if certificate_rows %}
+          {% for row in certificate_rows %}
+            {% if row.kind == 'system' %}
+              shared++;
+            {% else %}
+              uploaded++;
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        let total = shared + uploaded;
+        
+        totalCertsEl.textContent = total;
+        sharedCertsEl.textContent = shared;
+        uploadedCertsEl.textContent = uploaded;
+      }
+    {% endif %}
+  })();
+</script>
+{% endblock %}

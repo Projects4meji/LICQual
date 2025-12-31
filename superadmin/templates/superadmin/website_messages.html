@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Website Messages • ICTQUAL{% endblock %}
+
+{% block content %}
+<div class="sa-wrap">
+  <div class="sa-hero">
+    <h1 class="text-xl sm:text-2xl">Website Messages</h1>
+    <p class="mt-1 text-sm">Submissions from the Contact Us page.</p>
+  </div>
+
+  <div class="mt-4 overflow-auto bg-white border border-gray-200 rounded-xl">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-3 py-2 text-left font-semibold text-gray-700">Name</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-700">Email ID</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-700">Company Name (Optional)</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-700">Message detail</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-700">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for m in page_obj.object_list %}
+        <tr class="border-t">
+          <td class="px-3 py-2">{{ m.full_name }}</td>
+          <td class="px-3 py-2">
+            <a href="mailto:{{ m.email }}" class="text-blue-700 underline">{{ m.email }}</a>
+          </td>
+          <td class="px-3 py-2">{{ m.company|default:"—" }}</td>
+          <td class="px-3 py-2">
+            {{ m.message|linebreaksbr }}  {# auto-escaped, then <br> for newlines #}
+            <div class="text-xs text-gray-500 mt-1">
+              Submitted: {{ m.created_at|date:"Y-m-d H:i" }}
+              {% if m.subscribe %} • Subscribed{% endif %}
+            </div>
+          </td>
+          <td class="px-3 py-2">
+            <form action="{% url 'superadmin:website_message_delete' m.pk %}" method="post" onsubmit="return confirm('Delete this message?');">
+              {% csrf_token %}
+              <button class="px-3 py-1 rounded-md border hover:bg-red-50 text-red-700 border-red-200">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="px-3 py-6 text-center text-gray-500">No messages yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class="mt-3 flex items-center gap-2">
+    {% if page_obj.has_previous %}
+      <a class="px-3 py-1 border rounded" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+    <span class="text-sm text-gray-600">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a class="px-3 py-1 border rounded" href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

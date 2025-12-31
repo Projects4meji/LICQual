@@ -1,0 +1,610 @@
+{% extends "base.html" %}
+{% block title %}Assign Courses to Learner • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .page-header-subtitle {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  /* Search Input */
+  .search-input {
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    width: 100%;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Table Styling */
+  .courses-table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .courses-table th,
+  .courses-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: left;
+  }
+
+  .courses-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+  }
+
+  .courses-table thead th {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1.25rem 1rem;
+    border: none;
+  }
+
+  .courses-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+    background: #ffffff;
+  }
+
+  .courses-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+
+  .courses-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .courses-table tbody td {
+    color: #475569;
+    font-size: 0.9375rem;
+  }
+
+  .courses-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .courses-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+  }
+
+  /* Checkbox Styling */
+  .checkbox-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+  }
+
+  /* Business Select */
+  .business-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .business-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .business-select:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+
+  /* Status Badge */
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #e1f8e7;
+    color: #065f46;
+  }
+
+  .status-badge-existing {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  /* Mobile Cards */
+  .mobile-cards-container {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-cards-container {
+      display: none !important;
+    }
+  }
+
+  .course-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .course-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  }
+
+  .course-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .course-card-detail {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+  }
+
+  .course-card-select {
+    margin-top: 0.75rem;
+  }
+
+  /* Desktop Table Container */
+  .desktop-table-container {
+    display: none;
+    overflow-x: auto;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-table-container {
+      display: block;
+    }
+  }
+
+  /* Buttons */
+  .btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  /* Info Box */
+  .info-box {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid #3b82f6;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-box-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e40af;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .info-box-text {
+    font-size: 0.875rem;
+    color: #1e3a8a;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem 1.25rem;
+      border-radius: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div>
+        <h1>Assign Courses to Learner</h1>
+        <p class="page-header-subtitle">
+          {{ learner.full_name|default:"—" }} — {{ learner.email }}
+        </p>
+      </div>
+      <div class="page-header-actions">
+        <a href="{% url 'superadmin:learners_list' %}" class="btn-modern btn-secondary">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <h3 class="info-box-title">Important</h3>
+    <p class="info-box-text">
+      Select courses and assign a business for each course. The course must already be assigned to the selected business. 
+      If a learner is already registered for a course under a specific business, that combination will be skipped.
+    </p>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Search -->
+      <form method="get" class="mb-3">
+        <input
+          type="text"
+          name="q"
+          value="{{ q }}"
+          placeholder="Search courses by title, number, or category…"
+          class="search-input"
+          autocomplete="off"
+        />
+      </form>
+
+      {% if not courses %}
+        <div class="empty-state">
+          No courses found{% if q %} for "{{ q }}"{% endif %}.
+        </div>
+      {% else %}
+        <form method="post" id="assignForm">
+          {% csrf_token %}
+
+          <!-- Desktop Table -->
+          <div class="desktop-table-container">
+            <table class="courses-table">
+              <thead>
+                <tr>
+                  <th>
+                    <input type="checkbox" id="chk-all" class="checkbox-input" />
+                  </th>
+                  <th>Course Title</th>
+                  <th>Course Number</th>
+                  <th>Duration</th>
+                  <th>Category</th>
+                  <th>Business</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="course-tbody">
+                {% for course in courses %}
+                  {% with course_businesses=course.businesses.all %}
+                    {% if course_businesses %}
+                      <tr>
+                        <td>
+                          <input type="checkbox" name="course_ids" value="{{ course.id }}" class="row-chk checkbox-input">
+                        </td>
+                        <td>{{ course.title }}</td>
+                        <td>{{ course.course_number|default:"—" }}</td>
+                        <td>{{ course.duration_days }} day{{ course.duration_days|pluralize }}</td>
+                        <td>{{ course.category|default:"—" }}</td>
+                        <td>
+                          <select name="business_ids" class="business-select" required>
+                            <option value="">Select Business</option>
+                            {% for business in course_businesses %}
+                              {% if (course.id, business.id) in existing_course_business_pairs %}
+                                <option value="{{ business.id }}" disabled style="color: #94a3b8;">
+                                  {{ business.business_name|default:business.name }} (Already Assigned)
+                                </option>
+                              {% else %}
+                                <option value="{{ business.id }}">{{ business.business_name|default:business.name }}</option>
+                              {% endif %}
+                            {% endfor %}
+                          </select>
+                        </td>
+                        <td>
+                          {% for reg in existing_registrations %}
+                            {% if reg.course_id == course.id %}
+                              <span class="status-badge status-badge-existing">Assigned</span>
+                              {% break %}
+                            {% endif %}
+                          {% endfor %}
+                        </td>
+                      </tr>
+                    {% else %}
+                      <tr style="opacity: 0.6;">
+                        <td>
+                          <input type="checkbox" disabled class="checkbox-input">
+                        </td>
+                        <td>{{ course.title }}</td>
+                        <td>{{ course.course_number|default:"—" }}</td>
+                        <td>{{ course.duration_days }} day{{ course.duration_days|pluralize }}</td>
+                        <td>{{ course.category|default:"—" }}</td>
+                        <td>
+                          <select disabled class="business-select">
+                            <option>No Business Assigned</option>
+                          </select>
+                        </td>
+                        <td>
+                          <span style="color: #94a3b8; font-size: 0.75rem;">Course not assigned to any business</span>
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endwith %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards -->
+          <div class="mobile-cards-container">
+            {% for course in courses %}
+              {% with course_businesses=course.businesses.all %}
+                <div class="course-card" {% if not course_businesses %}style="opacity: 0.6;"{% endif %}>
+                  <div class="course-card-title">{{ course.title }}</div>
+                  <div class="course-card-detail"># {{ course.course_number|default:"—" }}</div>
+                  <div class="course-card-detail">{{ course.duration_days }} day{{ course.duration_days|pluralize }}</div>
+                  <div class="course-card-detail">Category: {{ course.category|default:"—" }}</div>
+                  <div class="course-card-select">
+                    {% if course_businesses %}
+                      <input type="checkbox" name="course_ids" value="{{ course.id }}" class="row-chk checkbox-input" id="course_{{ course.id }}">
+                      <label for="course_{{ course.id }}" style="margin-left: 0.5rem; font-size: 0.875rem; font-weight: 600;">Select</label>
+                      <select name="business_ids" class="business-select" style="margin-top: 0.5rem;" required>
+                        <option value="">Select Business</option>
+                        {% for business in course_businesses %}
+                          {% if (course.id, business.id) in existing_course_business_pairs %}
+                            <option value="{{ business.id }}" disabled style="color: #94a3b8;">
+                              {{ business.business_name|default:business.name }} (Already Assigned)
+                            </option>
+                          {% else %}
+                            <option value="{{ business.id }}">{{ business.business_name|default:business.name }}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                    {% else %}
+                      <span style="color: #94a3b8; font-size: 0.875rem;">Course not assigned to any business</span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endwith %}
+            {% endfor %}
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-modern btn-primary">Assign Selected Courses</button>
+            <a href="{% url 'superadmin:learners_list' %}" class="btn-modern btn-secondary">Cancel</a>
+          </div>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  // "Select All" checkbox
+  (function(){
+    var all = document.getElementById('chk-all');
+    if(!all) return;
+    all.addEventListener('change', function(){
+      document.querySelectorAll('.row-chk:not(:disabled)').forEach(function(cb){ cb.checked = all.checked; });
+    });
+  })();
+
+  // Form validation
+  document.getElementById('assignForm').addEventListener('submit', function(e) {
+    var checked = document.querySelectorAll('.row-chk:checked:not(:disabled)');
+    if (checked.length === 0) {
+      e.preventDefault();
+      alert('Please select at least one course to assign.');
+      return false;
+    }
+    
+    // Validate that each selected course has a business selected
+    var invalid = [];
+    checked.forEach(function(checkbox) {
+      var row = checkbox.closest('tr');
+      if (row) {
+        var select = row.querySelector('.business-select:not(:disabled)');
+        if (select && !select.value) {
+          var courseName = row.querySelector('td:nth-child(2)').textContent.trim();
+          invalid.push(courseName);
+        }
+      } else {
+        // Mobile card
+        var card = checkbox.closest('.course-card');
+        if (card) {
+          var select = card.querySelector('.business-select:not(:disabled)');
+          if (select && !select.value) {
+            var courseName = card.querySelector('.course-card-title').textContent.trim();
+            invalid.push(courseName);
+          }
+        }
+      }
+    });
+    
+    if (invalid.length > 0) {
+      e.preventDefault();
+      alert('Please select a business for each selected course:\n\n' + invalid.join('\n'));
+      return false;
+    }
+    
+    // Ensure course_ids and business_ids are paired correctly
+    // Only include courses with valid business selections
+    checked.forEach(function(checkbox) {
+      var row = checkbox.closest('tr');
+      var select = null;
+      if (row) {
+        select = row.querySelector('.business-select:not(:disabled)');
+      } else {
+        var card = checkbox.closest('.course-card');
+        if (card) {
+          select = card.querySelector('.business-select:not(:disabled)');
+        }
+      }
+      
+      if (!select || !select.value) {
+        checkbox.checked = false; // Uncheck if no business selected
+      }
+    });
+  });
+</script>
+{% endblock %}
+{% endblock %}
+

@@ -1,0 +1,1085 @@
+{% extends "superadmin/business_base.html" %}
+{% block title %}Business Dashboard • LICQUAL{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* Dashboard Specific Styles */
+  .dashboard-wrapper {
+    max-width: 100%;
+  }
+
+  /* Welcome Hero Banner */
+  .welcome-hero {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-radius: 1.5rem;
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .welcome-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .welcome-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+  }
+
+  .hero-greeting {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    opacity: 0.9;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0 0 1rem 0;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 1.125rem;
+    margin: 0;
+    opacity: 0.95;
+    font-weight: 500;
+  }
+
+  /* Stats Section - New Design */
+  .stats-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header-modern {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .section-title-modern {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-title-modern::before {
+    content: '';
+    width: 5px;
+    height: 28px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-radius: 3px;
+  }
+
+  /* Modern Stats Grid - 2x3 Layout (2 columns, 3 rows) */
+  .stats-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  /* Performance Graph Card - Spans full width */
+  .stat-card-graph {
+    grid-column: span 2;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .stat-card-graph::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .stat-card-graph:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e1;
+  }
+
+  .stat-card-graph:hover::before {
+    transform: scaleX(1);
+  }
+
+  .graph-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .graph-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .graph-icon-wrapper {
+    width: 72px;
+    height: 72px;
+    border-radius: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.2);
+    transition: all 0.4s ease;
+  }
+
+  .stat-card-graph:hover .graph-icon-wrapper {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    transform: rotate(5deg) scale(1.1);
+  }
+
+  .graph-icon-wrapper svg {
+    width: 36px;
+    height: 36px;
+    stroke: #ef4444;
+    stroke-width: 2.5;
+    transition: all 0.4s ease;
+  }
+
+  .stat-card-graph:hover .graph-icon-wrapper svg {
+    stroke: #ffffff;
+  }
+
+  .graph-title-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .graph-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0.25rem 0 0 0;
+    font-weight: 500;
+  }
+
+  .graph-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  /* Stat Card - New Design */
+  .stat-card-modern {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .stat-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .stat-card-modern:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e1;
+  }
+
+  .stat-card-modern:hover::before {
+    transform: scaleX(1);
+  }
+
+  .stat-header-modern {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-icon-modern {
+    width: 72px;
+    height: 72px;
+    border-radius: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.2);
+    transition: all 0.4s ease;
+  }
+
+  .stat-card-modern:hover .stat-icon-modern {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    transform: rotate(5deg) scale(1.1);
+  }
+
+  .stat-icon-modern svg {
+    width: 36px;
+    height: 36px;
+    stroke: #ef4444;
+    stroke-width: 2.5;
+    transition: all 0.4s ease;
+  }
+
+  .stat-card-modern:hover .stat-icon-modern svg {
+    stroke: #ffffff;
+  }
+
+  .stat-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    color: #475569;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .stat-value-modern {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label-modern {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #64748b;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .stat-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #10b981;
+    margin-top: 0.5rem;
+  }
+
+  /* COMPLETELY NEW Quick Actions Design - Hexagonal/Tile Layout */
+  .actions-section-modern {
+    margin-top: 3rem;
+  }
+
+  /* New Grid Layout - 3 columns with different sizes */
+  .actions-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    grid-auto-rows: minmax(200px, auto);
+  }
+
+  /* Large featured action card */
+  .action-card-featured {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
+    border: 3px solid transparent;
+    border-radius: 2rem;
+    padding: 2.5rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .action-card-featured::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 2rem;
+    padding: 3px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .action-card-featured:hover::before {
+    opacity: 1;
+  }
+
+  .action-card-featured::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    right: -100%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    transition: all 0.6s ease;
+  }
+
+  .action-card-featured:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 24px 56px rgba(239, 68, 68, 0.2);
+  }
+
+  .action-card-featured:hover::after {
+    top: -50%;
+    right: -50%;
+  }
+
+  /* Regular action cards - Compact vertical design */
+  .action-card-compact {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .action-card-compact::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .action-card-compact:hover {
+    transform: translateY(-8px) rotate(1deg);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e1;
+  }
+
+  .action-card-compact:hover::before {
+    transform: scaleX(1);
+  }
+
+  /* Featured card content */
+  .featured-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .featured-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+    transition: all 0.4s ease;
+  }
+
+  .action-card-featured:hover .featured-icon-wrapper {
+    transform: rotate(-10deg) scale(1.1);
+    box-shadow: 0 12px 28px rgba(239, 68, 68, 0.4);
+  }
+
+  .featured-icon-wrapper svg {
+    width: 40px;
+    height: 40px;
+    stroke: #ffffff;
+    stroke-width: 2.5;
+  }
+
+  .featured-content {
+    flex: 1;
+    margin-left: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .featured-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.75rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .featured-description {
+    font-size: 1rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .featured-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .featured-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    color: #475569;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .featured-arrow {
+    font-size: 1.5rem;
+    color: #3b82f6;
+    font-weight: 800;
+    transition: transform 0.3s ease;
+  }
+
+  .action-card-featured:hover .featured-arrow {
+    transform: translateX(8px);
+  }
+
+  /* Compact card content */
+  .compact-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    border-radius: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.25);
+    margin-bottom: 1.25rem;
+    transition: all 0.4s ease;
+    position: relative;
+  }
+
+  .action-card-compact:hover .compact-icon-wrapper {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-color: transparent;
+    transform: scale(1.15) rotate(-5deg);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .compact-icon-wrapper svg {
+    width: 32px;
+    height: 32px;
+    stroke: #ef4444;
+    stroke-width: 2.5;
+    transition: all 0.4s ease;
+  }
+
+  .action-card-compact:hover .compact-icon-wrapper svg {
+    stroke: #ffffff;
+    transform: scale(1.1);
+  }
+
+  .compact-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.01em;
+  }
+
+  .compact-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+  }
+
+  .compact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+  }
+
+  .action-card-compact:hover .compact-link {
+    color: #2563eb;
+    transform: translateX(4px);
+  }
+
+  .compact-arrow {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  .action-card-compact:hover .compact-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .actions-grid-modern {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .action-card-featured {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .stats-grid-modern {
+      grid-template-columns: 1fr;
+    }
+
+    .actions-grid-modern {
+      grid-template-columns: 1fr;
+    }
+
+    .action-card-featured {
+      grid-column: span 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .welcome-hero {
+      padding: 2rem 1.5rem;
+    }
+
+    .hero-title {
+      font-size: 1.875rem;
+    }
+
+    .stat-card-modern {
+      padding: 1.5rem;
+    }
+
+    .stat-icon-modern {
+      width: 64px;
+      height: 64px;
+    }
+
+    .stat-icon-modern svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .stat-value-modern {
+      font-size: 2.25rem;
+    }
+
+    .action-card-featured,
+    .action-card-compact {
+      padding: 1.5rem;
+    }
+
+    .featured-title {
+      font-size: 1.5rem;
+    }
+
+    /* Keep stats/graph full-width on small screens */
+    .stats-grid-modern {
+      grid-template-columns: 1fr;
+    }
+    .stat-card-graph {
+      grid-column: span 1;
+    }
+
+    /* Make the Monthly Registrations card wrap nicely */
+    .graph-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .graph-icon-wrapper {
+      width: 56px;
+      height: 56px;
+    }
+    .graph-title-text {
+      font-size: 1.25rem;
+    }
+    .graph-subtitle {
+      font-size: 0.85rem;
+    }
+    .graph-container {
+      height: 220px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .stat-card-graph {
+      grid-column: span 1;
+    }
+  }
+</style>
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block business_content %}
+<div class="dashboard-wrapper">
+  <!-- Welcome Hero Banner -->
+  <div class="welcome-hero">
+    <div class="hero-content">
+      <div class="hero-greeting">Welcome Back</div>
+      <h1 class="hero-title">{{ request.user.full_name|default:request.user.email }}</h1>
+      <p class="hero-subtitle">Here's your business overview and quick access to all features</p>
+    </div>
+  </div>
+
+  <!-- Statistics Section -->
+  <div class="stats-section">
+    <div class="section-header-modern">
+      <h2 class="section-title-modern">Key Metrics</h2>
+    </div>
+
+    <div class="stats-grid-modern">
+      <!-- Assigned Courses -->
+      <div class="stat-card-modern">
+        <div class="stat-header-modern">
+          <div class="stat-icon-modern">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20V6a2 2 0 0 0-2-2H6"></path>
+            </svg>
+          </div>
+          <span class="stat-badge">Courses</span>
+        </div>
+        <div class="stat-value-modern">{{ total_courses|default:0 }}</div>
+        <p class="stat-label-modern">Assigned Courses</p>
+        <div class="stat-trend">
+          <span>📚</span>
+          <span>Active</span>
+        </div>
+      </div>
+
+      <!-- Total Registrations -->
+      <div class="stat-card-modern">
+        <div class="stat-header-modern">
+          <div class="stat-icon-modern">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <span class="stat-badge">Learners</span>
+        </div>
+        <div class="stat-value-modern">{{ total_registrations|default:0 }}</div>
+        <p class="stat-label-modern">Total Registrations</p>
+        <div class="stat-trend">
+          <span>👥</span>
+          <span>Registered</span>
+        </div>
+      </div>
+
+      <!-- Pending Certificates -->
+      <div class="stat-card-modern">
+        <div class="stat-header-modern">
+          <div class="stat-icon-modern">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <span class="stat-badge">Pending</span>
+        </div>
+        <div class="stat-value-modern">{{ pending_certificates|default:0 }}</div>
+        <p class="stat-label-modern">Pending Certificates</p>
+        <div class="stat-trend">
+          <span>⏳</span>
+          <span>Awaiting</span>
+        </div>
+      </div>
+
+      <!-- Issued Certificates -->
+      <div class="stat-card-modern">
+        <div class="stat-header-modern">
+          <div class="stat-icon-modern">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <span class="stat-badge">Issued</span>
+        </div>
+        <div class="stat-value-modern">{{ issued_certificates|default:0 }}</div>
+        <p class="stat-label-modern">Issued Certificates</p>
+        <div class="stat-trend">
+          <span>✅</span>
+          <span>Completed</span>
+        </div>
+      </div>
+
+      <!-- Performance Graph Card -->
+      <div class="stat-card-graph">
+        <div class="graph-header">
+          <div class="graph-title-wrapper">
+            <div class="graph-icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <div>
+              <h3 class="graph-title-text">Monthly Registrations</h3>
+              <p class="graph-subtitle">Learners registered per month</p>
+            </div>
+          </div>
+          <span class="stat-badge">Performance</span>
+        </div>
+        <div class="graph-container">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLETELY NEW Quick Actions Section -->
+  <div class="actions-section-modern">
+    <div class="section-header-modern">
+      <h2 class="section-title-modern">Quick Actions</h2>
+    </div>
+
+    <div class="actions-grid-modern">
+      <!-- Featured Large Card - Courses List -->
+      <a class="action-card-featured" href="{% url 'superadmin:business_courses' %}?view=list">
+        <div class="featured-header">
+          <div class="featured-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20V6a2 2 0 0 0-2-2H6"></path>
+            </svg>
+          </div>
+          <div class="featured-content">
+            <h3 class="featured-title">Courses List</h3>
+            <p class="featured-description">Browse and manage all courses assigned to your business. View course details, register learners, and track progress across all your educational programs.</p>
+          </div>
+        </div>
+        <div class="featured-footer">
+          <span class="featured-badge">View All</span>
+          <span class="featured-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- Compact Card - Register Learners -->
+      <a class="action-card-compact" href="{% url 'superadmin:business_courses' %}">
+        <div class="compact-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 11V9a2 2 0 0 0-2-2h-2"></path>
+            <path d="M16 5h2a2 2 0 0 1 2 2v2"></path>
+            <path d="M20 11h-6"></path>
+            <path d="M17 8h.01"></path>
+          </svg>
+        </div>
+        <h3 class="compact-title">Register Learners</h3>
+        <p class="compact-description">Add new learners to courses</p>
+        <span class="compact-link">
+          Register
+          <span class="compact-arrow">→</span>
+        </span>
+      </a>
+
+      <!-- Compact Card - All Learners -->
+      <a class="action-card-compact" href="{% url 'superadmin:all_registered_learners' %}">
+        <div class="compact-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <h3 class="compact-title">All Learners</h3>
+        <p class="compact-description">Manage all registrations</p>
+        <span class="compact-link">
+          View All
+          <span class="compact-arrow">→</span>
+        </span>
+      </a>
+
+      <!-- Compact Card - Invoices -->
+      <a class="action-card-compact" href="{% url 'pricing:business_invoices_list' %}">
+        <div class="compact-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 21V3l3 2 3-2 3 2 3-2 3 2v18l-3-2-3 2-3-2-3 2-3-2z"></path>
+            <path d="M8 13h8"></path>
+            <path d="M8 17h8"></path>
+            <path d="M8 9h8"></path>
+          </svg>
+        </div>
+        <h3 class="compact-title">Invoices</h3>
+        <p class="compact-description">View and manage invoices</p>
+        <span class="compact-link">
+          View All
+          <span class="compact-arrow">→</span>
+        </span>
+      </a>
+
+      <!-- Compact Card - Pricing -->
+      <a class="action-card-compact" href="{% url 'superadmin:business_pricing' %}">
+        <div class="compact-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <h3 class="compact-title">Pricing</h3>
+        <p class="compact-description">View pricing details</p>
+        <span class="compact-link">
+          View
+          <span class="compact-arrow">→</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</div>
+
+{{ monthly_registrations|json_script:"monthly-registrations-data" }}
+{{ monthly_labels|json_script:"monthly-labels-data" }}
+<script>
+  // Performance Chart - Line Graph
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('performanceChart');
+    if (!ctx) return;
+
+    const monthlyData = JSON.parse(document.getElementById('monthly-registrations-data').textContent);
+    const monthlyLabels = JSON.parse(document.getElementById('monthly-labels-data').textContent);
+
+    // Use data as-is: months on X-axis (horizontal), learners on Y-axis (vertical)
+    // Data comes from backend as: [oldest_month, ..., newest_month]
+    // Keep original order for X-axis (left to right: oldest to newest)
+
+    // Calculate max value for Y-axis to set appropriate step size
+    const maxValue = Math.max(...monthlyData, 5); // At least 5
+    const yAxisMax = Math.ceil(maxValue / 5) * 5; // Round up to nearest multiple of 5
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: monthlyLabels, // Months on X-axis
+        datasets: [{
+          label: 'Learners Registered',
+          data: monthlyData, // Number of learners on Y-axis
+          borderColor: 'rgb(239, 68, 68)',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: 'rgb(59, 130, 246)',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointHoverBackgroundColor: 'rgb(239, 68, 68)',
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              font: {
+                family: "'Inter', sans-serif",
+                size: 13,
+                weight: 600
+              },
+              color: '#475569',
+              padding: 15,
+              usePointStyle: true,
+              pointStyle: 'circle'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+            padding: 12,
+            titleFont: {
+              family: "'Inter', sans-serif",
+              size: 13,
+              weight: 700
+            },
+            bodyFont: {
+              family: "'Inter', sans-serif",
+              size: 12,
+              weight: 500
+            },
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            borderColor: 'rgba(239, 68, 68, 0.5)',
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: true,
+            callbacks: {
+              label: function(context) {
+                return 'Learners: ' + context.parsed.y;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Months',
+              font: {
+                family: "'Inter', sans-serif",
+                size: 12,
+                weight: 600
+              },
+              color: '#64748b',
+              padding: { top: 10 }
+            },
+            grid: {
+              color: 'rgba(226, 232, 240, 0.5)',
+              drawBorder: false
+            },
+            ticks: {
+              font: {
+                family: "'Inter', sans-serif",
+                size: 11,
+                weight: 500
+              },
+              color: '#64748b',
+              maxRotation: 45,
+              minRotation: 45
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Number of Learners',
+              font: {
+                family: "'Inter', sans-serif",
+                size: 12,
+                weight: 600
+              },
+              color: '#64748b',
+              padding: { right: 10 }
+            },
+            beginAtZero: true,
+            max: yAxisMax,
+            grid: {
+              color: 'rgba(226, 232, 240, 0.5)',
+              drawBorder: false
+            },
+            ticks: {
+              font: {
+                family: "'Inter', sans-serif",
+                size: 11,
+                weight: 500
+              },
+              color: '#64748b',
+              stepSize: 5, // Multiples of 5
+              precision: 0,
+              callback: function(value) {
+                // Only show multiples of 5
+                return value % 5 === 0 ? value : '';
+              }
+            }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        },
+        animation: {
+          duration: 1500,
+          easing: 'easeInOutQuart'
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

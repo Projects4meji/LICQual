@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Subscribers • ICTQUAL{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-6">
+  <div class="mb-4">
+    <h1 class="text-2xl font-bold text-slate-900">Email Subscribers</h1>
+    <p class="text-slate-600 mt-1">Total: {{ page_obj.paginator.count }}</p>
+  </div>
+
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-50 text-slate-700">
+        <tr>
+          <th class="text-left px-4 py-3 font-semibold">Email</th>
+          <th class="text-left px-4 py-3 font-semibold">Active</th>
+          <th class="text-left px-4 py-3 font-semibold">Created</th>
+          <th class="text-left px-4 py-3 font-semibold">Updated</th>
+          <th class="text-left px-4 py-3 font-semibold">Action</th>
+
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for sub in page_obj %}
+          <tr>
+            <td class="px-4 py-3">{{ sub.email }}</td>
+            <td class="px-4 py-3">
+              {% if sub.is_active %}
+                <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">Active</span>
+              {% else %}
+                <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3">{{ sub.created_at|date:"Y-m-d H:i" }}</td>
+            <td class="px-4 py-3">{{ sub.updated_at|date:"Y-m-d H:i" }}</td>
+            <td class="px-4 py-3">
+  <form method="post" action="{% url 'superadmin:subscriber_delete' sub.id %}" onsubmit="return confirm('Delete this subscriber?');">
+    {% csrf_token %}
+    <button type="submit" class="inline-flex items-center gap-1 rounded-md bg-red-600 px-3 py-1.5 text-white text-xs font-semibold hover:bg-red-700 focus:outline-none">
+      Delete
+    </button>
+  </form>
+</td>
+
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="px-4 py-6 text-center text-slate-500">No subscribers yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+    <div class="mt-4 flex items-center justify-between text-sm">
+      <div>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</div>
+      <div class="space-x-2">
+        {% if page_obj.has_previous %}
+          <a class="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a class="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50" href="?page={{ page_obj.next_page_number }}">Next</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,927 @@
+{% extends "base.html" %}
+{% block title %}Learner Certificates • ICTQUAL{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page Container */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+  }
+
+  /* Modern Header */
+  .page-header {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .learner-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .learner-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .learner-details h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .learner-details p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9375rem;
+    margin: 0;
+  }
+
+  .page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-back:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Modern Card */
+  .modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    overflow: visible;
+  }
+
+  .card-content {
+    padding: 2rem 2rem 2.5rem;
+  }
+
+  /* Table Styling */
+  .certificates-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: visible;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  }
+
+  .certificates-table thead th:nth-child(1) { width: 21%; }
+  .certificates-table thead th:nth-child(2) { width: 21%; }
+  .certificates-table thead th:nth-child(3) { width: 12%; }
+  .certificates-table thead th:nth-child(4) { width: 10%; }
+  .certificates-table thead th:nth-child(5) { width: 14%; }
+  .certificates-table thead th:nth-child(6) { width: 12%; }
+  .certificates-table thead th:nth-child(7) { width: 10%; }
+
+  .certificates-table th,
+  .certificates-table td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: middle;
+    padding: 1.25rem 1rem;
+    text-align: left;
+  }
+
+  .certificates-table tbody td:nth-child(3),
+  .certificates-table tbody td:nth-child(4),
+  .certificates-table tbody td:nth-child(5),
+  .certificates-table tbody td:nth-child(6),
+  .certificates-table tbody td:nth-child(7) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .certificates-table thead {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+    clip-path: inset(0 round 1rem 1rem 0 0);
+  }
+
+  .certificates-table thead th {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1.35rem 1rem;
+    border: none;
+    text-align: center;
+  }
+
+  .certificates-table thead th:first-child {
+    padding-left: 1.5rem;
+    text-align: left;
+  }
+
+  .certificates-table thead th:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .certificates-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+    z-index: 100;
+  }
+
+  .certificates-table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.006);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    z-index: 200;
+  }
+
+  .certificates-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .certificates-table tbody td {
+    color: #1e293b;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .certificates-table tbody td:first-child {
+    padding-left: 1.5rem;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .certificates-table tbody td:last-child {
+    padding-right: 1.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  .certificates-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+  }
+
+  .certificates-table tbody tr:nth-child(even):hover {
+    background-color: #f1f5f9;
+  }
+
+  /* Desktop table container */
+  .desktop-table-container {
+    overflow: visible;
+    position: relative;
+  }
+
+  /* Certificate Badge Styling */
+  .certificate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .certificate-badge.issued {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .certificate-badge.issued::before {
+    content: '✓';
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .certificate-badge.pending {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+
+  .certificate-badge.pending::before {
+    content: '○';
+    font-size: 0.875rem;
+  }
+
+  .certificate-badge.revoked {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: #fde8e8;
+    color: #991b1b;
+    margin-left: 0.5rem;
+  }
+
+  .pill-locked {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Action Buttons */
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.55rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .action-btn-download {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .action-btn-download:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .action-btn-share {
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+  }
+
+  .action-btn-share:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .action-btn-edit {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .action-btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Actions dropdown */
+  .actions-wrapper {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 6000;
+  }
+
+  .certificates-table tbody tr:hover .actions-wrapper {
+    z-index: 1000;
+  }
+
+  .actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    font-size: 1.125rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .actions-trigger:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+
+  .actions-trigger::after {
+    content: '⋯';
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .actions-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 12000;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+
+  .actions-wrapper:hover .actions-menu,
+  .actions-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .action-item:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+
+  .action-item:last-child {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+  }
+
+  .action-item:hover {
+    background: #f8fafc;
+    color: #3b82f6;
+  }
+
+  .action-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .action-item.danger {
+    color: #ef4444;
+  }
+
+  .action-item.danger:hover {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  .chip-gradient {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .chip-blue {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 0.55rem;
+    background: #eef2ff;
+    border: 1px solid #e0e7ff;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* Mobile Cards */
+  .certificate-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    transition: all 0.25s ease;
+  }
+
+  .certificate-card:hover {
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    transform: translateY(-3px);
+  }
+
+  .certificate-card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+  }
+
+  .certificate-card-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .certificate-card-detail:last-of-type {
+    border-bottom: none;
+  }
+
+  .certificate-card-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .certificate-card-value {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #1e293b;
+    text-align: right;
+  }
+
+  .certificate-card-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f1f5f9;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  /* Links */
+  .cert-link {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .cert-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #64748b;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 1rem;
+    }
+
+    .page-header {
+      padding: 1.5rem;
+    }
+
+    .learner-details h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    /* Responsive action buttons for desktop table */
+    .actions-wrapper {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: auto;
+    }
+
+    .actions-trigger {
+      display: none; /* Hide the dropdown trigger on mobile */
+    }
+
+    .actions-menu {
+      position: static;
+      display: flex !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1;
+      visibility: visible;
+      transform: none !important;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      min-width: auto;
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+    }
+
+    /* Mobile action buttons - modern design */
+    .actions-wrapper .actions-menu .action-item {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      border-radius: 0.5rem !important;
+      text-decoration: none !important;
+      border: none !important;
+      background: #f8fafc !important;
+      color: #475569 !important;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      min-height: 40px !important;
+      min-width: 44px !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      gap: 0.5rem !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item:active {
+      transform: translateY(0) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.download {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.download:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.share {
+      background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.share:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.edit {
+      background: #60a5fa !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.edit:hover {
+      background: #3b82f6 !important;
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.delete {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.delete:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%) !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.lock {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 50%, #374151 100%) !important;
+      color: white !important;
+      box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3) !important;
+    }
+
+    .actions-wrapper .actions-menu .action-item.lock:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 50%, #1f2937 100%) !important;
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4) !important;
+    }
+
+    .actions-wrapper .actions-menu button.action-item {
+      cursor: pointer !important;
+    }
+
+    /* Hide form wrapper display styles */
+    .actions-menu form {
+      display: contents;
+    }
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .page-header-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+
+    .learner-info {
+      margin-bottom: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="learner-info">
+        <div class="learner-avatar">
+          {{ user_obj.full_name|default:user_obj.email|first|upper }}
+        </div>
+        <div class="learner-details">
+          <h1>
+            {{ user_obj.full_name|default:user_obj.email }}
+            {% if user_obj.is_profile_locked %}<span class="pill-locked">Locked</span>{% endif %}
+          </h1>
+          <p>{{ user_obj.email }}</p>
+        </div>
+      </div>
+      <div class="page-header-actions">
+        <a href="{{ back_url }}" class="btn-back">← Back to Learners</a>
+      </div>
+      </div>
+    </div>
+
+  <!-- Modern Card -->
+  <div class="modern-card">
+    <div class="card-content">
+      <!-- Desktop table -->
+      <div class="hidden md:block desktop-table-container">
+        <table class="certificates-table">
+          <thead>
+            <tr>
+              <th>Course Title</th>
+              <th>Business</th>
+              <th>Registered on</th>
+              <th>Certificate Issued</th>
+              <th>Certificate #</th>
+              <th>Issuance Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for r in registrations %}
+            <tr>
+              <td><strong>{{ r.course.title }}</strong></td>
+              <td><span class="chip-gradient">{{ r.business.business_name|default:r.business.name }}</span></td>
+              <td>{{ r.created_at|date:"d M Y" }}</td>
+              <td>
+                {% if r.is_revoked %}
+                  <span class="certificate-badge revoked">Revoked</span>
+                {% elif r.certificate_issued_at %}
+                  <span class="certificate-badge issued">Issued</span>
+                {% else %}
+                  <span class="certificate-badge pending">Pending</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if r.certificate_issued_at and r.certificate_number %}
+                  <a href="{% url 'verify_certificate' r.certificate_number %}" class="cert-link">
+                    <span class="chip-blue">{{ r.certificate_number }}</span>
+                  </a>
+                {% else %}<span style="color: #94a3b8;">—</span>{% endif %}
+              </td>
+              <td>{% if r.certificate_issued_at %}{{ r.certificate_issue_date|date:"d M Y" }}{% else %}<span style="color: #94a3b8;">—</span>{% endif %}</td>
+              <td>
+                <div class="actions-wrapper">
+                  <button class="actions-trigger" aria-label="Actions menu"></button>
+                  <div class="actions-menu">
+                    {% if r.certificate_issued_at %}
+                      <a href="{% url 'superadmin:download_certificate' r.id %}?next={{ request.get_full_path|urlencode }}" class="action-item">Download Certificate</a>
+                      <form method="post" action="{% url 'learners:share_certificate_email' r.id %}" style="display:contents;">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="action-item">Share Certificate</button>
+                      </form>
+                      <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-item">Edit Learner</a>
+                      <form method="post" action="{% url 'superadmin:toggle_revoke_registration' r.id %}" style="display:contents;" onsubmit="return confirm('Are you sure?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="action-item danger">
+                          {% if r.is_revoked %}Unrevoke{% else %}Revoke{% endif %}
+                        </button>
+                      </form>
+                    {% else %}
+                      <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-item">Edit Learner</a>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="7" class="empty-state">No registrations found.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="md:hidden">
+        {% for r in registrations %}
+          <div class="certificate-card">
+            <div class="certificate-card-title">{{ r.course.title }}</div>
+            
+            <div class="certificate-card-detail">
+              <span class="certificate-card-label">Business</span>
+              <span class="certificate-card-value"><span class="chip-gradient">{{ r.business.business_name|default:r.business.name }}</span></span>
+            </div>
+
+            <div class="certificate-card-detail">
+              <span class="certificate-card-label">Registered</span>
+              <span class="certificate-card-value">{{ r.created_at|date:"d M Y" }}</span>
+            </div>
+
+            <div class="certificate-card-detail">
+              <span class="certificate-card-label">Certificate Issued</span>
+              <span class="certificate-card-value">
+              {% if r.is_revoked %}
+                <span class="certificate-badge revoked">Revoked</span>
+              {% elif r.certificate_issued_at %}
+                <span class="certificate-badge issued">Issued</span>
+              {% else %}
+                <span class="certificate-badge pending">Pending</span>
+              {% endif %}
+              </span>
+            </div>
+
+            <div class="certificate-card-detail">
+              <span class="certificate-card-label">Certificate #</span>
+              <span class="certificate-card-value">
+              {% if r.certificate_issued_at and r.certificate_number %}
+                  <a href="{% url 'verify_certificate' r.certificate_number %}" class="cert-link">
+                    <span class="chip-blue">{{ r.certificate_number }}</span>
+                  </a>
+              {% else %}
+                  <span style="color: #94a3b8;">—</span>
+              {% endif %}
+              </span>
+            </div>
+
+            <div class="certificate-card-detail">
+              <span class="certificate-card-label">Issued on</span>
+              <span class="certificate-card-value">
+              {% if r.certificate_issued_at %}
+                {{ r.certificate_issue_date|date:"d M Y" }}
+              {% else %}
+                  <span style="color: #94a3b8;">—</span>
+              {% endif %}
+              </span>
+            </div>
+
+            <div class="certificate-card-actions">
+              {% if r.certificate_issued_at %}
+                <a href="{% url 'superadmin:download_certificate' r.id %}?next={{ request.get_full_path|urlencode }}" class="action-btn action-btn-download">Download</a>
+                <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-btn action-btn-edit">Edit</a>
+                <form method="post" action="{% url 'learners:share_certificate_email' r.id %}" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" class="action-btn action-btn-share">Share</button>
+                </form>
+                <form method="post" action="{% url 'superadmin:toggle_revoke_registration' r.id %}" style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" class="action-btn {% if r.is_revoked %}action-btn-unrevoke{% else %}action-btn-revoke{% endif %}">
+                    {% if r.is_revoked %}Unrevoke{% else %}Revoke{% endif %}
+                  </button>
+                </form>
+              {% else %}
+                <a href="{% url 'superadmin:edit_learner' r.id %}" class="action-btn action-btn-edit">Edit</a>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-state">No registrations found.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
